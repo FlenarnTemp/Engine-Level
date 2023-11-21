@@ -145,14 +145,14 @@ float GetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV) {
 	return NULL;
 }
 
-void ModBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float iModAmount)
+void ModBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float fModAmount)
 {
-	myActor->ModBaseActorValue(*myAV, iModAmount);
+	myActor->ModBaseActorValue(*myAV, fModAmount);
 }
 
-void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float iSetAmount)
+void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float fSetAmount)
 {
-	myActor->SetBaseActorValue(*myAV, iSetAmount);
+	myActor->SetBaseActorValue(*myAV, fSetAmount);
 }
 
 float GetPlayerAVValue(RE::ActorValueInfo* myAV)
@@ -165,7 +165,12 @@ float GetPlayerBaseAVValue(RE::ActorValueInfo* myAV)
 	return GetBaseAVValue(GetPlayerCharacter(), myAV);
 }
 
-void ModPlayerBaseAVValue(RE::ActorValueInfo* myAV, float iModAmount)
+void ModPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fModAmount)
 {
-	ModBaseAVValue(GetPlayerCharacter(), myAV, iModAmount);
+	ModBaseAVValue(GetPlayerCharacter(), myAV, fModAmount);
+}
+
+void SetPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fSetAmount)
+{
+	SetBaseAVValue(GetPlayerCharacter(), myAV, fSetAmount);
 }

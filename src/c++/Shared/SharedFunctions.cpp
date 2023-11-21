@@ -108,7 +108,7 @@ bool WeaponHasKeyword(RE::TESObjectWEAP* weapon, RE::BGSKeyword* keyword)
 {
 	if (weapon)
 	{
-		for (int i = 0; i < weapon->numKeywords; i++)
+		for (uint32_t i = 0; i < weapon->numKeywords; i++)
 		{
 			if (weapon->keywords[i] == keyword)
 			{
@@ -123,9 +123,121 @@ bool ArmorHasKeyword(RE::TESObjectARMO* armor, RE::BGSKeyword* keyword)
 {
 	if (armor)
 	{
-		for (int i = 0; i < armor->numKeywords; i++)
+		for (uint32_t i = 0; i < armor->numKeywords; i++)
 		{
 			if (armor->keywords[i] == keyword)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*bool ReferenceHasKeyword(RE::TESObjectREFR* ref, RE::BGSKeyword* keyword)
+{
+	if (ref)
+	{
+		RE::TBO_InstanceData* myInstanceData = nullptr;
+		RE::BSExtraData* myExtraData = ref->extraList->GetByType(RE::kInstanceData);
+
+		if (myExtraData)
+		{
+			// TODO
+			//RE::ExtraInstanceData* myExtraInstanceData = 
+		}
+
+		if (myInstanceData)
+		{
+			
+		}
+	}
+
+}*/
+
+bool NPCHasKeyword(RE::TESNPC* npc, RE::BGSKeyword* keyword)
+{
+	if (npc)
+	{
+		for (uint32_t i = 0; i < npc->numKeywords; i++)
+		{
+			if (npc->keywords[i] == keyword)
+			{
+				return true;
+			}
+		}
+	}
+
+	// If still false, check if race has keyword
+	// Doesn't seem to be bound on the NPC check if it's only on the race? Gotta love inheritance.
+	RE::TESRace* npcRace = npc->originalRace;
+
+	if (npcRace)
+	{
+		for (uint32_t i = 0; i < npcRace->numKeywords; i++)
+		{
+			if (npcRace->keywords[i] == keyword)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+// Get Inxed in FormList
+UINT32 PositionInFormList(RE::TESForm* form, RE::BGSListForm* list)
+{
+	if (list->arrayOfForms.size() != 0)
+	{
+		for (uint32_t i = 0; i <= list->arrayOfForms.size() - 1; i++)
+		{
+			if (list->arrayOfForms[i] == form)
+			{
+				return i;
+			}
+		}
+	}
+	return 0;
+}
+
+// Gets and return next form player has a count higher than 0 of in list, from current index to start of array
+uint32_t GetNextAvailableFormInInventoryFromList(UINT32 startingIndex, RE::BGSListForm* list)
+{
+	auto playerCharacter = GetPlayerCharacter();
+	if (list->arrayOfForms.size() != 0)
+	{
+		for (uint32_t a = startingIndex + 1; a <= list->arrayOfForms.size() - 1; a++)
+		{
+			RE::TESBoundObject* a_object = reinterpret_cast<RE::TESBoundObject*>(list->arrayOfForms[a]);
+			if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
+			{
+				return a;
+			}		
+		}
+
+		for (uint32_t b = 0; b <= startingIndex; b++)
+		{
+			RE::TESBoundObject* a_object = reinterpret_cast<RE::TESBoundObject*>(list->arrayOfForms[b]);
+			if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
+			{
+				return b;
+			}	
+		}
+	}
+
+	return (uint32_t) - 1;
+}
+
+//	Returns True if Form is in FormList
+bool IsFormInList(RE::TESForm* form, RE::BGSListForm* list)
+{
+	if (list->arrayOfForms.size() != 0)
+	{
+		for (uint32_t i = 0; i <= list->arrayOfForms.size() - 1; i++)
+		{
+			if (list->arrayOfForms[i] == form)
 			{
 				return true;
 			}

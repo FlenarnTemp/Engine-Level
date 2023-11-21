@@ -28,8 +28,10 @@ namespace Skills
 
 float GetAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV);
 float GetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV);
-void ModBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float iModAmount);
-void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float iSetAmount);
+void ModBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float fModAmount);
+void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float fSetAmount);
 
 float GetPlayerAVValue(RE::ActorValueInfo* myAV);
 float GetPlayerBaseAVValue(RE::ActorValueInfo* myAV);
+void ModPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fModAmount);
+void SetPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fSetAmount);

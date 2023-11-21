@@ -43,6 +43,18 @@ std::string GetFormIDAsString(uint32_t formID)
 	return result;
 }
 
+// 0 = male, 1 = female
+uint32_t GetActorSex(RE::Actor* myActor)
+{
+	uint32_t myGender = 0;
+	RE::TESNPC* myActorBase = myActor->GetNPC();
+	if (myActorBase)
+	{
+		myGender = myActorBase->GetSex();
+	}
+	return myGender;
+}
+
 RE::PlayerCharacter* GetPlayerCharacter()
 {
 	auto PlayerCharacter = RE::PlayerCharacter::GetSingleton();
@@ -58,6 +70,12 @@ int16_t GetPlayerLevel()
 {
 	return GetPlayerCharacter()->GetLevel();
 }
+
+uint32_t GetPlayerSex()
+{
+	return GetActorSex(GetPlayerCharacter());
+}
+
 
 // Takes a Float and converts it to a Precise String.
 // eg. FloatToPreciseString(3.141592, 2) would return "3.14"
@@ -86,13 +104,32 @@ float RNG(float min, float max)
 	return dist(rng);
 }
 
-uint32_t GetActorSex(RE::Actor* myActor)
+bool WeaponHasKeyword(RE::TESObjectWEAP* weapon, RE::BGSKeyword* keyword)
 {
-	uint32_t myGender = 0;
-	RE::TESNPC* myActorBase = myActor->GetNPC();
-	if (myActorBase)
+	if (weapon)
 	{
-		myGender = myActorBase->GetSex();
+		for (int i = 0; i < weapon->numKeywords; i++)
+		{
+			if (weapon->keywords[i] == keyword)
+			{
+				return true;
+			}
+		}
 	}
-	return myGender;
+	return false;
+}
+
+bool ArmorHasKeyword(RE::TESObjectARMO* armor, RE::BGSKeyword* keyword)
+{
+	if (armor)
+	{
+		for (int i = 0; i < armor->numKeywords; i++)
+		{
+			if (armor->keywords[i] == keyword)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }

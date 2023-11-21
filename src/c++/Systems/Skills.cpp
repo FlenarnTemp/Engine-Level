@@ -8,6 +8,36 @@ CascadiaAV_Struct			CascadiaActorValues;
 CascadiaPerks_Struct		CascadiaPerks;
 CascadiaGlobals_Struct		CascadiaGlobals;
 
+/*
+	Fallout New Vegas Calculations:
+
+	Barter				(CHA * 2) + 2 + (LCK / 2)
+
+	Energy Weapons		(PER * 2) + 2 + (LCK / 2)
+
+	Explosives			(PER * 2) + 2 + (LCK / 2)
+
+	Guns				(AGI * 2) + 2 + (LCK / 2)
+
+	Lockpick 			(PER * 2) + 2 + (LCK / 2)
+
+	Medicine 			(INT * 2) + 2 + (LCK / 2)
+
+	Melee Weapons 		(STR * 2) + 2 + (LCK / 2)
+
+	Repair				(INT * 2) + 2 + (LCK / 2)
+
+	Science				(INT * 2) + 2 + (LCK / 2)
+
+	Sneak				(AGI * 2) + 2 + (LCK / 2)
+
+	Speech				(CHA * 2) + 2 + (LCK / 2)
+
+	Survival			(END * 2) + 2 + (LCK / 2)
+
+	Unarmed				(END * 2) + 2 + (LCK / 2)
+*/
+
 namespace Skills
 {
 	//	Most functions in this namespace are based on shad0wshayd3's work on Project Massachusetts & HcG x Grills rework for the Capital Wasteland.
@@ -92,7 +122,7 @@ namespace Skills
 }
 
 // Internal Functions
-
+//=========================================================================================================================
 float GetAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV)
 {
 	if (myActor)
@@ -112,9 +142,14 @@ float GetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV) {
 	return NULL;
 }
 
-void ModBaseAVVAlue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float iModAmount)
+void ModBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float iModAmount)
 {
 	myActor->ModBaseActorValue(*myAV, iModAmount);
+}
+
+void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float iSetAmount)
+{
+	myActor->SetBaseActorValue(*myAV, iSetAmount);
 }
 
 float GetPlayerAVValue(RE::ActorValueInfo* myAV)
@@ -125,4 +160,9 @@ float GetPlayerAVValue(RE::ActorValueInfo* myAV)
 float GetPlayerBaseAVValue(RE::ActorValueInfo* myAV)
 {
 	return GetBaseAVValue(GetPlayerCharacter(), myAV);
+}
+
+void ModPlayerBaseAVValue(RE::ActorValueInfo* myAV, float iModAmount)
+{
+	ModBaseAVValue(GetPlayerCharacter(), myAV, iModAmount);
 }

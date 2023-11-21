@@ -85,3 +85,14 @@ float RNG(float min, float max)
 
 	return dist(rng);
 }
+
+uint32_t GetActorSex(RE::Actor* myActor)
+{
+	uint32_t myGender = 0;
+	RE::TESNPC* myActorBase = myActor->GetNPC();
+	if (myActorBase)
+	{
+		myGender = myActorBase->GetSex();
+	}
+	return myGender;
+}

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Menus
+/*/namespace Menus
 {
 	class LevelUpMenu :
 		public RE::GameMenuBase
@@ -222,4 +222,4 @@ namespace Menus
 				}
 			}
 	};
-}
+}*/

@@ -17,8 +17,8 @@ enum SPECIALFormIDs
 namespace Skills
 {
 	RE::ActorValueInfo* GetSkillByName(std::string mySkill);
-	UINT32 GetSkillByValueName(RE::Actor* myActor, std::string mySkill);
-	UINT32 GetBaseSkillValueByName(RE::Actor* myActor, std::string mySkill);
+	float GetSkillByValueName(RE::Actor* myActor, std::string mySkill);
+	float GetBaseSkillValueByName(RE::Actor* myActor, std::string mySkill);
 
 	RE::ActorValueInfo* GetDependantAV(RE::ActorValueInfo* myAV);
 	void AddDependentAV(RE::ActorValueInfo* myAV, RE::ActorValueInfo* dependantAV);
@@ -30,3 +30,6 @@ float GetAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV);
 float GetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV);
 void ModBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, int iModAmount);
 void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, int iSetAmount);
+
+float GetPlayerAVValue(RE::ActorValueInfo* myAV);
+float GetPlayerBaseAVValue(RE::ActorValueInfo* myAV);

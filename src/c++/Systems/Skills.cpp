@@ -1,4 +1,5 @@
 #include "Skills.h"
+#include "Shared/SharedFunctions.h"
 
 class ActorValueInfo;
 
@@ -28,7 +29,7 @@ namespace Skills
 	}
 
 	//	Returns Actor Value of given Actor based on Skill Name
-	UINT32 GetSkillValueByName(RE::Actor* myActor, std::string mySkill)
+	float GetSkillValueByName(RE::Actor* myActor, std::string mySkill)
 	{
 		RE::ActorValueInfo* myAV = GetSkillByName(mySkill);
 
@@ -42,7 +43,7 @@ namespace Skills
 		}
 	}
 
-	UINT32 GetBaseSkillValueByName(RE::Actor* myActor, std::string mySkill)
+	float GetBaseSkillValueByName(RE::Actor* myActor, std::string mySkill)
 	{
 		RE::ActorValueInfo* myAV = GetSkillByName(mySkill);
 
@@ -111,13 +112,17 @@ float GetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV) {
 	return NULL;
 }
 
-void ModBaseAVVAlue(RE::Actor* myActor, RE::ActorValueInfo* myAV,int iModAmount)
+void ModBaseAVVAlue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float iModAmount)
 {
 	myActor->ModBaseActorValue(*myAV, iModAmount);
 }
 
-void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, int iSetAmount)
+float GetPlayerAVValue(RE::ActorValueInfo* myAV)
 {
-	myActor->
+	return GetAVValue(GetPlayerCharacter(), myAV);
 }
 
+float GetPlayerBaseAVValue(RE::ActorValueInfo* myAV)
+{
+	return GetBaseAVValue(GetPlayerCharacter(), myAV);
+}

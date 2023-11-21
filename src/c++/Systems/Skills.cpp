@@ -1,6 +1,9 @@
 #include "Skills.h"
 #include "Shared/SharedFunctions.h"
 
+REL::Relocation<uintptr_t> ActorValueDerivedVtbl{ REL::ID(337946) };
+REL::Relocation<uintptr_t> ActorValueCalcVtbl{ REL::ID(510751) };
+
 class ActorValueInfo;
 
 VanillaAV_Struct			VanillaActorValues;

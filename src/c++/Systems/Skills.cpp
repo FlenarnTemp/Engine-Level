@@ -128,7 +128,7 @@ namespace Skills
 	void RegisterCalc(RE::ActorValueInfo* myAV, void(*f)(RE::Actor*, RE::ActorValueInfo&, float, float, RE::Actor*))
 	{
 		//myAV->VTABLE = reinterpret_cast<void*>(REL::Relocation(ActorValueCalcVtbl).get());
-		myAV->derivationFunction = f;
+		//myAV->derivationFunction = f;
 	}
 
 	float CalculateSkillOffset(RE::ActorValueOwner* myAVOwner, RE::ActorValueInfo& myAV)

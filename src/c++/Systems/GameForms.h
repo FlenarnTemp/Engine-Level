@@ -2,16 +2,19 @@
 
 #ifndef VanillaAVStruct
 #define VanillaAVStruct
+
+RE::ActorValue* avSingleton = RE::ActorValue::GetSingleton();
+
 struct VanillaAV_Struct
 {
 	// Vanilla SPECIAL Values
-	RE::ActorValueInfo* Strength;
-	RE::ActorValueInfo* Perception;
-	RE::ActorValueInfo* Endurance;
-	RE::ActorValueInfo* Charisma;
-	RE::ActorValueInfo* Intelligence;
-	RE::ActorValueInfo* Agility;
-	RE::ActorValueInfo* Luck;
+	RE::ActorValueInfo* Strength = avSingleton->strength;
+	RE::ActorValueInfo* Perception = avSingleton->perception;
+	RE::ActorValueInfo* Endurance = avSingleton->endurance;
+	RE::ActorValueInfo* Charisma = avSingleton->charisma;
+	RE::ActorValueInfo* Intelligence = avSingleton->intelligence;
+	RE::ActorValueInfo* Agility = avSingleton->agility;
+	RE::ActorValueInfo* Luck = avSingleton->luck;
 };
 #endif
 extern VanillaAV_Struct VanillaActorValues;

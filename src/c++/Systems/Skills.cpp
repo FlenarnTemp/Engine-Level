@@ -112,10 +112,10 @@ namespace Skills
 		}
 	}
 
-	void RegisterDerivedAV(RE::ActorValueInfo* myAV, float(*f)(RE::ActorValueOwner*, RE::ActorValueInfo&))
+	/*void RegisterDerivedAV(RE::ActorValueInfo* myAV, float(*f)(RE::ActorValueOwner*, RE::ActorValueInfo&))
 	{
 		// TODO
-	}
+	}*/
 
 	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(RE::ActorValueOwner*, RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2)
 	{
@@ -125,11 +125,11 @@ namespace Skills
 		skillsLinkMap.emplace(myAV, av1);
 	}
 
-	void RegisterCalc(RE::ActorValueInfo* myAV, void(*f)(RE::Actor*, RE::ActorValueInfo&, float, float, RE::Actor*))
+	/*void RegisterCalc(RE::ActorValueInfo* myAV, void(*f)(RE::Actor*, RE::ActorValueInfo&, float, float, RE::Actor*))
 	{
 		//myAV->VTABLE = reinterpret_cast<void*>(REL::Relocation(ActorValueCalcVtbl).get());
 		//myAV->derivationFunction = f;
-	}
+	}*/
 
 	float CalculateSkillOffset(RE::ActorValueOwner* myAVOwner, RE::ActorValueInfo& myAV)
 	{

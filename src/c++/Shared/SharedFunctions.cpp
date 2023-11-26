@@ -210,7 +210,7 @@ uint32_t GetNextAvailableFormInInventoryFromList(UINT32 startingIndex, RE::BGSLi
 	{
 		for (uint32_t a = startingIndex + 1; a <= list->arrayOfForms.size() - 1; a++)
 		{
-			RE::TESBoundObject* a_object = reinterpret_cast<RE::TESBoundObject*>(list->arrayOfForms[a]);
+			RE::TESBoundObject* a_object = (RE::TESBoundObject*)(list->arrayOfForms[a]);
 			if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
 			{
 				return a;
@@ -219,7 +219,7 @@ uint32_t GetNextAvailableFormInInventoryFromList(UINT32 startingIndex, RE::BGSLi
 
 		for (uint32_t b = 0; b <= startingIndex; b++)
 		{
-			RE::TESBoundObject* a_object = reinterpret_cast<RE::TESBoundObject*>(list->arrayOfForms[b]);
+			RE::TESBoundObject* a_object = (RE::TESBoundObject*)(list->arrayOfForms[b]);
 			if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
 			{
 				return b;

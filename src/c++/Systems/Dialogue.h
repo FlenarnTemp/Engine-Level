@@ -31,3 +31,10 @@ bool IsSceneActionWithinPhase(RE::BGSSceneAction* action, std::uint32_t phase);
 RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();
 
 
+// Topic Info
+void BuildDialogueMap(bool force = false);
+
+std::vector<RE::TESTopicInfo*> GetPlayerInfos();
+RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID);
+
+RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID);

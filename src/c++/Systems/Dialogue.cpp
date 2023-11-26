@@ -35,7 +35,7 @@ void BuildDialogueMap(bool force)
 				RE::TESTopicInfo* nextPlayerInfo = playerTopic->topicInfos[nextPlayerInfoIndex];
 				if (nextPlayerInfo->responses.head || nextPlayerInfo->dataInfo)
 				{
-					// Found it!
+					// We found it!
 					break;
 				}
 			}
@@ -65,7 +65,50 @@ void BuildDialogueMap(bool force)
 	g_dialogueHolder.playerDialogue = playerDialogue;
 
 	// Debug View Map
+	for (auto const& info : g_dialogueHolder.dialogueMap)
+	{
+		logger::info("For info %08X", info.first->formID);
+		auto const& responses = info.second;
+		for (auto const& response : responses)
+		{
+			logger::info("Response: %08X", response->formID);
+		}
+	}
+}
 
+// Return player response TopicInfos.
+std::vector<RE::TESTopicInfo*> GetPlayerInfos()
+{
+	BuildDialogueMap();
+	std::vector<RE::TESTopicInfo*> infos;
+	for (auto const& info : g_dialogueHolder.dialogueMap)
+	{
+		infos.push_back(info.first);
+	}
+	return infos;
+}
+
+RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
+{
+	BuildDialogueMap();
+	if (optionID < g_dialogueHolder.dialogueMap.size())
+	{
+		return g_dialogueHolder.dialogueMap[optionID].first;
+	} 
+	else
+	{
+		return nullptr;
+	}
+}
+
+// Returns the first NPC response info that passes its condition check.
+RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
+{
+	BuildDialogueMap();
+	auto npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
+
+	RE::TESTopicInfo* infoHolder;
+	
 }
 
 // Returns the currently executing player dialogue cation, or NULL if no player dialogue action is currenctly active.

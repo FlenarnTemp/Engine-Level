@@ -19,3 +19,19 @@ WeaponConditionData::WeaponConditionData(RE::TESForm* form, RE::ExtraDataList* e
 	}
 }
 
+RE::TESObjectWEAP::InstanceData* GetWeaponInstanceData(RE::ExtraDataList* myExtraDataList)
+{
+	RE::TESObjectWEAP::InstanceData* result = nullptr;
+	RE::TBO_InstanceData* myInstanceData = nullptr;
+
+	if (myExtraDataList)
+	{
+		RE::BSExtraData* myExtraData = myExtraDataList->GetByType(RE::kInstanceData);
+
+		if (myExtraData)
+		{
+			RE::ExtraInstanceData* myExtraInstanceData = (RE::ExtraInstanceData*)myExtraData;
+		}
+	}
+}
+

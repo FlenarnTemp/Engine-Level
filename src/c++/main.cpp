@@ -37,16 +37,15 @@ namespace
 		switch (a_msg->type)
 		{
 			case F4SE::MessagingInterface::kGameDataReady:
-				if (static_cast<bool>(a_msg->data))
-				{
-					
-				}
+				logger::info(FMT_STRING("{:s} - kGameDataReady"), Version::PROJECT);
 				break;
 
 			case F4SE::MessagingInterface::kGameLoaded:
+				logger::info(FMT_STRING("{:s} - kGameLoaded"), Version::PROJECT);
 				break;
 
 			case F4SE::MessagingInterface::kPostLoadGame:
+				logger::info(FMT_STRING("{:s} - kPostLoadGame"), Version::PROJECT);
 				break;
 
 			default:

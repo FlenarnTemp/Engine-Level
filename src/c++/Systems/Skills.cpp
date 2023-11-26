@@ -121,14 +121,15 @@ namespace Skills
 		AddDependentAV(myAV, av1);
 		AddDependentAV(myAV, av2);
 		skillsLinkMap.emplace(myAV, av1);
-	}
-
-	/*void RegisterCalc(RE::ActorValueInfo* myAV, void(*f)(RE::Actor*, RE::ActorValueInfo&, float, float, RE::Actor*))
-	{
-		//myAV->VTABLE = reinterpret_cast<void*>(REL::Relocation(ActorValueCalcVtbl).get());
-		//myAV->derivationFunction = f;
 	}*/
 
+	void RegisterCalc(RE::ActorValueInfo* myAV, void(*f)(RE::Actor*, RE::ActorValueInfo&, float, float, RE::Actor*))
+	{
+		//myAV->VTABLE = reinterpret_cast<void*>(REL::Relocation(ActorValueCalcVtbl
+		//myAV->derivationFunction = f;
+	}
+
+	// Returns calculation of the offset of the 
 	float CalculateSkillOffset(RE::ActorValueOwner* myAVOwner, RE::ActorValueInfo& myAV)
 	{
 		if (!myAVOwner || !&myAV)
@@ -140,6 +141,31 @@ namespace Skills
 			// (Dependent x 2) + 2 + (Luck / 2)
 			return ((myAVOwner->GetActorValue(*GetDependantAV(&myAV)) * 2) + 2 + ceilf(myAVOwner->GetActorValue(*VanillaActorValues.Luck) / 2));
 		}
+	}
+
+	void RegisterForSkillLink()
+	{
+		logger::info("Skills: Linking Skills from FalloutCascadia.esm");
+
+		skillsLinkMap.clear();
+		strSkillMap.clear();
+
+		// Link Skills to their SPECIAL skills.
+		// TODO - a bunch of RegisterLinkedAV setups.
+
+		// Add Skills to array with String so we can find them based on name.
+		strSkillMap.emplace("Barter", CascadiaActorValues.Barter);
+		strSkillMap.emplace("EnergyWeapons", CascadiaActorValues.EnergyWeapons);
+		strSkillMap.emplace("Explosives", CascadiaActorValues.Explosives);
+		strSkillMap.emplace("Guns", CascadiaActorValues.Guns);
+		strSkillMap.emplace("Lockpick", CascadiaActorValues.Lockpick);
+		strSkillMap.emplace("Medicine", CascadiaActorValues.Medicine);
+		strSkillMap.emplace("Repair", CascadiaActorValues.Repair);
+		strSkillMap.emplace("Science", CascadiaActorValues.Science);
+		strSkillMap.emplace("Sneak", CascadiaActorValues.Sneak);
+		strSkillMap.emplace("Speech", CascadiaActorValues.Speech);
+		strSkillMap.emplace("Survival", CascadiaActorValues.Survival);
+		strSkillMap.emplace("Unarmed", CascadiaActorValues.Unarmed);
 	}
 }
 

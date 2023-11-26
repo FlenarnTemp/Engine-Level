@@ -2,7 +2,6 @@
 
 struct WeaponConditionData 
 {
-	// TODO - 5 function calls.
 	WeaponConditionData();
 	WeaponConditionData(RE::TESForm* form, RE::ExtraDataList* extraData);
 	WeaponConditionData(RE::Actor* actor);
@@ -13,7 +12,7 @@ struct WeaponConditionData
 	RE::TESForm*						Form;
 	RE::ExtraDataList*					extraData;
 	RE::TESObjectWEAP::InstanceData*	instance;
-	UINT64								invHandle;
+	std::uint64_t						invHandle;
 };
 
 struct ArmorConditionData

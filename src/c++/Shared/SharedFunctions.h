@@ -26,3 +26,7 @@ bool NPCHasKeyword(RE::TESNPC* npc, RE::BGSKeyword* keyword);
 uint32_t PositionInFormList(RE::TESForm* form, RE::BGSListForm* list);
 uint32_t GetNextAvailableFormInInventoryFromList(UINT32 startingIndex, RE::BGSListForm* list);
 bool IsFormInList(RE::TESForm* form, RE::BGSListForm* list);
+
+void SetWheelZoomEnabled(bool enbled);
+void SetFavoritesEnabled(bool enabled);
+void SetMovementEnabled(bool enabled);

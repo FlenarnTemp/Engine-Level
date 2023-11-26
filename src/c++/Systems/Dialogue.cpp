@@ -81,7 +81,7 @@ RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction()
 			{
 				if (action->status & RE::BGSSceneAction::Status::kRunning || IsSceneActionWithinPhase(action, scene->currentActivePhase))
 				{
-					return reinterpret_cast<RE::BGSSceneActionPlayerDialogue*>(action);
+					return (RE::BGSSceneActionPlayerDialogue*)(action);
 				}
 			}
 		}

@@ -110,36 +110,30 @@ namespace Skills
 		}
 	}
 
-	/*void RegisterDerivedAV(RE::ActorValueInfo* myAV, float(*f)(RE::ActorValueOwner*, RE::ActorValueInfo&))
+	void RegisterDerivedAV(RE::ActorValueInfo* myAV, RE::msvc::function<float(const RE::ActorValueOwner*, const RE::ActorValueInfo&)> f)
 	{
-		// TODO
-	}*/
+		myAV->derivationFunction = f;
+	}
 
-	/*void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(RE::ActorValueOwner*, RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2)
+	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(RE::ActorValueOwner*, RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2)
 	{
-		//RegisterDerivedAV(myAV, CalcFunction);
+		RegisterDerivedAV(myAV, CalcFunction);
 		AddDependentAV(myAV, av1);
 		AddDependentAV(myAV, av2);
 		skillsLinkMap.emplace(myAV, av1);
-	}*/
-
-	void RegisterCalc(RE::ActorValueInfo* myAV, void(*f)(RE::Actor*, RE::ActorValueInfo&, float, float, RE::Actor*))
-	{
-		//myAV->VTABLE = reinterpret_cast<void*>(REL::Relocation(ActorValueCalcVtbl
-		//myAV->derivationFunction = f;
 	}
 
 	// Returns calculation of the offset of the 
-	float CalculateSkillOffset(RE::ActorValueOwner* myAVOwner, RE::ActorValueInfo& myAV)
+	float CalculateSkillOffset(RE::ActorValueOwner* a_actor, RE::ActorValueInfo& a_info)
 	{
-		if (!myAVOwner || !&myAV)
+		if (!a_actor || !&a_info)
 		{
 			return 0.0;
 		}
 		else
 		{
 			// (Dependent x 2) + 2 + (Luck / 2)
-			return ((myAVOwner->GetActorValue(*GetDependantAV(&myAV)) * 2) + 2 + ceilf(myAVOwner->GetActorValue(*VanillaActorValues.Luck) / 2));
+			return ((a_actor->GetActorValue(*GetDependantAV(&a_info)) * 2) + 2 + ceilf(a_actor->GetActorValue(*VanillaActorValues.Luck) / 2));
 		}
 	}
 

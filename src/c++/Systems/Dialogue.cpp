@@ -88,7 +88,7 @@ std::vector<RE::TESTopicInfo*> GetPlayerInfos()
 	return infos;
 }
 
-RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
+/**RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
 {
 	BuildDialogueMap();
 	if (optionID < g_dialogueHolder.dialogueMap.size())
@@ -99,17 +99,17 @@ RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue
 	{
 		return nullptr;
 	}
-}
+}*/
 
 // Returns the first NPC response info that passes its condition check.
-RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
+/**RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
 {
 	BuildDialogueMap();
 	auto npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
 
 	RE::TESTopicInfo* infoHolder;
 	
-}
+}*/
 
 // Returns the currently executing player dialogue cation, or NULL if no player dialogue action is currenctly active.
 RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction()

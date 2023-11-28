@@ -79,7 +79,7 @@ add_library(
 	${ROOT_DIR}/res/settings.toml
 	${ROOT_DIR}/.clang-format
 	${ROOT_DIR}/.editorconfig
- "Scripts/ObScript.h" "Scripts/ObScript/BetaComment.h" "Menus/TextInputMenu.h" "Systems/AmmoSwitch.h" "Menus/LevelUpMenu.h" "Systems/AmmoSwitch.cpp" "Shared/SharedFunctions.h" "Shared/SharedFunctions.cpp" "Systems/Skills.h" "Systems/GameForms.h" "Systems/ItemDegradation.h" "Serialization/Serialization.h" "Serialization/Serialization.cpp" "Systems/ItemDegradation.cpp" "Systems/Dialogue.cpp" "Systems/Dialogue.h")
+ "Scripts/ObScript.h" "Scripts/ObScript/BetaComment.h" "Menus/TextInputMenu.h" "Systems/AmmoSwitch.h" "Menus/LevelUpMenu.h" "Systems/AmmoSwitch.cpp" "Shared/SharedFunctions.h" "Shared/SharedFunctions.cpp" "Systems/Skills.h" "Systems/GameForms.h" "Systems/ItemDegradation.h" "Serialization/Serialization.h" "Serialization/Serialization.cpp" "Systems/ItemDegradation.cpp" "Systems/Dialogue.cpp" "Systems/Dialogue.h" "Shared/InputWatcher.cpp")
 
 target_compile_features(
 	${PROJECT_NAME}

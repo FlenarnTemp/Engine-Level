@@ -1,9 +1,6 @@
 #include "Systems/Skills.h"
 #include "Shared/SharedFunctions.h"
 
-REL::Relocation<uintptr_t> ActorValueDerivedVtbl{ REL::ID(337946) };
-REL::Relocation<uintptr_t> ActorValueCalcVtbl{ REL::ID(510751) };
-
 VanillaAV_Struct			VanillaActorValues;
 CascadiaAV_Struct			CascadiaActorValues;
 CascadiaPerks_Struct		CascadiaPerks;
@@ -110,9 +107,9 @@ namespace Skills
 		}
 	}
 
-	void RegisterDerivedAV(RE::ActorValueInfo* myAV, RE::msvc::function<float(const RE::ActorValueOwner*, const RE::ActorValueInfo&)> f)
+	void RegisterDerivedAV(RE::ActorValueInfo* myAV, RE::msvc::function<float(const RE::ActorValueOwner*, const RE::ActorValueInfo&)> derivationFunctionReplacement)
 	{
-		myAV->derivationFunction = f;
+		myAV->derivationFunction = derivationFunctionReplacement;
 	}
 
 	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(RE::ActorValueOwner*, RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2)
@@ -145,7 +142,19 @@ namespace Skills
 		strSkillMap.clear();
 
 		// Link Skills to their SPECIAL skills.
-		// TODO - a bunch of RegisterLinkedAV setups.
+		RegisterLinkedAV(CascadiaActorValues.Barter, CalculateSkillOffset, VanillaActorValues.Charisma, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.EnergyWeapons, CalculateSkillOffset, VanillaActorValues.Perception, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Explosives, CalculateSkillOffset, VanillaActorValues.Perception, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Guns, CalculateSkillOffset, VanillaActorValues.Agility, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Lockpick, CalculateSkillOffset, VanillaActorValues.Charisma, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Medicine, CalculateSkillOffset, VanillaActorValues.Intelligence, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.MeleeWeapons, CalculateSkillOffset, VanillaActorValues.Strength, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Repair, CalculateSkillOffset, VanillaActorValues.Intelligence, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Science, CalculateSkillOffset, VanillaActorValues.Intelligence, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Sneak, CalculateSkillOffset, VanillaActorValues.Agility, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Speech, CalculateSkillOffset, VanillaActorValues.Charisma, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Survival, CalculateSkillOffset, VanillaActorValues.Endurance, VanillaActorValues.Luck);
+		RegisterLinkedAV(CascadiaActorValues.Unarmed, CalculateSkillOffset, VanillaActorValues.Endurance, VanillaActorValues.Luck);
 
 		// Add Skills to array with String so we can find them based on name.
 		strSkillMap.emplace("Barter", CascadiaActorValues.Barter);

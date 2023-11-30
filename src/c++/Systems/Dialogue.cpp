@@ -94,7 +94,7 @@ std::vector<RE::TESTopicInfo*> GetPlayerInfos()
 	if (optionID < g_dialogueHolder.dialogueMap.size())
 	{
 		return g_dialogueHolder.dialogueMap[optionID].first;
-	} 
+	}
 	else
 	{
 		return nullptr;
@@ -102,14 +102,70 @@ std::vector<RE::TESTopicInfo*> GetPlayerInfos()
 }*/
 
 // Returns the first NPC response info that passes its condition check.
-/**RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
+RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
 {
 	BuildDialogueMap();
 	auto npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
 
 	RE::TESTopicInfo* infoHolder;
-	
-}*/
+	RE::BSTArray<RE::TESTopicInfo*> randomOptions{};
+	std::uint32_t randomRoll;
+
+	for (RE::TESTopicInfo* info : npcInfos)
+	{
+		if ((info->formFlags >> 5) & 1) continue;
+		if ((info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kHasBeenSaid)) continue;
+
+		if (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom)
+		{
+			// TODO - EvaluateInfoCondition
+
+			if (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd)
+			{
+				if (randomOptions.size() == 1)
+				{
+					return randomOptions[0];
+				}
+
+				randomRoll = rand() & randomOptions.size();
+				infoHolder = randomOptions[randomRoll];
+
+				return infoHolder;
+			}
+			continue;
+		}
+
+		if (!(info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom) && !(info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd) && randomOptions.size() != 0)
+		{
+			if (randomOptions.size() == 1)
+			{
+				return randomOptions[0];
+			}
+
+			randomRoll = rand() % randomOptions.size();
+			infoHolder = randomOptions[randomRoll];
+
+			return infoHolder;
+		}
+		// TODO - EvaluateInfoCondition
+
+	}
+
+	// Do a random roll if the last info topic is 'random' flagged, but not 'randomEnd'
+	if (randomOptions.size() != 0)
+	{
+		if (randomOptions.size() == 1)
+		{
+			return randomOptions[0];
+		}
+		randomRoll = rand() % randomOptions.size();
+		infoHolder = randomOptions[randomRoll];
+		return infoHolder;
+	}
+
+	// All infos failed their condition checks.
+	return nullptr;
+}
 
 // Returns the currently executing player dialogue cation, or NULL if no player dialogue action is currenctly active.
 RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction()

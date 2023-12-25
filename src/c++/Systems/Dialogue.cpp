@@ -35,7 +35,7 @@ void BuildDialogueMap(bool force)
 				RE::TESTopicInfo* nextPlayerInfo = playerTopic->topicInfos[nextPlayerInfoIndex];
 				if (nextPlayerInfo->responses.head || nextPlayerInfo->dataInfo)
 				{
-					// We found it!
+					// We found it, yay!
 					break;
 				}
 			}
@@ -88,7 +88,7 @@ std::vector<RE::TESTopicInfo*> GetPlayerInfos()
 	return infos;
 }
 
-/**RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
+RE::TESTopicInfo* GetPlayerInfo(uint32_t optionID)
 {
 	BuildDialogueMap();
 	if (optionID < g_dialogueHolder.dialogueMap.size())
@@ -99,10 +99,10 @@ std::vector<RE::TESTopicInfo*> GetPlayerInfos()
 	{
 		return nullptr;
 	}
-}*/
+}
 
 // Returns the first NPC response info that passes its condition check.
-RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
+/**RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID)
 {
 	BuildDialogueMap();
 	auto npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
@@ -151,7 +151,7 @@ RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, u
 
 	}
 
-	// Do a random roll if the last info topic is 'random' flagged, but not 'randomEnd'
+	// Do a random roll if the last info topic is 'random' flagged, but not 'randomEnd'.
 	if (randomOptions.size() != 0)
 	{
 		if (randomOptions.size() == 1)
@@ -164,8 +164,9 @@ RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, u
 	}
 
 	// All infos failed their condition checks.
+	logger::info("All infos failed their condition checks");
 	return nullptr;
-}
+}*/
 
 // Returns the currently executing player dialogue cation, or NULL if no player dialogue action is currenctly active.
 RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction()

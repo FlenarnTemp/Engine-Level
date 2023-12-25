@@ -28,3 +28,5 @@ struct ArmorConditionData
 	RE::ExtraDataList					extraData;
 	RE::TESObjectARMO::InstanceData		instance;
 };
+
+RE::TESObjectWEAP::InstanceData* GetWeaponInstanceData(RE::ExtraDataList* myExtraDataList);

@@ -1,4 +1,5 @@
 #include "SharedFunctions.h"
+#include "Systems/ItemDegradation.h"
 
 // Returns true is FormID is base game OR dynamically placed ("FF" index)
 // Assumes all DLC is installed (Excluding DLCUltraHighResolution.esm as it is empty and "safe" to ignore).
@@ -134,7 +135,7 @@ bool ArmorHasKeyword(RE::TESObjectARMO* armor, RE::BGSKeyword* keyword)
 	return false;
 }
 
-/*bool ReferenceHasKeyword(RE::TESObjectREFR* ref, RE::BGSKeyword* keyword)
+bool ReferenceHasKeyword(RE::TESObjectREFR* ref, RE::BGSKeyword* keyword)
 {
 	if (ref)
 	{
@@ -143,17 +144,44 @@ bool ArmorHasKeyword(RE::TESObjectARMO* armor, RE::BGSKeyword* keyword)
 
 		if (myExtraData)
 		{
-			// TODO
-			//RE::ExtraInstanceData* myExtraInstanceData = 
+			RE::ExtraInstanceData* myExtraInstanceData = (RE::ExtraInstanceData*)myExtraData;
+			if (myExtraInstanceData)
+			{
+				myInstanceData = myExtraInstanceData->data.get();
+			}
 		}
 
 		if (myInstanceData)
 		{
-			
+			return ref->HasKeyword(keyword, myInstanceData);
 		}
 	}
+	return false;
+}
 
-}*/
+bool ActorHasKeyword(RE::Actor* actor, RE::BGSKeyword* keyword)
+{
+	if (actor)
+	{
+		RE::TBO_InstanceData* myInstanceData = nullptr;
+		RE::BSExtraData* myExtraData = actor->extraList->GetByType(RE::kInstanceData);
+
+		if (myExtraData)
+		{
+			RE::ExtraInstanceData* myExtraInstanceData = (RE::ExtraInstanceData*)myExtraData;
+			if (myExtraInstanceData)
+			{
+				myInstanceData = myExtraInstanceData->data.get();
+			}
+		}
+
+		if (myInstanceData)
+		{
+			return actor->HasKeywordHelper(keyword, myInstanceData);
+		}
+	}
+	return false;
+}
 
 bool NPCHasKeyword(RE::TESNPC* npc, RE::BGSKeyword* keyword)
 {
@@ -244,4 +272,61 @@ bool IsFormInList(RE::TESForm* form, RE::BGSListForm* list)
 		}
 	}
 	return false;
+}
+
+bool IsMeleeWeapon(WeaponConditionData myConditionData)
+{
+	bool result = false;
+
+	switch (myConditionData.instance->type.get()) {
+	case RE::WEAPON_TYPE::kHandToHand:
+	case RE::WEAPON_TYPE::kOneHandAxe:
+	case RE::WEAPON_TYPE::kOneHandDagger:
+	case RE::WEAPON_TYPE::kOneHandMace:
+	case RE::WEAPON_TYPE::kOneHandSword:
+	case RE::WEAPON_TYPE::kStaff:
+	case RE::WEAPON_TYPE::kTwoHandAxe:
+	case RE::WEAPON_TYPE::kTwoHandSword:
+		result = true;
+		break;
+
+	default:
+		result = false;
+		break;
+	}
+
+	return result;
+}
+
+float CalculateSkillBonusFromActor(WeaponConditionData myConditionData)
+{
+	float actorSkillValue = 1.0f;
+
+	RE::TESObjectWEAP* myWeapon = myConditionData.Form->As<RE::TESObjectWEAP>();
+
+	if (myWeapon->weaponData.skill != nullptr)
+	{
+		if (myConditionData.actor != nullptr)
+		{
+			actorSkillValue = (myConditionData.actor->GetActorValue(*myWeapon->weaponData.skill) / 100);
+		}
+		else
+		{
+			actorSkillValue = (GetPlayerCharacter()->GetActorValue(*myWeapon->weaponData.skill) / 100);
+		}
+	}
+
+	float result = ()
+}
+
+RE::Setting* GetGMST(const char* a_name)
+{
+	return RE::GameSettingCollection::GetSingleton()->GetSetting(a_name);
+}
+
+float fGetGMSTValue(const char* a_name)
+{
+  if (const auto gameSetting = RE::GameSettingCollection::GetSingleton()->GetSetting(a_name)) {
+    return gameSetting->GetFloat();
+  }
 }

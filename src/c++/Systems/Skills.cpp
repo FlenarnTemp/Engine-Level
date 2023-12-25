@@ -136,7 +136,7 @@ namespace Skills
 
 	void RegisterForSkillLink()
 	{
-		logger::info("Skills: Linking Skills from FalloutCascadia.esm");
+		logger::info("Skills: Linking Skills forms from FalloutCascadia.esm");
 
 		skillsLinkMap.clear();
 		strSkillMap.clear();

@@ -30,3 +30,4 @@ struct ArmorConditionData
 };
 
 RE::TESObjectWEAP::InstanceData* GetWeaponInstanceData(RE::ExtraDataList* myExtraDataList);
+void DefineItemDegradationFormsFromGame();

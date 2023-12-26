@@ -1,5 +1,6 @@
 #include "Systems/Skills.h"
 #include "Shared/SharedFunctions.h"
+#include "../../../build/src/c++/CommonLibF4/workaround.h"
 
 VanillaAV_Struct			VanillaActorValues;
 CascadiaAV_Struct			CascadiaActorValues;
@@ -107,12 +108,16 @@ namespace Skills
 		}
 	}
 
-	void RegisterDerivedAV(RE::ActorValueInfo* myAV, RE::msvc::function<float(const RE::ActorValueOwner*, const RE::ActorValueInfo&)> derivationFunctionReplacement)
+	void RegisterDerivedAV(RE::ActorValueInfo* myAV, std::function<float(const RE::ActorValueOwner*, const RE::ActorValueInfo&)> CalcFunction)
 	{
-		myAV->derivationFunction = derivationFunctionReplacement;
+		using underlying_t = RE::msvc::workaround::function<float(const RE::ActorValueOwner*, const RE::ActorValueInfo&)>;
+
+		auto& func = *reinterpret_cast<underlying_t *>(&myAV->derivationFunction);
+		func._fn = new underlying_t::proxy_t();
+		func._fn->_badHack = CalcFunction;
 	}
 
-	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(RE::ActorValueOwner*, RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2)
+	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(const RE::ActorValueOwner*, const RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2)
 	{
 		RegisterDerivedAV(myAV, CalcFunction);
 		AddDependentAV(myAV, av1);
@@ -121,7 +126,7 @@ namespace Skills
 	}
 
 	// Returns calculation of the offset of the 
-	float CalculateSkillOffset(RE::ActorValueOwner* a_actor, RE::ActorValueInfo& a_info)
+	float CalculateSkillOffset(const RE::ActorValueOwner* a_actor, const RE::ActorValueInfo& a_info)
 	{
 		if (!a_actor || !&a_info)
 		{
@@ -136,7 +141,7 @@ namespace Skills
 
 	void RegisterForSkillLink()
 	{
-		logger::info("Skills: Linking Skills forms from FalloutCascadia.esm");
+		logger::info("Skills: Linking Skills from FalloutCascadia.esm");
 
 		skillsLinkMap.clear();
 		strSkillMap.clear();

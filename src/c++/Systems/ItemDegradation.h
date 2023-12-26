@@ -31,3 +31,6 @@ struct ArmorConditionData
 
 RE::TESObjectWEAP::InstanceData* GetWeaponInstanceData(RE::ExtraDataList* myExtraDataList);
 void DefineItemDegradationFormsFromGame();
+
+float CalculateUpdatedDamageValue(float baseDamage, float minimum, float conditionPercent, float skillBonus);
+float CalculateUpdatedRateOfFireValue(WeaponConditionData myConditionData, float currentCondition);

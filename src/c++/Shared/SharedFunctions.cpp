@@ -144,7 +144,7 @@ bool ReferenceHasKeyword(RE::TESObjectREFR* ref, RE::BGSKeyword* keyword)
 
 		if (myExtraData)
 		{
-			RE::ExtraInstanceData* myExtraInstanceData = (RE::ExtraInstanceData*)myExtraData;
+			RE::ExtraInstanceData* myExtraInstanceData = (RE::ExtraInstanceData*) myExtraData;
 			if (myExtraInstanceData)
 			{
 				myInstanceData = myExtraInstanceData->data.get();
@@ -168,7 +168,7 @@ bool ActorHasKeyword(RE::Actor* actor, RE::BGSKeyword* keyword)
 
 		if (myExtraData)
 		{
-			RE::ExtraInstanceData* myExtraInstanceData = (RE::ExtraInstanceData*)myExtraData;
+			RE::ExtraInstanceData* myExtraInstanceData = (RE::ExtraInstanceData*) myExtraData;
 			if (myExtraInstanceData)
 			{
 				myInstanceData = myExtraInstanceData->data.get();
@@ -212,6 +212,37 @@ bool NPCHasKeyword(RE::TESNPC* npc, RE::BGSKeyword* keyword)
 	}
 
 	return false;
+}
+
+const char* GetItemDisplayName(RE::ExtraDataList myExtraData, RE::TESForm baseForm)
+{
+	RE::BSExtraData* extraData = myExtraData.GetByType(RE::EXTRA_DATA_TYPE::kTextDisplayData);
+	RE::ExtraTextDisplayData* displayText = (RE::ExtraTextDisplayData*) extraData;
+
+	if (displayText)
+	{
+		return "";
+	}
+	else
+	{
+		return "";
+	}
+}
+
+bool IsInMenuMode()
+{
+	auto g_ui = RE::UI::GetSingleton();
+	return(
+		(g_ui->menuMode >= 1)
+		|| g_ui->GetMenuOpen(RE::BSFixedString("CookingMenu"))
+		|| g_ui->GetMenuOpen(RE::BSFixedString("FaderMenu"))
+		|| g_ui->GetMenuOpen(RE::BSFixedString("FavoritesMenu"))
+		|| g_ui->GetMenuOpen(RE::BSFixedString("PowerArmorModMenu"))
+		|| g_ui->GetMenuOpen(RE::BSFixedString("RobotModMenu"))
+		|| g_ui->GetMenuOpen(RE::BSFixedString("VATSMenu"))
+		|| g_ui->GetMenuOpen(RE::BSFixedString("WorkshopMenu"))
+		|| g_ui->GetMenuOpen(RE::BSFixedString("DialogueMenu"))
+		);
 }
 
 // Get Inxed in FormList
@@ -298,35 +329,7 @@ bool IsMeleeWeapon(WeaponConditionData myConditionData)
 	return result;
 }
 
-float CalculateSkillBonusFromActor(WeaponConditionData myConditionData)
-{
-	float actorSkillValue = 1.0f;
-
-	RE::TESObjectWEAP* myWeapon = myConditionData.Form->As<RE::TESObjectWEAP>();
-
-	if (myWeapon->weaponData.skill != nullptr)
-	{
-		if (myConditionData.actor != nullptr)
-		{
-			actorSkillValue = (myConditionData.actor->GetActorValue(*myWeapon->weaponData.skill) / 100);
-		}
-		else
-		{
-			actorSkillValue = (GetPlayerCharacter()->GetActorValue(*myWeapon->weaponData.skill) / 100);
-		}
-	}
-
-	float result = ()
-}
-
 RE::Setting* GetGMST(const char* a_name)
 {
 	return RE::GameSettingCollection::GetSingleton()->GetSetting(a_name);
-}
-
-float fGetGMSTValue(const char* a_name)
-{
-  if (const auto gameSetting = RE::GameSettingCollection::GetSingleton()->GetSetting(a_name)) {
-    return gameSetting->GetFloat();
-  }
 }

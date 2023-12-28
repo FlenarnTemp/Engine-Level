@@ -3,7 +3,7 @@
 
 // Returns true is FormID is base game OR dynamically placed ("FF" index)
 // Assumes all DLC is installed (Excluding DLCUltraHighResolution.esm as it is empty and "safe" to ignore).
-// TODO - Better handling for the "FF" index, list official span of .esl's?
+// TODO - Better handling for the "FF" index, list span of "official" .esl's?
 bool IsFormIDStringBaseGame(std::string formIDString)
 {
 	std::string formIndex = formIDString.substr(0, 2);
@@ -45,15 +45,15 @@ std::string GetFormIDAsString(uint32_t formID)
 }
 
 // 0 = male, 1 = female
-uint32_t GetActorSex(RE::Actor* myActor)
+uint32_t GetActorSex(RE::Actor* a_actor)
 {
-	uint32_t myGender = 0;
-	RE::TESNPC* myActorBase = myActor->GetNPC();
-	if (myActorBase)
+	uint32_t gender = 0;
+	RE::TESNPC* a_actorBase = a_actor->GetNPC();
+	if (a_actorBase)
 	{
-		myGender = myActorBase->GetSex();
+		gender = a_actorBase->GetSex();
 	}
-	return myGender;
+	return gender;
 }
 
 RE::PlayerCharacter* GetPlayerCharacter()
@@ -80,14 +80,14 @@ uint32_t GetPlayerSex()
 
 // Takes a Float and converts it to a Precise String.
 // eg. FloatToPreciseString(3.141592, 2) would return "3.14"
-std::string FloatToPreciseString(float myFloat, int myPrecision)
+std::string FloatToPreciseString(float value, uint32_t precision)
 {
 	std::stringstream stream;
-	stream << std::fixed << std::setprecision(myPrecision) << myFloat;
+	stream << std::fixed << std::setprecision(precision) << float;
 	return stream.str();
 }
 
-int RNG(int min, int max)
+uint32_t RNG(uint32_t min, uint32_t max)
 {
 	std::random_device dev;
 	std::mt19937 rng(dev());

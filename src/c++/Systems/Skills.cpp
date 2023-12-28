@@ -108,16 +108,16 @@ namespace Skills
 		}
 	}
 
-	void RegisterDerivedAV(RE::ActorValueInfo* myAV, std::function<float(const RE::ActorValueOwner*, const RE::ActorValueInfo&)> CalcFunction)
+	void RegisterDerivedAV(RE::ActorValueInfo* myAV, std::function<float(const RE::ActorValueOwner*, RE::ActorValueInfo&)> CalcFunction)
 	{
-		using underlying_t = RE::msvc::workaround::function<float(const RE::ActorValueOwner*, const RE::ActorValueInfo&)>;
+		using underlying_t = RE::msvc::workaround::function<float(RE::ActorValueOwner*, RE::ActorValueInfo&)>;
 
 		auto& func = *reinterpret_cast<underlying_t *>(&myAV->derivationFunction);
 		func._fn = new underlying_t::proxy_t();
 		func._fn->_badHack = CalcFunction;
 	}
 
-	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(const RE::ActorValueOwner*, const RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2)
+	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(const RE::ActorValueOwner*, RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2)
 	{
 		RegisterDerivedAV(myAV, CalcFunction);
 		AddDependentAV(myAV, av1);
@@ -126,7 +126,7 @@ namespace Skills
 	}
 
 	// Returns calculation of the offset of the 
-	float CalculateSkillOffset(const RE::ActorValueOwner* a_actor, const RE::ActorValueInfo& a_info)
+	float CalculateSkillOffset(const RE::ActorValueOwner* a_actor, RE::ActorValueInfo& a_info)
 	{
 		if (!a_actor || !&a_info)
 		{

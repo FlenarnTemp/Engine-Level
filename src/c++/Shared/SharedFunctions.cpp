@@ -83,7 +83,7 @@ uint32_t GetPlayerSex()
 std::string FloatToPreciseString(float value, uint32_t precision)
 {
 	std::stringstream stream;
-	stream << std::fixed << std::setprecision(precision) << float;
+	stream << std::fixed << std::setprecision(precision) << value;
 	return stream.str();
 }
 

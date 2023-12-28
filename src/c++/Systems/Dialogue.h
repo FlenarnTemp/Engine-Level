@@ -2,15 +2,15 @@
 
 struct DialogueOption
 {
-	int optionID;
+	uint32_t optionID;
 	RE::TESTopicInfo* info;
 	const char* prompText;
 	std::string reseponseText;
 	bool enabled;
 	bool said;
-	int challengeLevel;
-	int challengeResult;
-	bool linkedToSeld;
+	uint32_t challengeLevel;
+	uint32_t challengeResult;
+	bool linkedToSelf;
 	bool endsScene;
 	bool isBarterOption;
 	bool isInventoryOption;
@@ -24,9 +24,26 @@ struct DialogueHolder
 	std::vector<std::pair<RE::TESTopicInfo*, std::vector<RE::TESTopicInfo*>>> dialogueMap;
 };
 
+// 18
+struct SceneLink
+{
+	RE::TESTopicInfo* key;	// 00
+	RE::BGSScene* scene;	// 08
+	uint32_t phase;			// 10
+	uint32_t pad14;			// 14
+
+	operator RE::TESTopicInfo* () const { return key; }
+	static inline uint32_t GetHash(RE::TESTopicInfo** key)
+	{
+		uint32_t hash;
+	
+	}
+
+};
+
 extern DialogueHolder g_dialogueHolder;
 
-bool IsSceneActionWithinPhase(RE::BGSSceneAction* action, std::uint32_t phase);
+bool IsSceneActionWithinPhase(RE::BGSSceneAction* action, uint32_t phase);
 
 RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();
 

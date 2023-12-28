@@ -1,8 +1,5 @@
 #include "ItemDegradation.h"
-#include "GameForms.h"
 #include "Shared/SharedFunctions.h"
-
-#include <chrono>
 
 // Weapon Condition - Manual Settings
 float fDamageSkillMult;
@@ -23,6 +20,7 @@ RE::Setting* fWeaponConditionRateOfFire9;
 RE::Setting* fWeaponConditionRateOfFire10;
 
 // Item Degradation
+ItemDegradation_Struct			ItemDegradationForms;
 
 
 // Power Armor Keyword
@@ -298,7 +296,7 @@ RE::TESObjectARMO::InstanceData* GetArmorInstanceData(RE::ExtraDataList* myExtra
 	return result;
 }
 
-/*float GetMaxConditionValueFromWeapon(RE::TESObjectWEAP* myWeapon)
+float GetMaxConditionValueFromWeapon(RE::TESObjectWEAP* myWeapon)
 {
 	float result = -1.0;
 
@@ -309,14 +307,17 @@ RE::TESObjectARMO::InstanceData* GetArmorInstanceData(RE::ExtraDataList* myExtra
 
 	for (uint32_t i = 0; i < myWeapon->weaponData.damageTypes->size(); i++)
 	{
-		if (myWeapon->weaponData.damageTypes[i] == myWeapon)
-
-		result = 
-		break;
+		if (myWeapon->weaponData.damageTypes[i][0].first == ItemDegradationForms.weaponConditionHealthMaxDMGT)
+		{
+			result = myWeapon->weaponData.damageTypes[i][0].second.f;
+			break;
+		}
 	}
-}*
 
-/**float GetMaxConditionValueFromArmor(RE::TESObjectARMO* myArmor)
+	return result;
+}
+
+float GetMaxConditionValueFromArmor(RE::TESObjectARMO* myArmor)
 {
 	float result = -1.0;
 
@@ -326,7 +327,9 @@ RE::TESObjectARMO::InstanceData* GetArmorInstanceData(RE::ExtraDataList* myExtra
 	}
 
 	logger::info("Getting max condition of %f from %s", result, myArmor->GetFullName());
-}*/
+
+	return result;
+}
 
 float GetStartingConditionValueFromArmor(RE::TESObjectARMO::InstanceData* myInstanceData)
 {
@@ -367,9 +370,9 @@ void InitializeConditionWeapon(WeaponConditionData myConditionData)
 		return;
 	}
 
-	float fMaxCNDValue = 0;//GetMaxConditionValueFromWeapon(myWeaponBaseForm);
+	float fMaxCNDValue = GetMaxConditionValueFromWeapon(myWeaponBaseForm);
 	float fMinCNDValue = 0;
-	//float fStartCNDValue = 0;
+	float fStartCNDValue = 0;
 
 	if (!myConditionData.extraData)
 	{
@@ -385,6 +388,18 @@ void InitializeConditionWeapon(WeaponConditionData myConditionData)
 	// Minimum CND value should be 10% of max CND value.
 	fMinCNDValue = (fMaxCNDValue / 10);
 
+	// Create Condition value if they don't exist.
+	if (!myConditionData.extraData->HasType(RE::kHealth)) {
+		if (myConditionData.extraData->HasType(RE::kInstanceData)) {
+			if (myConditionData.instance->actorValues) {
+				for (uint32_t i = 0; i < myConditionData.instance->actorValues->size(); i++) {
+					auto iteration = myConditionData.instance->actorValues[i];
+					fMaxCNDValue = (iteration)
+				}
+			}
+		}
+	}
+
 }
 
 void InitializeWeaponCondition(RE::TESObjectREFR* myRef)
@@ -393,7 +408,7 @@ void InitializeWeaponCondition(RE::TESObjectREFR* myRef)
 	{
 		return;
 	}
-	//InitializeConditionWeapon(WeaponConditionData(myRef));
+	InitializeConditionWeapon(WeaponConditionData(myRef));
 }
 
 float GetWeaponDamage(WeaponConditionData myConditionData)
@@ -445,12 +460,12 @@ float GetWeaponDamage(WeaponConditionData myConditionData)
 	{
 		for (uint32_t i = 0; i < baseWEAPForm->weaponData.damageTypes->size(); i++)
 		{
-			if (baseWEAPForm->weaponData.damageTypes[i][0].first != ItemDegradationForms.weaponConditionHealthMaxDMGT && baseWEAPForm->weaponData.damageTypes[i][0].first != ItemDegradationForms.weaponConditionHealthStartingDMGT)
+			/**if (baseWEAPForm->weaponData.damageTypes[i][0].first != ItemDegradationForms.weaponConditionHealthMaxDMGT && baseWEAPForm->weaponData.damageTypes[i][0].first != ItemDegradationForms.weaponConditionHealthStartingDMGT)
 			{
 				baseValue = baseWEAPForm->weaponData.damageTypes[i][i].second.f;
 				newValue = CalculateUpdatedDamageValue(baseValue, minimum, currentCondition, CalculateSkillBonusFromActor(myConditionData));
 				return newValue;
-			}
+			}*/
 		}
 	}
 

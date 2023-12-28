@@ -1,5 +1,21 @@
 #pragma once
 
+#ifndef ItemDegradationStruct
+#define ItemDegradationStruct
+struct ItemDegradation_Struct 
+{
+	// Holds our weapon condition on the weapon form in Creation Kit.
+	RE::BGSDamageType* weaponConditionHealthMaxDMGT;
+	RE::BGSDamageType* weaponConditionHealthStartingDMGT;
+
+	// Actor Values that hold information on Items.
+	RE::ActorValueInfo* itemConditionMaxHealth;
+	RE::ActorValueInfo* itemConditionMinHealth;
+	RE::ActorValueInfo* itemConditionStartCondtion;
+};
+#endif
+extern ItemDegradation_Struct ItemDegradationForms;
+
 struct WeaponConditionData 
 {
 	WeaponConditionData();

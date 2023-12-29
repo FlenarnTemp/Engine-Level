@@ -27,7 +27,7 @@ ItemDegradation_Struct			ItemDegradationForms;
 RE::BGSKeyword* furnitureTypePowerArmor;
 
 // Armor Type Keywords
-RE::BGSKeyword* armorTypePower;
+RE::BGSKeyword* armorTypePowerArmor;
 RE::BGSKeyword* armorBodyPartChest;
 RE::BGSKeyword* armorBodyPartHead;
 RE::BGSKeyword* armorBodyPartLeftArm;
@@ -475,7 +475,7 @@ float GetWeaponDamage(WeaponConditionData myConditionData)
 
 void DefineItemDegradationFormsFromGame()
 {
-	logger::info("Item Degradation: Linking Degradation forms from FalloutCascadia.esm");
+	logger::info("Item Degradation: Linking degradation forms.");
 
 	fDamageSkillBase = 0.5f;
 	fDamageSkillMult = 0.5f;
@@ -492,6 +492,17 @@ void DefineItemDegradationFormsFromGame()
 	fWeaponConditionRateOfFire8 = GetGMST("fWeaponConditionRateOfFire8");
 	fWeaponConditionRateOfFire9 = GetGMST("fWeaponConditionRateOfFire9");
 	fWeaponConditionRateOfFire10 = GetGMST("fWeaponConditionRateOfFire10");
+
+	// Armor Type Keywords
+	armorTypePowerArmor = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(317601, "Fallout4.esm");			//HEX: 4D8A1
+	armorBodyPartChest = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(442604, "Fallout4.esm");			//HEX: 6C0EC
+	armorBodyPartHead = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(1098776, "Fallout4.esm");			//HEX: 10C418
+	armorBodyPartLeftArm = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(2170118, "FalloutCascadia.esm");	//HEX: 211D06
+	armorBodyPartRightArm = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(2170120, "FalloutCascadia.esm");	//HEX: 211D08
+	armorBodyPartLeftLeg = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(2170119, "FalloutCascadia.esm");	//HEX: 211D07
+	armorBodyPartRightLeg = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(2170121, "FalloutCascadia.esm");	//HEX: 211D09
+
+	logger::info("Item Degradation: Finished linking degradation forms.")
 }
 
 float CalculateSkillBonusFromActor(WeaponConditionData myConditionData)
@@ -573,4 +584,18 @@ float CalculateUpdatedRateOfFireValue(WeaponConditionData myConditionData, float
 	}
 
 	return result;
+}
+
+void UnequipWeapon(RE::Actor* a_actor)
+{
+	if (!a_actor) { return; }
+
+	a_actor->RemoveWeapon();
+
+	// TODO - rest of it
+}
+
+RE::BGSKeyword* GetPowerArmorTypeKeyword()
+{
+	return armorTypePowerArmor;
 }

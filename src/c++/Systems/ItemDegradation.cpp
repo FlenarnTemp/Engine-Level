@@ -381,7 +381,7 @@ void InitializeConditionWeapon(WeaponConditionData myConditionData)
 
 	if (fMaxCNDValue == -1)
 	{
-		// Unable to find value from Damage Type so default to random amount between 400 & 600 (Averae of all Base Game Fallout 3 weapons is 438)
+		// Unable to find value from Damage Type so default to random amount between 400 & 600 (Average of all basegame Fallout 3 weapons is 438)
 		fMaxCNDValue = (static_cast <float> (rand() % 500 + 400));
 	}
 

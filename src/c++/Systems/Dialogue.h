@@ -44,14 +44,13 @@ struct SceneLink
 extern DialogueHolder g_dialogueHolder;
 
 bool IsSceneActionWithinPhase(RE::BGSSceneAction* action, uint32_t phase);
+bool EvaluateInfoConditions(RE::TESTopicInfo* a_info, RE::BGSSceneAction* a_action, bool swap);
 
 RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();
 
 
 // Topic Info
 void BuildDialogueMap(bool force = false);
-
 std::vector<RE::TESTopicInfo*> GetPlayerInfos();
 RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID);
-
 RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID);

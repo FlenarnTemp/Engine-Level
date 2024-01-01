@@ -1,6 +1,8 @@
 #include "Systems/Dialogue.h"
 #include "Shared/SharedFunctions.h"
 
+#include "RE/Bethesda/BSPointerHandle.h"
+
 DialogueHolder g_dialogueHolder;
 
 void BuildDialogueMap(bool force)
@@ -16,8 +18,8 @@ void BuildDialogueMap(bool force)
 
 	for (std::uint32_t c = 0; c < 4; c++)
 	{
-		RE::TESTopic* playerTopic = playerDialogue->response[c];
-		RE::TESTopic* npcTopic = playerDialogue->npcResponse[c];
+		RE::TESTopic* playerTopic = playerDialogue->responseTopics[c];
+		RE::TESTopic* npcTopic = playerDialogue->pNPCResponseTopics[c];
 		uint32_t playerInfoCount = playerTopic->numTopicInfos;
 		uint32_t npcInfoCount = npcTopic ? npcTopic->numTopicInfos : 0;
 
@@ -182,7 +184,7 @@ RE::TESTopicInfo* GetNPCResponseInf(RE::BGSSceneActionNPCResponseDialogue* a_npc
 	uint32_t index = 0; // The next available free slot in the vector.
 
 	for (uint32_t c = 0; c < 4; c++) {
-		RE::TESTopic* topic = a_npcDialogue->response[c];
+		RE::TESTopic* topic = a_npcDialogue->responseTopics[c];
 		uint32_t infoCount = topic ? topic->numTopicInfos : 0;
 
 		// Loop through all TopicInfos while index <= optionID + 1
@@ -193,10 +195,11 @@ RE::TESTopicInfo* GetNPCResponseInf(RE::BGSSceneActionNPCResponseDialogue* a_npc
 				// This is a info group.
 				infoGroupMap[info] = index++;
 			} else {
-				if (RE::TESTopicInfo* infoGroupParent = GetInfoGroupParent(info)) {
+				if (RE::TESTopicInfo* parentInfoGroup = info->GetParentInfoGroup()) {
 					// Info has a parent.
-					auto idx = infoGroupMap.find(infoGroupParent);
+					auto idx = infoGroupMap.find(parentInfoGroup);
 					if (idx != infoGroupMap.end()) {
+						// Put it into the parents slot.
 						infos[idx->second].push_back(info);
 					}
 				} else {
@@ -237,7 +240,7 @@ RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction()
 		for (uint32_t i = 0; i < scene->actions.size(); i++)
 		{
 			RE::BGSSceneAction* action = scene->actions[i];
-			if (action->GetType() == RE::BGSSceneAction::Type::kPlayerDialogue)
+			if (action->GetActionType() == RE::BGSSceneAction::SCENE_ACTION_TYPE::kPlayerDialogue)
 			{
 				if (action->status & RE::BGSSceneAction::Status::kRunning || IsSceneActionWithinPhase(action, scene->currentActivePhase))
 				{
@@ -263,16 +266,16 @@ bool EvaluateInfoConditions(RE::TESTopicInfo* a_info, RE::BGSSceneAction* a_acti
 		return true;
 	}
 
-	uint32_t targetHandle = 0;
+	RE::BSPointerHandle<RE::TESObjectREFR>* targetHandle;
 	RE::TESObjectREFR* targetRef = nullptr;
 	RE::BGSScene* scene = GetPlayerCharacter()->GetCurrentScene();
 
 	if (scene) {
-		RE::TESQuest::
+		scene->parentQuest->GetAliasedRef(targetHandle, a_action->actorID); // Might go boom
 	}
 
 	if (targetHandle) {
-
+		// TODO
 	}
 	else {
 		targetRef = GetPlayerCharacter();
@@ -288,6 +291,8 @@ bool EvaluateInfoConditions(RE::TESTopicInfo* a_info, RE::BGSSceneAction* a_acti
 		refA = targetRef;
 		refB = GetPlayerCharacter();
 	}
+
+	return conditions.IsTrue(refA, refB);
 }
 
 std::vector<DialogueOption> GetDialogueOptions()
@@ -348,11 +353,11 @@ std::vector<DialogueOption> GetDialogueOptions()
 			option.prompText = prompt ? prompt->prompt.c_str() : "";
 			option.reseponseText = responseText;
 			option.enabled = EvaluateInfoConditions(originalInfo, playerDialogue);
-			option.said = (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kHasBeenSaid) != 0;
-			option.challengeLevel = GetSpeechChallengeLevel(info);
-            option.challengeResult = GetSpeechChallengeState(info);
+			option.said = (info->data.flags.get() & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kHasBeenSaid) != 0;
+			option.challengeLevel = info->GetSpeechChallengeLevel();
+			option.challengeResult = info->GetSuccessLevel();
 			option.linkedToSelf = sceneLink ? (currentScene == sceneLink->scene && playerDialogue->startPhase >= sceneLink->phase && playerDialogue->endPhase <= sceneLink->phase) : false;
-			option.endsScene = npcResponseInfo ? (npcResponseInfo->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kEndRunningScene) != 0 : false;
+			option.endsScene = npcResponseInfo ? (npcResponseInfo->data.flags.get() & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kEndRunningScene) != 0 : false;
 			option.isBarterOption = npcResponseInfo ? TODO : false;
 			option.isInventoryOption = npcResponseInfo ? TODO : false;
 			options.push_back(option);

@@ -1,8 +1,8 @@
 #include "Menus/Scaleform.h"
 
-std::pair<float, float> GetSubtitlePosition()
+std::pair<double, double> GetSubtitlePosition()
 {
-	std::pair<float, float> position;
+	std::pair<double, double> position;
 
 	RE::BSFixedString menuString("HUDMenu");
 	if (RE::UI::GetSingleton()->GetMenuOpen(menuString)) 
@@ -24,7 +24,7 @@ std::pair<float, float> GetSubtitlePosition()
 	return position;
 }
 
-bool SetSubtitlePosition(float x, float y)
+bool SetSubtitlePosition(double x, double y)
 {
 	RE::BSFixedString menuString("HUDMenu");
 	if (RE::UI::GetSingleton()->GetMenuOpen(menuString))
@@ -33,16 +33,16 @@ bool SetSubtitlePosition(float x, float y)
 		RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
 
 		RE::Scaleform::GFx::Value subtitle; movieRoot->GetVariable(&subtitle, "root.BottomCenterGroup_mc,SubtitleText_mc");
-		subtitle.SetMember("x", &RE::Scaleform::GFx::Value(x));
-		subtitle.SetMember("y", &RE::Scaleform::GFx::Value(y));
+		subtitle.SetMember("x", RE::Scaleform::GFx::Value(x));
+		subtitle.SetMember("y", RE::Scaleform::GFx::Value(y));
 		return true;
 	}
 
 	return false;
 }
 
-void RegisterFunction_DialogueMenu(RE::Scaleform::GFx::Value, codeObj, RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase> movieRoot) {
-	RE::Scaleform::GFx::ASMovieRootBase::CreateFunction()
+void RegisterFunction_DialogueMenu(RE::Scaleform::GFx::Value codeObj, RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase> movieRoot) {
+	RE::Scaleform::GFx::ASMovieRootBase::CreateFunction();
 }
 
 bool RegisterScaleform(RE::Scaleform::GFx::Movie* movie, RE::Scaleform::GFx::Value* f4se_root)
@@ -103,9 +103,9 @@ void GetDialogueGFxValue(RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase>
 			dialogueValue.SetMember("challengeLevel", &challengeLevelValue);
 			dialogueValue.SetMember("challengeResult", &challengeResultValue);
 			dialogueValue.SetMember("linkedToSelf", &linkedToSelfValue);
-			dialogueValue.SetMember("endsScene", &RE::Scaleform::GFx::Value(option.endsScene));
-			dialogueValue.SetMember("isBarterOption", &RE::Scaleform::GFx::Value(option.isBarterOption));
-			dialogueValue.SetMember("isInventoryOption", &RE::Scaleform::GFx::Value(option.isInventoryOption));
+			dialogueValue.SetMember("endsScene", RE::Scaleform::GFx::Value(option.endsScene));
+			dialogueValue.SetMember("isBarterOption", RE::Scaleform::GFx::Value(option.isBarterOption));
+			dialogueValue.SetMember("isInventoryOption", RE::Scaleform::GFx::Value(option.isInventoryOption));
 			outValue->PushBack(&dialogueValue);
 		}
 	} else {

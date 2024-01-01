@@ -4,5 +4,5 @@
 
 bool RegisterScaleform(RE::Scaleform::GFx::Movie* movie, RE::Scaleform::GFx::Value* f4se_root);
 
-std::pair<float, float> GetSubtitlePosition();
-bool SetSubtitlePosition(float x, float y);
+std::pair<double, double> GetSubtitlePosition();
+bool SetSubtitlePosition(double x, double y);

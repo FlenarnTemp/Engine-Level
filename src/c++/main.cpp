@@ -1,3 +1,4 @@
+#include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
 
 namespace
@@ -37,47 +38,47 @@ namespace
 		switch (a_msg->type)
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
-			logger::info(FMT_STRING("{:s} - kGameDataReady"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kGameDataReady"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:
-			logger::info(FMT_STRING("{:s} - kGameLoaded"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kGameLoaded"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kPostLoad:
-			logger::info(FMT_STRING("{:s} - kPostLoad"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kPostLoad"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kPostLoadGame:
-			logger::info(FMT_STRING("{:s} - kPostLoadGame"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kPostLoadGame"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kPostPostLoad:
-			logger::info(FMT_STRING("{:s} - kPostPostLoad"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kPostPostLoad"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kPostSaveGame:
-			logger::info(FMT_STRING("{:s} - kPostSaveGame"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kPostSaveGame"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kDeleteGame:
-			logger::info(FMT_STRING("{:s} - kDeleteGame"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kDeleteGame"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kNewGame:
-			logger::info(FMT_STRING("{:s} - kNewGame"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kNewGame"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kInputLoaded:
-			logger::info(FMT_STRING("{:s} - kInputLoaded"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kInputLoaded"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kPreLoadGame:
-			logger::info(FMT_STRING("{:s} - kPreLoadGame"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kPreLoadGame"), Version::PROJECT);
 			break;
 
 		case F4SE::MessagingInterface::kPreSaveGame:
-			logger::info(FMT_STRING("{:s} - kPreSaveGame"), Version::PROJECT);
+			//logger::info(FMT_STRING("{:s} - kPreSaveGame"), Version::PROJECT);
 			break;
 
 		default:
@@ -117,8 +118,13 @@ extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_
 
 	const auto messaging = F4SE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(MessageHandler))
+	{
+		logger::critical("Failed to register messaging handler, marking as incompatible."sv);
+		return false;
+	}
 
-		ObScript::Install();
+	Patches::Install();
+	ObScript::Install();
 
 	logger::info(FMT_STRING("{:s} finished loading."), Version::PROJECT);
 

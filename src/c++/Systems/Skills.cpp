@@ -2,6 +2,8 @@
 #include "Shared/SharedFunctions.h"
 #include "../../../build/src/c++/CommonLibF4/workaround.h"
 
+/**
+
 VanillaAV_Struct			VanillaActorValues;
 CascadiaAV_Struct			CascadiaActorValues;
 CascadiaPerks_Struct		CascadiaPerks;
@@ -35,7 +37,7 @@ CascadiaGlobals_Struct		CascadiaGlobals;
 	Survival			(END * 2) + 2 + (LCK / 2)
 
 	Unarmed				(END * 2) + 2 + (LCK / 2)
-*/
+*
 
 namespace Skills
 {
@@ -270,3 +272,4 @@ bool DefineSkillsFormsFromGame()
 
 	return true;
 }
+*/

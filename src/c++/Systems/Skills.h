@@ -2,6 +2,7 @@
 
 #include "GameForms.h"
 
+/**
 typedef std::vector<RE::ActorValueInfo*> AVVector;
 
 
@@ -41,3 +42,4 @@ void ModPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fModAmount);
 void SetPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fSetAmount);
 
 bool DefineSkillsFormsFromGame();
+*/

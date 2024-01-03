@@ -31,7 +31,9 @@ void SetWheelZoomEnabled(bool enbled);
 void SetFavoritesEnabled(bool enabled);
 void SetMovementEnabled(bool enabled);
 
-bool IsMeleeWeapon(WeaponConditionData myConditionData);
-float CalculateSkillBonusFromActor(WeaponConditionData myConditionData);
+//bool IsMeleeWeapon(WeaponConditionData myConditionData);
+//float CalculateSkillBonusFromActor(WeaponConditionData myConditionData);
 
 RE::Setting* GetGMST(const char* a_name);
+
+float ConvertPercentageToFloat(std::uint8_t percentage);

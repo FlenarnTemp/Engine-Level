@@ -1,15 +1,15 @@
 #pragma once
-
+/**
 struct DialogueOption
 {
-	uint32_t optionID;
+	std::uint32_t optionID;
 	RE::TESTopicInfo* info;
 	const char* prompText;
 	std::string reseponseText;
 	bool enabled;
 	bool said;
-	uint32_t challengeLevel;
-	uint32_t challengeResult;
+	std::uint32_t challengeLevel;
+	std::uint32_t challengeResult;
 	bool linkedToSelf;
 	bool endsScene;
 	bool isBarterOption;
@@ -33,12 +33,6 @@ struct SceneLink
 	uint32_t pad14;			// 14
 
 	operator RE::TESTopicInfo* () const { return key; }
-	static inline uint32_t GetHash(RE::TESTopicInfo** key)
-	{
-		uint32_t hash;
-	
-	}
-
 };
 
 extern DialogueHolder g_dialogueHolder;
@@ -54,3 +48,4 @@ void BuildDialogueMap(bool force = false);
 std::vector<RE::TESTopicInfo*> GetPlayerInfos();
 RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID);
 RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID);
+*/

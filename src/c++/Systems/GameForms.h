@@ -1,7 +1,8 @@
 #pragma once
-
+/**
 #ifndef VanillaAVStruct
 #define VanillaAVStruct
+
 
 RE::ActorValue* avSingleton = RE::ActorValue::GetSingleton();
 
@@ -70,3 +71,4 @@ struct CascadiaPerks_Struct
 };
 #endif
 extern CascadiaPerks_Struct CascadiaPerks;
+*/

@@ -1,7 +1,8 @@
 #include "AmmoSwitch.h"
 
-namespace AmmoSwitch
+/**namespace AmmoSwitch
 {
 	AmmoSwitchValues_Struct AmmoSwitchValues;
 
 }
+*/

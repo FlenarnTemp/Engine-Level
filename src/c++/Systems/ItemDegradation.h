@@ -1,5 +1,5 @@
 #pragma once
-
+/**
 #ifndef ItemDegradationStruct
 #define ItemDegradationStruct
 struct ItemDegradation_Struct 
@@ -50,3 +50,4 @@ void DefineItemDegradationFormsFromGame();
 
 float CalculateUpdatedDamageValue(float baseDamage, float minimum, float conditionPercent, float skillBonus);
 float CalculateUpdatedRateOfFireValue(WeaponConditionData myConditionData, float currentCondition);
+*/

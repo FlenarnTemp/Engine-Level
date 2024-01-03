@@ -3,8 +3,9 @@
 
 #include "RE/Bethesda/BSPointerHandle.h"
 
-DialogueHolder g_dialogueHolder;
+//DialogueHolder g_dialogueHolder;
 
+/*
 void BuildDialogueMap(bool force)
 {
 	RE::BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction();
@@ -116,7 +117,7 @@ RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, u
 	for (RE::TESTopicInfo* info : npcInfos)
 	{
 		if ((info->formFlags >> 5) & 1) continue;
-		if ((info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kHasBeenSaid)) continue;
+		if ((info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) continue;
 
 		if (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom)
 		{
@@ -316,8 +317,8 @@ std::vector<DialogueOption> GetDialogueOptions()
 			}
 
 			// Another IsFrameworkActive() check should go here... Sorry Loaf one.
-			// Ski "Say Once" marked infos that have already been said.
-			if ((info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kHasBeenSaid)) {
+			// Skip "Say Once" marked infos that have already been said.
+			if ((info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) {
 				continue;
 			}
 
@@ -325,17 +326,18 @@ std::vector<DialogueOption> GetDialogueOptions()
 			int vanillaDialogueOrder[] = { 3, 0, 1, 2 };
 
 			// Get prompt
-			auto prompt = ;
+			//auto prompt = ; - TODO
 
 			// Get response and perform text replacement.
 			std::string responseText = "";
-			if (info->responses) {
-				std::string str(info->responses.head)
-			}
+			/*if (info->responses) {
+				std::string str(info->responses.head) - TODO
+			}*/
 
 			// Get NPC response TopicInfo for dialogue cues.
 			// Another IsFrameworkActive() check goes here in "retail".
-			RE::TESTopicInfo* npcResponseInfo = GetNPCInfo(playerDialogue, i);
+
+			/**RE::TESTopicInfo* npcResponseInfo = GetNPCInfo(playerDialogue, i);
 			if (!npcResponseInfo) {
 				// No NPC response info - look one phase ahead (only) for a NPC response action.
 				if (auto npcResponseAction = FindNextNPCResponseAction(currentScene, currentScene->currentActivePhase)) {
@@ -350,16 +352,16 @@ std::vector<DialogueOption> GetDialogueOptions()
 			DialogueOption option = {};
 			option.optionID = i;
 			option.info = info;
-			option.prompText = prompt ? prompt->prompt.c_str() : "";
+			//option.prompText = prompt ? prompt->prompt.c_str() : "";
 			option.reseponseText = responseText;
-			option.enabled = EvaluateInfoConditions(originalInfo, playerDialogue);
-			option.said = (info->data.flags.get() & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kHasBeenSaid) != 0;
+			option.enabled = EvaluateInfoConditions(originalInfo, playerDialogue, true);
+			option.said = (info->data.flags.get() & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid) != 0;
 			option.challengeLevel = info->GetSpeechChallengeLevel();
 			option.challengeResult = info->GetSuccessLevel();
 			option.linkedToSelf = sceneLink ? (currentScene == sceneLink->scene && playerDialogue->startPhase >= sceneLink->phase && playerDialogue->endPhase <= sceneLink->phase) : false;
 			option.endsScene = npcResponseInfo ? (npcResponseInfo->data.flags.get() & RE::TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kEndRunningScene) != 0 : false;
-			option.isBarterOption = npcResponseInfo ? TODO : false;
-			option.isInventoryOption = npcResponseInfo ? TODO : false;
+			//option.isBarterOption = npcResponseInfo ? TODO : false; - TODO
+			//option.isInventoryOption = npcResponseInfo ? TODO : false; - TODO
 			options.push_back(option);
 		}
 	}
@@ -378,3 +380,5 @@ namespace {
 	// Event Handlers
 	
 }
+
+**/

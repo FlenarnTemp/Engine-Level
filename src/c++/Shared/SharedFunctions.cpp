@@ -4,6 +4,7 @@
 // Returns true is FormID is base game OR dynamically placed ("FF" index)
 // Assumes all DLC is installed (Excluding DLCUltraHighResolution.esm as it is empty and "safe" to ignore).
 // TODO - Better handling for the "FF" index, list span of "official" .esl's?
+
 bool IsFormIDStringBaseGame(std::string formIDString)
 {
 	std::string formIndex = formIDString.substr(0, 2);
@@ -305,7 +306,7 @@ bool IsFormInList(RE::TESForm* form, RE::BGSListForm* list)
 	return false;
 }
 
-bool IsMeleeWeapon(WeaponConditionData myConditionData)
+/*bool IsMeleeWeapon(WeaponConditionData myConditionData)
 {
 	bool result = false;
 
@@ -327,9 +328,15 @@ bool IsMeleeWeapon(WeaponConditionData myConditionData)
 	}
 
 	return result;
-}
+}*/
 
 RE::Setting* GetGMST(const char* a_name)
 {
 	return RE::GameSettingCollection::GetSingleton()->GetSetting(a_name);
+}
+
+//	Converts a UInt8 percentage to float (eg. 38% becomes 0.38)
+float ConvertPercentageToFloat(std::uint8_t percentage)
+{
+	return (percentage / static_cast<float>(100));
 }

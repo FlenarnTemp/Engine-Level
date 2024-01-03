@@ -1,6 +1,6 @@
 #pragma once
 
-namespace AmmoSwitch
+/**namespace AmmoSwitch
 {
 	RE::TESAmmo* GetCoreAmmo();
 	RE::TESAmmo* GetNextAvailableAmmo();
@@ -15,4 +15,4 @@ namespace AmmoSwitch
 	};
 #endif
 	extern AmmoSwitchValues_Struct AmmoSwitchValues;
-}
+}*/

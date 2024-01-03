@@ -33,7 +33,7 @@ namespace ObScript
 			}
 			else
 			{
-				logger::debug("Failed to register BetaComment."sv);
+				logger::warn("WARNING: Failed to register BetaComment."sv);
 			}
 		}
 
@@ -310,7 +310,7 @@ namespace ObScript
 			return static_cast<std::time_t>(ull.QuadPart / 10000000ULL - 11644473600ULL);
 		}
 
-		static constexpr auto LONG_NAME = "BetaComments"sv;
+		static constexpr auto LONG_NAME = "BetaComment"sv;
 		static constexpr auto SHORT_NAME = "bc"sv;
 
 		inline static RE::TESObjectREFR* m_refr{ nullptr };

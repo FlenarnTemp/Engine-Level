@@ -1,4 +1,5 @@
 #include "Menus/Scaleform.h"
+#include "Systems/Dialogue.h"
 
 std::pair<double, double> GetSubtitlePosition()
 {
@@ -42,10 +43,10 @@ bool SetSubtitlePosition(double x, double y)
 }
 
 void RegisterFunction_DialogueMenu(RE::Scaleform::GFx::Value codeObj, RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase> movieRoot) {
-	RE::Scaleform::GFx::ASMovieRootBase::CreateFunction();
+	//RE::Scaleform::GFx::ASMovieRootBase::CreateFunction();
 }
 
-bool RegisterScaleform(RE::Scaleform::GFx::Movie* movie, RE::Scaleform::GFx::Value* f4se_root)
+/**bool RegisterScaleform(RE::Scaleform::GFx::Movie* movie, RE::Scaleform::GFx::Value* f4se_root)
 {
 	RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase> movieRoot = movie->asMovieRoot;
 
@@ -62,20 +63,20 @@ bool RegisterScaleform(RE::Scaleform::GFx::Movie* movie, RE::Scaleform::GFx::Val
 	if (strcmp(currentSWFPathString, "Interface/DialogueMenu.swf") == 0) {
 		RE::Scaleform::GFx::Value codeObj;
 		movieRoot->GetVariable(&codeObj, "root.Menu_mc.BGSCodeObj");
-		RegisterFunctions_DialogueMenu(&codeObj, movieRoot);
+		//RegisterFunctions_DialogueMenu(&codeObj, movieRoot); - TODO
 
 		movieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
 
 	} else if (strcmp(currentSWFPathString, "Interface/MultiActivateMenu.swf") == 0) {
 		RE::Scaleform::GFx::Value codeObj;
 		movie->GetVariable(&codeObj, "root.Menu_mc.BGSCodeObj");
-		RegisterFunction_MultiActivateMenu(&codeObj, movieRoot);
+		//RegisterFunction_MultiActivateMenu(&codeObj, movieRoot); - TODO
 	}
 
 	return true;
-}
+}*/
 
-void GetDialogueGFxValue(RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase>* movieRoot, RE::Scaleform::GFx::Value* outValue) {
+/**void GetDialogueGFxValue(RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase>* movieRoot, RE::Scaleform::GFx::Value* outValue) {
 	movieRoot->get()->CreateArray(outValue);
 
 	if (auto playerDialogue = GetCurrentPlayerDialogueAction()) {
@@ -112,4 +113,4 @@ void GetDialogueGFxValue(RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase>
 		// Player dialogue option not currently available.
 		logger::warn("WARNING: Player dialogue not currently available. No dialogue will be retrieved.");
 	}
-}
+}*/

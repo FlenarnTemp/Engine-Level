@@ -1,6 +1,6 @@
 #include "ItemDegradation.h"
 #include "Shared/SharedFunctions.h"
-
+/**
 // Weapon Condition - Manual Settings
 float fDamageSkillMult;
 float fDamageSkillBase;
@@ -38,7 +38,7 @@ RE::BGSKeyword* armorBodyPartRightLeg;
 /* =============================================================================
 	Weapon Condition
    ============================================================================= */
-
+/**
 WeaponConditionData::WeaponConditionData() : actor(nullptr), Form(nullptr), extraData(nullptr), instance(nullptr) { }
 
 WeaponConditionData::WeaponConditionData(RE::TESForm* form, RE::ExtraDataList* extradata)
@@ -372,7 +372,7 @@ void InitializeConditionWeapon(WeaponConditionData myConditionData)
 
 	float fMaxCNDValue = GetMaxConditionValueFromWeapon(myWeaponBaseForm);
 	float fMinCNDValue = 0;
-	float fStartCNDValue = 0;
+	//float fStartCNDValue = 0;
 
 	if (!myConditionData.extraData)
 	{
@@ -394,7 +394,7 @@ void InitializeConditionWeapon(WeaponConditionData myConditionData)
 			if (myConditionData.instance->actorValues) {
 				for (uint32_t i = 0; i < myConditionData.instance->actorValues->size(); i++) {
 					auto iteration = myConditionData.instance->actorValues[i];
-					fMaxCNDValue = (iteration)
+					//fMaxCNDValue = (iteration)
 				}
 			}
 		}
@@ -465,7 +465,7 @@ float GetWeaponDamage(WeaponConditionData myConditionData)
 				baseValue = baseWEAPForm->weaponData.damageTypes[i][i].second.f;
 				newValue = CalculateUpdatedDamageValue(baseValue, minimum, currentCondition, CalculateSkillBonusFromActor(myConditionData));
 				return newValue;
-			}*/
+			}*
 		}
 	}
 
@@ -502,7 +502,7 @@ void DefineItemDegradationFormsFromGame()
 	armorBodyPartLeftLeg = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(2170119, "FalloutCascadia.esm");	//HEX: 211D07
 	armorBodyPartRightLeg = RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSKeyword>(2170121, "FalloutCascadia.esm");	//HEX: 211D09
 
-	logger::info("Item Degradation: Finished linking degradation forms.")
+	logger::info("Item Degradation: Finished linking degradation forms.");
 }
 
 float CalculateSkillBonusFromActor(WeaponConditionData myConditionData)
@@ -590,7 +590,7 @@ void UnequipWeapon(RE::Actor* a_actor)
 {
 	if (!a_actor) { return; }
 
-	a_actor->RemoveWeapon();
+	//a_actor->RemoveWeapon();
 
 	// TODO - rest of it
 }
@@ -599,3 +599,4 @@ RE::BGSKeyword* GetPowerArmorTypeKeyword()
 {
 	return armorTypePowerArmor;
 }
+*/

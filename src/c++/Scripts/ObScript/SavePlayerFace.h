@@ -77,7 +77,6 @@ namespace ObScript
 			RE::TESNPC* npc = a_actor->GetNPC();
 
 			RE::NPCFile npcFile{};
-			std::span<RE::BGSHeadPart*> headParts = npc->GetHeadParts();
 
 			npcFile.bodyMorphRegionsA = RE::GetBodyMorphRegionsFromNPC(npc);					// Body Morph Regions
 			logger::debug("Body Morph Regions");
@@ -85,14 +84,6 @@ namespace ObScript
 			logger::debug("Facial Bone Morph Intensity");
 			npcFile.facialBoneRegionsA = GetFacialBoneRegionsFromNPC(npc);						// Facial Bone Regions
 			logger::debug("Facial Bone Regions");
-			npcFile.headPartEyebrows = GetSpecificHeadPartOfType(headParts, npc->numHeadParts, RE::BGSHeadPart::HeadPartType::kEyebrows);		//	Eyebrows Head Part
-			npcFile.headPartEyes = GetSpecificHeadPartOfType(headParts, npc->numHeadParts, RE::BGSHeadPart::HeadPartType::kEyes);				//	Eyes Head Part
-			npcFile.headPartFace = GetSpecificHeadPartOfType(headParts, npc->numHeadParts, RE::BGSHeadPart::HeadPartType::kFace);				//	Face Head Part
-			npcFile.headPartFacial_Hair = GetSpecificHeadPartOfType(headParts, npc->numHeadParts, RE::BGSHeadPart::HeadPartType::kFacialHair);	//	Facial Hair Head Part
-			npcFile.headPartHair = GetSpecificHeadPartOfType(headParts, npc->numHeadParts, RE::BGSHeadPart::HeadPartType::kHair);				//	Hair Head Part
-			npcFile.headPartHead_Rear = GetSpecificHeadPartOfType(headParts, npc->numHeadParts, RE::BGSHeadPart::HeadPartType::kHeadRear);		//	Head Rear Head Part
-			npcFile.headPartTeeth = GetSpecificHeadPartOfType(headParts, npc->numHeadParts, RE::BGSHeadPart::HeadPartType::kTeeth);				//	Teeth Head Part
-			logger::debug("Head Parts");
 			npcFile.morphSlidersA = GetMorphSliderValuesFromNPC(npc);							//Morph Sliders
 			logger::debug("Morph Sliders");
 			npcFile.tintEntriesA = GetTintEntriesFromNPC(npc, npc->GetSex());					// Tint Entries

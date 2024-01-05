@@ -47,13 +47,6 @@ namespace RE
 		BodyMorphRegions				bodyMorphRegionsA;
 		float							facialBoneMorphIntensity;
 		std::vector<FacialBoneRegion>	facialBoneRegionsA;
-		BGSHeadPart						* headPartEyebrows;
-		BGSHeadPart						* headPartEyes;
-		BGSHeadPart						* headPartFace;
-		BGSHeadPart						* headPartFacial_Hair;
-		BGSHeadPart						* headPartHair;
-		BGSHeadPart						* headPartHead_Rear;
-		BGSHeadPart						* headPartTeeth;
 		std::vector<MorphSlider>		morphSlidersA;
 		std::vector<TintEntry>			tintEntriesA;
 	};
@@ -81,7 +74,7 @@ namespace RE
 		std::string GenerateFacialBoneMorphIntensity(NPCFile npcFile);
 		std::string GenerateFacialBoneRegions(NPCFile npcFile);
 		std::string GenerateHairColor(TESNPC* npc, bool bHairColor);
-		std::string GenerateHeadPart(BGSHeadPart* headPart, const char* partName);
+		std::string GenerateHeadPart(TESNPC* npc, BGSHeadPart::HeadPartType type);
 		std::string GenerateMorphSliders(NPCFile npcFile);
 		std::string GenerateRace(TESNPC* npc);
 		std::string GenerateSex(TESNPC* npc);

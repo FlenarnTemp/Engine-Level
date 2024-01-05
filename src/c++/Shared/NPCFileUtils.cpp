@@ -223,20 +223,6 @@ namespace RE
 		return result;
 	}
 
-	BGSHeadPart* GetSpecificHeadPartOfType(std::span<BGSHeadPart*> headParts, std::int8_t numHeadParts, BGSHeadPart::HeadPartType type)
-	{
-		for (std::int8_t i = 0; i < numHeadParts; i++) {
-			BGSHeadPart* currentHeadPart = headParts[i];
-
-			if (currentHeadPart->type.get() == type)
-			{
-				return currentHeadPart;
-			}
-		}
-
-		return NULL;
-	}
-
 	std::vector<FacialBoneRegion> GetFacialBoneRegionsFromNPC(TESNPC* npc)
 	{
 		std::vector<FacialBoneRegion> result;
@@ -343,6 +329,8 @@ namespace RE
 
 			std::ofstream output(outputFile, std::ios_base::binary | std::ios_base::out);
 
+			std::span<RE::BGSHeadPart*> headParts = npc->GetHeadParts();
+
 			output << "{" << std::endl;
 			output << GenerateBodyMorphRegionsOutput(npcFile);
 			output << GenerateComplexionOutput(npc);
@@ -350,13 +338,13 @@ namespace RE
 			output << GenerateFacialBoneRegions(npcFile);
 			output << GenerateHairColor(npc, false);
 			output << GenerateHairColor(npc, true);
-			output << GenerateHeadPart(npcFile.headPartEyebrows, "HeadPartEyebrows");
-			output << GenerateHeadPart(npcFile.headPartEyes, "HeadPartEyes");
-			output << GenerateHeadPart(npcFile.headPartFace, "HeadPartFace");
-			output << GenerateHeadPart(npcFile.headPartFacial_Hair, "HeadPartFacial_Hair");
-			output << GenerateHeadPart(npcFile.headPartHair, "HeadPartHair");
-			output << GenerateHeadPart(npcFile.headPartHead_Rear, "HeadPartHead_Rear");
-			output << GenerateHeadPart(npcFile.headPartTeeth, "HeadPartTeeth");
+			output << GenerateHeadPart(npc, RE::BGSHeadPart::HeadPartType::kEyebrows);
+			output << GenerateHeadPart(npc, RE::BGSHeadPart::HeadPartType::kEyes);
+			output << GenerateHeadPart(npc, RE::BGSHeadPart::HeadPartType::kFace);
+			output << GenerateHeadPart(npc, RE::BGSHeadPart::HeadPartType::kFacialHair);
+			output << GenerateHeadPart(npc, RE::BGSHeadPart::HeadPartType::kHair);
+			output << GenerateHeadPart(npc, RE::BGSHeadPart::HeadPartType::kHeadRear);
+			output << GenerateHeadPart(npc, RE::BGSHeadPart::HeadPartType::kTeeth);
 			output << GenerateMorphSliders(npcFile);
 			output << GenerateRace(npc);
 			output << GenerateSex(npc);
@@ -519,8 +507,43 @@ namespace RE
 			return result.str();
 		}
 
-		std::string GenerateHeadPart(BGSHeadPart* headPart, const char* partName)
+		std::string GenerateHeadPart(TESNPC* npc, BGSHeadPart::HeadPartType type)
 		{
+			std::span<BGSHeadPart*> headParts = npc->GetHeadParts();
+			std::int8_t numHeadParts = npc->numHeadParts;
+
+			const char* partName;
+
+			switch (type)
+			{
+			case BGSHeadPart::HeadPartType::kEyebrows:
+				partName = "HeadPartEyebrows";
+			case BGSHeadPart::HeadPartType::kEyes:
+				partName = "HeadPartEyes";
+			case BGSHeadPart::HeadPartType::kFace:
+				partName = "HeadPartFace";
+			case BGSHeadPart::HeadPartType::kFacialHair:
+				partName = "HeadPartFacial_Hair";
+			case BGSHeadPart::HeadPartType::kHair:
+				partName = "HeadPartHair";
+			case BGSHeadPart::HeadPartType::kHeadRear:
+				partName = "HeadPartHead_Rear";
+			case BGSHeadPart::HeadPartType::kTeeth:
+				partName = "HeadPartTeeth";
+
+			}
+
+			BGSHeadPart* headPart;
+
+			for (std::int8_t i = 0; i < numHeadParts; i++) {
+				BGSHeadPart* currentHeadPart = headParts[i];
+
+				if (currentHeadPart->type.get() == type)
+				{
+					headPart = currentHeadPart;
+				}
+			}
+
 			std::stringstream result;
 
 			result << "   \"" << partName << "\" : \"";

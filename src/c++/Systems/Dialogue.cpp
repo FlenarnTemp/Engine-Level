@@ -261,7 +261,7 @@ namespace RE
 	{
 		if (scene)
 		{
-			for (std::size_t i = 0; i < scene->actions.size(); i++)
+			for (std::uint32_t i = 0; i < scene->actions.size(); i++)
 			{
 				BGSSceneAction* action = scene->actions[i];
 				if (action->startPhase == currentPhase + 1)

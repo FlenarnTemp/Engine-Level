@@ -53,6 +53,7 @@ namespace RE
 	BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();
 
 	// Topic Info
+	std::vector<DialogueOption> GetDialogueOptions();
 	void BuildDialogueMap(bool force = false);
 	std::vector<TESTopicInfo*> GetPlayerInfos();
 	TESTopicInfo* GetPlayerInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID);

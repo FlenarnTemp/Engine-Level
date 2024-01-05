@@ -46,7 +46,7 @@ void RegisterFunction_DialogueMenu(RE::Scaleform::GFx::Value codeObj, RE::Scalef
 	//RE::Scaleform::GFx::ASMovieRootBase::CreateFunction();
 }
 
-/**bool RegisterScaleform(RE::Scaleform::GFx::Movie* movie, RE::Scaleform::GFx::Value* f4se_root)
+bool RegisterScaleform(RE::Scaleform::GFx::Movie* movie, RE::Scaleform::GFx::Value* f4se_root)
 {
 	RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase> movieRoot = movie->asMovieRoot;
 
@@ -74,19 +74,19 @@ void RegisterFunction_DialogueMenu(RE::Scaleform::GFx::Value codeObj, RE::Scalef
 	}
 
 	return true;
-}*/
+}
 
-/**void GetDialogueGFxValue(RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase>* movieRoot, RE::Scaleform::GFx::Value* outValue) {
+void GetDialogueGFxValue(RE::Scaleform::Ptr<RE::Scaleform::GFx::ASMovieRootBase>* movieRoot, RE::Scaleform::GFx::Value* outValue) {
 	movieRoot->get()->CreateArray(outValue);
 
-	if (auto playerDialogue = GetCurrentPlayerDialogueAction()) {
-		std::vector<DialogueOption> options = GetDialogueOptions();
+	if (auto playerDialogue = RE::GetCurrentPlayerDialogueAction()) {
+		std::vector<RE::DialogueOption> options = RE::GetDialogueOptions();
 
 		for (auto option : options) {
 			RE::Scaleform::GFx::Value optionIDValue, promptValue, responseValue, enabledValue, saidValue, challengeLevelValue, challengeResultValue, linkedToSelfValue;
 
 			optionIDValue = option.optionID;
-			promptValue = option.prompText;
+			promptValue = option.prompText.c_str();
 			responseValue = option.reseponseText.c_str();
 			enabledValue = option.enabled;
 			saidValue = option.said;
@@ -113,4 +113,4 @@ void RegisterFunction_DialogueMenu(RE::Scaleform::GFx::Value codeObj, RE::Scalef
 		// Player dialogue option not currently available.
 		logger::warn("WARNING: Player dialogue not currently available. No dialogue will be retrieved.");
 	}
-}*/
+}

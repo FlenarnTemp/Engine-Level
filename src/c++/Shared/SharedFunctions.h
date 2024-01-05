@@ -5,15 +5,15 @@
 bool IsFormIDStringBaseGame(std::string formIDString);
 std::string GetFormIDAsString(uint32_t formID);
 
-uint32_t GetActorSex(RE::Actor* a_actor);
+std::uint32_t GetActorSex(RE::Actor* a_actor);
 RE::PlayerCharacter* GetPlayerCharacter();
 bool IsPlayerGodMode();
-int16_t GetPlayerLevel();
-uint32_t GetPlayerSex();
+std::int16_t GetPlayerLevel();
+std::uint32_t GetPlayerSex();
 
 std::string FloatToPreciseString(float value, int precision);
 
-uint32_t RNG(int min, int max);
+std::uint32_t RNG(int min, int max);
 float RNG(float min, float max);
 
 bool WeaponHasKeyword(RE::TESObjectWEAP* weapon, RE::BGSKeyword* keyword);

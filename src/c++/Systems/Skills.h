@@ -2,7 +2,6 @@
 
 #include "GameForms.h"
 
-/**
 typedef std::vector<RE::ActorValueInfo*> AVVector;
 
 
@@ -29,6 +28,7 @@ namespace Skills
 	void RegisterDerivedAV(RE::ActorValueInfo* myAV, std::function<float(const RE::ActorValueOwner*, RE::ActorValueInfo&)> CalcFunction);
 	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(const RE::ActorValueOwner*, RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2);
 	float CalculateSkillOffset(const RE::ActorValueOwner* myAVOwner, RE::ActorValueInfo& myAV);
+	void RegisterForSkillLink();
 }
 
 float GetAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV);
@@ -42,4 +42,4 @@ void ModPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fModAmount);
 void SetPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fSetAmount);
 
 bool DefineSkillsFormsFromGame();
-*/
+

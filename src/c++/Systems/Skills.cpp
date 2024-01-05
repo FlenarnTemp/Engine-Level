@@ -2,8 +2,6 @@
 #include "Shared/SharedFunctions.h"
 #include "../../../build/src/c++/CommonLibF4/workaround.h"
 
-/**
-
 VanillaAV_Struct			VanillaActorValues;
 CascadiaAV_Struct			CascadiaActorValues;
 CascadiaPerks_Struct		CascadiaPerks;
@@ -37,7 +35,7 @@ CascadiaGlobals_Struct		CascadiaGlobals;
 	Survival			(END * 2) + 2 + (LCK / 2)
 
 	Unarmed				(END * 2) + 2 + (LCK / 2)
-*
+*/
 
 namespace Skills
 {
@@ -270,6 +268,17 @@ bool DefineSkillsFormsFromGame()
 	Skills::CascadiaSkillsList.emplace_back(CascadiaActorValues.Survival);
 	Skills::CascadiaSkillsList.emplace_back(CascadiaActorValues.Unarmed);
 
+	// Vanilla SPECIAL List
+	RE::ActorValue* avSingleton = RE::ActorValue::GetSingleton();
+
+	VanillaActorValues.Strength = avSingleton->strength;
+	VanillaActorValues.Perception = avSingleton->perception;
+	VanillaActorValues.Endurance = avSingleton->endurance;
+	VanillaActorValues.Charisma = avSingleton->charisma;
+	VanillaActorValues.Intelligence = avSingleton->intelligence;
+	VanillaActorValues.Agility = avSingleton->agility;
+	VanillaActorValues.Luck = avSingleton->luck;
+
 	return true;
 }
-*/
+

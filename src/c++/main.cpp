@@ -1,5 +1,8 @@
 #include "Patches/Patches.h"
+
 #include "Scripts/ObScript.h"
+
+#include "Systems/Skills.h"
 
 namespace
 {
@@ -38,6 +41,9 @@ namespace
 		switch (a_msg->type)
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
+			if (DefineSkillsFormsFromGame()) {
+				Skills::RegisterForSkillLink();
+			}
 			//logger::info(FMT_STRING("{:s} - kGameDataReady"), Version::PROJECT);
 			break;
 

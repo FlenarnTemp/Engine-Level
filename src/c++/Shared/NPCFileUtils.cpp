@@ -530,27 +530,21 @@ namespace RE
 				partName = "HeadPartHead_Rear";
 			case BGSHeadPart::HeadPartType::kTeeth:
 				partName = "HeadPartTeeth";
-
-			}
-
-			BGSHeadPart* headPart;
-
-			for (std::int8_t i = 0; i < numHeadParts; i++) {
-				BGSHeadPart* currentHeadPart = headParts[i];
-
-				if (currentHeadPart->type.get() == type)
-				{
-					headPart = currentHeadPart;
-				}
+			default:
+				partName = "";
 			}
 
 			std::stringstream result;
 
 			result << "   \"" << partName << "\" : \"";
 
-			if (headPart)
-			{
-				result << headPart->formEditorID.c_str();
+			for (std::int8_t i = 0; i < numHeadParts; i++) {
+				BGSHeadPart* currentHeadPart = headParts[i];
+
+				if (currentHeadPart->type.get() == type)
+				{
+					result << currentHeadPart->formEditorID.c_str();
+				}
 			}
 
 			result << "\"," << std::endl;

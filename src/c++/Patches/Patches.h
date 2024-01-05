@@ -2,6 +2,7 @@
 
 #include "Patches/LoadEditorIDs.h"
 #include "Patches/OnStoryCraftItem.h"
+#include "Patches/TESObjectREFR.h"
 
 namespace Patches
 {
@@ -9,5 +10,6 @@ namespace Patches
 	{
 		LoadEditorIDs::Install();
 		OnStoryCraftItem::Install();
+		TESObjectREFR_ConsoleName::Install();
 	}
 }

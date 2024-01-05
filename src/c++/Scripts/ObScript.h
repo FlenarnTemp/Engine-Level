@@ -2,6 +2,8 @@
 
 #include "ObScript/BetaComment.h"
 #include "ObScript/GetBaseObject.h"
+#include "ObScript/GetDefaultObject.h"
+#include "ObScript/Help.h"
 #include "ObScript/SavePlayerFace.h"
 
 namespace ObScript
@@ -10,6 +12,8 @@ namespace ObScript
 	{
 		ObScript::BetaComment::Install();
 		ObScript::GetBaseObject::Install();
+		ObScript::GetDefaultObject::Install();
+		ObScript::Help::Install();
 		ObScript::SavePlayerFace::Install();
 	}
 }

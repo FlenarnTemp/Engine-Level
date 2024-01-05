@@ -1,51 +1,63 @@
 #pragma once
-/**
-struct DialogueOption
+
+namespace RE
 {
-	std::uint32_t optionID;
-	RE::TESTopicInfo* info;
-	const char* prompText;
-	std::string reseponseText;
-	bool enabled;
-	bool said;
-	std::uint32_t challengeLevel;
-	std::uint32_t challengeResult;
-	bool linkedToSelf;
-	bool endsScene;
-	bool isBarterOption;
-	bool isInventoryOption;
-};
+	struct DialogueOption
+	{
+		std::uint32_t optionID;
+		TESTopicInfo* info;
+		BGSLocalizedString prompText;
+		BGSLocalizedString reseponseText;
+		bool enabled;
+		bool said;
+		std::uint32_t challengeLevel;
+		std::uint32_t challengeResult;
+		bool linkedToSelf;
+		bool endsScene;
+		bool isBarterOption;
+		bool isInventoryOption;
+	};
 
-struct DialogueHolder
-{
-	RE::BGSScene* scene;
-	RE::BGSSceneActionPlayerDialogue* playerDialogue;
+	struct DialogueHolder
+	{
+		BGSScene* scene;
+		BGSSceneActionPlayerDialogue* playerDialogue;
 
-	std::vector<std::pair<RE::TESTopicInfo*, std::vector<RE::TESTopicInfo*>>> dialogueMap;
-};
+		std::vector<std::pair<TESTopicInfo*, std::vector<TESTopicInfo*>>> dialogueMap;
+	};
 
-// 18
-struct SceneLink
-{
-	RE::TESTopicInfo* key;	// 00
-	RE::BGSScene* scene;	// 08
-	uint32_t phase;			// 10
-	uint32_t pad14;			// 14
+	struct TOPIC_INFO_SCENEDATA
+	{
+		BGSScene* pScene;
+		std::uint32_t uiPhase;
+	};
+	static_assert(sizeof(TOPIC_INFO_SCENEDATA) == 0x10);
 
-	operator RE::TESTopicInfo* () const { return key; }
-};
+	[[nodiscard]] inline BSTHashMap<const TESTopicInfo*, BGSLocalizedString>& GetAllPromptMap()
+	{
+		REL::Relocation<BSTHashMap<const TESTopicInfo*, BGSLocalizedString>*> AllPromptMap{ REL::ID(1044503), -0x28 };
+		return *AllPromptMap;
+	}
 
-extern DialogueHolder g_dialogueHolder;
+	[[nodiscard]] inline BSTHashMap<const TESTopicInfo*, TOPIC_INFO_SCENEDATA>& GetAllSceneListMap()
+	{
+		REL::Relocation<BSTHashMap<const TESTopicInfo*, TOPIC_INFO_SCENEDATA>*> AllSceneListsMap{ REL::ID(1123956), -0x28 };
+		return *AllSceneListsMap;
+	}
 
-bool IsSceneActionWithinPhase(RE::BGSSceneAction* action, uint32_t phase);
-bool EvaluateInfoConditions(RE::TESTopicInfo* a_info, RE::BGSSceneAction* a_action, bool swap);
+	bool IsSceneActionWithinPhase(BGSSceneAction* action, std::uint32_t phase);
+	TESObjectREFR* GetActionREFR(BGSScene* scene, BGSSceneAction* action);
+	bool EvaluateInfoConditions(TESTopicInfo* a_info, BGSSceneAction* a_action, bool swap);
+	TOPIC_INFO_SCENEDATA* GetSceneData(TESTopicInfo* topicInfo);
 
-RE::BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();
+	BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();
+
+	// Topic Info
+	void BuildDialogueMap(bool force = false);
+	std::vector<TESTopicInfo*> GetPlayerInfos();
+	TESTopicInfo* GetPlayerInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID);
+	TESTopicInfo* GetNPCInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID);
+}
 
 
-// Topic Info
-void BuildDialogueMap(bool force = false);
-std::vector<RE::TESTopicInfo*> GetPlayerInfos();
-RE::TESTopicInfo* GetPlayerInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID);
-RE::TESTopicInfo* GetNPCInfo(RE::BGSSceneActionPlayerDialogue* playerDialogue, uint32_t optionID);
-*/
+

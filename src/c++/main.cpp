@@ -1,3 +1,5 @@
+#include "Menus/Scaleform.h"
+
 #include "Patches/Patches.h"
 
 #include "Scripts/ObScript.h"
@@ -128,6 +130,19 @@ extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_
 		logger::critical("Failed to register messaging handler, marking as incompatible."sv);
 		return false;
 	}
+
+	const auto scaleform = F4SE::GetScaleformInterface();
+	if (!scaleform)
+	{
+		logger::critical("Failed to register scaleform interface, marking as incompatible."sv);
+		return false;
+	}
+
+	if (scaleform->Register("CAS_Dialogue", RE::RegisterScaleform));
+	{
+		logger::info("Registered Scaleform.");
+	}
+
 
 	Patches::Install();
 	ObScript::Install();

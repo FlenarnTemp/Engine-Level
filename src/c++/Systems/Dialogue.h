@@ -51,6 +51,7 @@ namespace RE
 	TOPIC_INFO_SCENEDATA* GetSceneData(TESTopicInfo* topicInfo);
 
 	BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();
+	TESObjectREFR* GetCurrentPlayerDialogueTarget();
 
 	// Topic Info
 	std::vector<DialogueOption> GetDialogueOptions();

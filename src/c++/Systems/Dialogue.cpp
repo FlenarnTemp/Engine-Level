@@ -300,6 +300,25 @@ namespace RE
 		return nullptr;
 	}
 
+	TESObjectREFR* GetCurrentPlayerDialogueTarget()
+	{
+		if (auto playerDialogue = GetCurrentPlayerDialogueAction())
+		{
+			BGSScene* scene = GetPlayerCharacter()->GetCurrentScene();
+
+			BSPointerHandle<TESObjectREFR>* targetHandle = 0;
+			TESObjectREFR* targetREFR = nullptr;
+			scene->parentQuest->GetAliasedRef(targetHandle, playerDialogue->actorID);
+			auto REFRptr = targetHandle->get();
+
+			if (targetHandle && REFRptr != nullptr)
+			{
+				targetREFR = REFRptr.get();
+				return targetREFR;
+			}
+		}
+	}
+
 	// Check to see whether the given scene action is active in the given phase.
 	bool IsSceneActionWithinPhase(BGSSceneAction* action, std::uint32_t phase)
 	{

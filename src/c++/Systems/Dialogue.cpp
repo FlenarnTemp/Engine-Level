@@ -319,16 +319,17 @@ namespace RE
 		return nullptr;
 	}
 
-
 	bool SelectDialogueOption(std::uint32_t option) {
 
-		if (!(*g_menuTopicManager)->awaitingPlayerInput) return false;
-		if (auto playerDialogue = GetCurrentPlayerDialogueAction()) {
+		if (!(MenuTopicManager::GetSingleton()->bAllowInput)) return false;
+		if (auto playerDialogue = GetCurrentPlayerDialogueAction()) 
+		{
 			// We're using option 5 and up for additional options. (Options 5 = Option 0).
-			GetPlayerCharacter()->SetLastDialogueInput(option + 5)
-				return true;
+			GetPlayerCharacter()->SetLastDialogueInput(option + 5);
+			return true;
 		}
-		else {
+		else 
+		{
 			return false;
 		}
 	}

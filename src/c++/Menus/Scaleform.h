@@ -120,24 +120,24 @@ namespace RE
 			switch (reinterpret_cast<std::uint64_t>(a_params.userData))
 			{
 
-				// IsFrameworkActive
-				// We "cheat" here, we always return true, since we're a TC, our theoretical impact
-				// on the retail game does not matter.
 			case 3:
 			{
 				logger::info("DialogueMenu - IsFrameworkActive");
+
 				if (a_params.retVal)
 				{
+					// We "cheat" here, we always return true, since we're a TC, our theoretical impact
+					// on the retail game does not matter.
 					*a_params.retVal = true;
 				}
 				break;
 			}
 
-			// GetTargetName
 			case 4:
 				logger::info("DialogueMenu - GetTargetName");
 				if (a_params.retVal)
 				{
+					// TODO
 					/*const char* result = "";
 					if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
 					{
@@ -148,7 +148,6 @@ namespace RE
 				}
 				break;
 
-				// GetTargetType
 			case 5:
 				logger::info("DialogueMenu - GetTargetType");
 				if (a_params.retVal)
@@ -173,7 +172,6 @@ namespace RE
 
 					if (BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction())
 					{
-						logger::info("Player dialogue available.");
 						std::vector<DialogueOption> options = GetDialogueOptions();
 
 						for (DialogueOption option : options)
@@ -207,7 +205,7 @@ namespace RE
 					}
 					else
 					{
-						logger::info("WARNING: Player dialogue not currently available. No dialogue will be retrieved.");
+						logger::warn("Player dialogue not currently available. No dialogue will be retrieved.");
 					}
 				}
 

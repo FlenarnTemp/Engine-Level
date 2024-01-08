@@ -45,11 +45,15 @@ namespace Patches
 				auto iter = map->find(a_editorID);
 				if (iter != map->end())
 				{
-					logger::warn(
-						FMT_STRING("EditorID Conflict: {:08X} and {:08X} are both {:s}"sv),
-						iter->second->GetFormID(),
-						a_this->GetFormID(),
-						a_editorID);
+					if (iter->second->GetFormID() != a_this->GetFormID())
+					{
+						logger::warn(
+							FMT_STRING("EditorID Conflict: {:08X} and {:08X} are both {:s}"sv),
+							iter->second->GetFormID(),
+							a_this->GetFormID(),
+							a_editorID);
+					}
+
 					return;
 				}
 
@@ -141,7 +145,6 @@ namespace Patches
 			// InstallHook<RE::TESWorldSpace>();
 			// InstallHook<RE::TESObjectLAND>();
 			// InstallHook<RE::NavMesh>();
-			// InstallHook<RE::TESTopic>();
 			InstallHook<RE::TESTopicInfo>();
 			// InstallHook<RE::TESQuest>();
 			// InstallHook<RE::TESIdleForm>();

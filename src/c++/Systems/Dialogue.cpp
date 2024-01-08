@@ -81,13 +81,15 @@ namespace RE
 		// Debug View Map
 		for (auto const& info : g_dialogueHolder.dialogueMap)
 		{
-			logger::info("For info %08X", info.first->formID);
+
+			logger::info(FMT_STRING("For info {:08X}"), info.first->formID);
 			auto const& responses = info.second;
 			for (auto const& response : responses)
 			{
-				logger::info("Response: %08X", response->formID);
+				logger::info(FMT_STRING("Response {:08X}"), response->formID);
 			}
 		}
+		logger::info("BuildDialogueMap - complete.");
 	}
 
 	// Return player response TopicInfos.
@@ -120,19 +122,25 @@ namespace RE
 	{
 		BuildDialogueMap();
 		auto npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
+		logger::info("GetNPCInfo - first step.");
 
 		TESTopicInfo* infoHolder;
 		BSTArray<TESTopicInfo*> randomOptions{};
 		std::uint32_t randomRoll;
 
+
 		for (TESTopicInfo* info : npcInfos)
 		{
+			logger::info("GetNPCInfo - indexed.");
+
 			if ((info->formFlags >> 5) & 1) continue;
 			if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) continue;
 
 			if (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom)
 			{
-				// TODO - EvaluateInfoCondition
+				if (EvaluateInfoConditions(info, playerDialogue, true)) {
+					randomOptions.push_back(info);
+				}
 
 				if (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd)
 				{
@@ -143,39 +151,50 @@ namespace RE
 
 					randomRoll = rand() & randomOptions.size();
 					infoHolder = randomOptions[randomRoll];
-
+					logger::info("GetNPCInfo - first return");
 					return infoHolder;
 				}
 				continue;
 			}
 
-			if (!(info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom) && !(info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd) && randomOptions.size() != 0)
+			logger::info("GetNPCInfo - second step.");
+
+			if (!(info->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom)) && !(info->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd)) && randomOptions.size() != 0)
 			{
+				logger::info("Entered random & randomEnd check.");
 				if (randomOptions.size() == 1)
 				{
+					logger::info("GetNPCInfo - second return");
 					return randomOptions[0];
 				}
 
 				randomRoll = rand() % randomOptions.size();
 				infoHolder = randomOptions[randomRoll];
-
+				logger::info("GetNPCInfo - third return");
 				return infoHolder;
 			}
 
+			logger::info("Skipped random & randomEnd check.");
+
 			if (EvaluateInfoConditions(info, playerDialogue, true)) {
+				logger::info("GetNPCInfo - fourth return");
 				return info;
 			}
 		}
+		logger::info("GetNPCInfo - third step.");
+
 
 		// Do a random roll if the last info topic is 'random' flagged, but not 'randomEnd'.
 		if (randomOptions.size() != 0)
 		{
 			if (randomOptions.size() == 1)
 			{
+				logger::info("GetNPCInfo - fifth return");
 				return randomOptions[0];
 			}
 			randomRoll = rand() % randomOptions.size();
 			infoHolder = randomOptions[randomRoll];
+			logger::info("GetNPCInfo - sixth return");
 			return infoHolder;
 		}
 
@@ -215,7 +234,7 @@ namespace RE
 					{
 						// Info has a parent.
 						auto idx = infoGroupMap.find(parentInfoGroup);
-						if (idx != infoGroupMap.end()) 
+						if (idx != infoGroupMap.end())
 						{
 							// Put it into the parents slot.
 							infos[idx->second].push_back(info);
@@ -223,11 +242,11 @@ namespace RE
 					}
 					else {
 						// No parent, add normally.
-						if (index <= optionID) 
+						if (index <= optionID)
 						{
 							infos[index++].push_back(info);
 						}
-						else 
+						else
 						{
 							break;
 						}
@@ -239,11 +258,11 @@ namespace RE
 		// Evaluate conditions and pick the best one from the group.
 		std::vector<TESTopicInfo*> infoGroup = infos[optionID];
 
-		for (TESTopicInfo* info : infoGroup) 
+		for (TESTopicInfo* info : infoGroup)
 		{
-			if (EvaluateInfoConditions(info, a_npcDialogue, true)) 
+			if (EvaluateInfoConditions(info, a_npcDialogue, true))
 			{
-				if (info->responses.head || info->dataInfo) 
+				if (info->responses.head || info->dataInfo)
 				{
 					return info;
 				}
@@ -300,6 +319,20 @@ namespace RE
 		return nullptr;
 	}
 
+
+	bool SelectDialogueOption(std::uint32_t option) {
+
+		if (!(*g_menuTopicManager)->awaitingPlayerInput) return false;
+		if (auto playerDialogue = GetCurrentPlayerDialogueAction()) {
+			// We're using option 5 and up for additional options. (Options 5 = Option 0).
+			GetPlayerCharacter()->SetLastDialogueInput(option + 5)
+				return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	TESObjectREFR* GetCurrentPlayerDialogueTarget()
 	{
 		if (auto playerDialogue = GetCurrentPlayerDialogueAction())
@@ -308,7 +341,7 @@ namespace RE
 
 			BSPointerHandle<TESObjectREFR>* targetHandle = 0;
 			TESObjectREFR* targetREFR = nullptr;
-			scene->parentQuest->GetAliasedRef(targetHandle, playerDialogue->actorID);
+			TESQuest::GetAliasedRef(scene->parentQuest, targetHandle, playerDialogue->actorID);
 			auto REFRptr = targetHandle->get();
 
 			if (targetHandle && REFRptr != nullptr)
@@ -332,7 +365,7 @@ namespace RE
 		{
 			BSPointerHandle<TESObjectREFR>* targetHandle = 0;
 			TESObjectREFR* targetREFR = nullptr;
-			scene->parentQuest->GetAliasedRef(targetHandle, action->actorID);
+			TESQuest::GetAliasedRef(scene->parentQuest, targetHandle, action->actorID);
 			auto REFRptr = targetHandle->get();
 
 			if (targetHandle && REFRptr != nullptr)
@@ -345,43 +378,49 @@ namespace RE
 		return nullptr;
 	}
 
-		// Topic Infos
+	// Topic Infos
 	bool EvaluateInfoConditions(TESTopicInfo* a_info, BGSSceneAction* a_action, bool swap)
 	{
 		TESCondition conditions = a_info->objConditions;
-		if (!conditions) 
+		if (!conditions)
 		{
 			return true;
 		}
 
-		BSPointerHandle<TESObjectREFR>* targetHandle = 0;
+		logger::info("EvaluateInfoConditions - first step");
+
+		BSPointerHandle<TESObjectREFR> targetHandle;
 		TESObjectREFR* targetREFR = nullptr;
 		BGSScene* scene = GetPlayerCharacter()->GetCurrentScene();
 
-		if (scene) 
+		logger::info("EvaluateInfoConditions - second step");
+		if (scene)
 		{
-			scene->parentQuest->GetAliasedRef(targetHandle, a_action->actorID); // TODO - Might go boom
+			TESQuest::GetAliasedRef(scene->parentQuest, &targetHandle, a_action->actorID); // TODO - Might go boom
 		}
+		logger::info("EvaluateInfoConditions - third step");
 
-		auto REFRptr = targetHandle->get();
+		auto REFRptr = targetHandle.get();
 
-		if (targetHandle && REFRptr != nullptr) 
+		if (targetHandle && REFRptr != nullptr)
 		{
 			targetREFR = REFRptr.get();
 		}
-		else 
+		else
 		{
 			targetREFR = GetPlayerCharacter();
 		}
 
+		logger::info("EvaluateInfoConditions - fourth step");
+
 		// Test against conditions - (subject = player)
 		TESObjectREFR* refA, * refB;
-		if (!swap) 
+		if (!swap)
 		{
 			refA = GetPlayerCharacter();
 			refB = targetREFR;
 		}
-		else 
+		else
 		{
 			refA = targetREFR;
 			refB = GetPlayerCharacter();
@@ -396,32 +435,50 @@ namespace RE
 
 		if (auto playerDialogue = GetCurrentPlayerDialogueAction())
 		{
+			logger::info("Found player dialogue.");
 			std::vector<TESTopicInfo*> infos = GetPlayerInfos();
 
 			BGSScene* currentScene = GetPlayerCharacter()->GetCurrentScene();
 
-			for (std::uint32_t i = 0; i < infos.size(); i++) 
+			for (std::uint32_t i = 0; i < infos.size(); i++)
 			{
+				logger::info("Indexed again!");
+
 				TESTopicInfo* info = infos[i];
 				if (!info) { continue; }
 
 				TESTopicInfo* originalInfo = info;
-				while (info->dataInfo) 
+				while (info->dataInfo)
 				{
 					info = info->dataInfo;
 				}
 
 
-				if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) 
+				if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid))
 				{
+					logger::info("SayOnce & DialogueInfoSaid, continuing.");
 					continue;
 				}
 
+
 				// Question, Positive, Negative, Neutral
-				int vanillaDialogueOrder[] = { 3, 0, 1, 2 };
+				std::uint32_t vanillaDialogueOrder[] = { 3, 0, 1, 2 };
+
+				logger::info("First step.");
 
 				// Get prompt
-				BGSLocalizedString prompt = GetAllPromptMap().find(info)->second;
+
+				BGSLocalizedString prompt;
+
+				auto idx = GetAllPromptMap().find(info);
+				if (idx != GetAllPromptMap().end())
+				{
+					logger::info("Set prompt");
+					prompt = idx->second;
+				}
+
+				logger::info("Second step.");
+
 
 				// Get response and perform text replacement.
 				const char* responseText = "";
@@ -431,27 +488,41 @@ namespace RE
 					BSStringT<char> response;
 					response.Set(responseText, 500);
 
+					logger::info("Third step.");
+
+
 					if (info->parentTopic && info->parentTopic->ownerQuest)
 					{
-						info->parentTopic->ownerQuest->instanceData[info->parentTopic->ownerQuest->currentInstanceID]->ParseString(response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
+						//logger::info("Entered into doom.");
+						BGSQuestInstanceText::ParseString(&response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
+						//info->parentTopic->ownerQuest->instanceData[info->parentTopic->ownerQuest->currentInstanceID]->ParseString(response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 					}
 					responseText = response.data();
 				}
+				logger::info("Fourth step.");
+
 
 				// Get NPC response TopicInfo for dialogue cues.
 				TESTopicInfo* npcResponseInfo = GetNPCInfo(playerDialogue, i);
-				if (!npcResponseInfo) 
+				logger::info("Got a NPC response.");
+				if (!npcResponseInfo)
 				{
+					logger::info("NPC Response is not null.");
 					// No NPC response info - look one phase ahead (only) for a NPC response action.
-					if (BGSSceneActionNPCResponseDialogue* npcResponseAction = FindNextNPCResponseAction(currentScene, currentScene->currentActivePhase)) 
+					if (BGSSceneActionNPCResponseDialogue* npcResponseAction = FindNextNPCResponseAction(currentScene, currentScene->currentActivePhase))
 					{
+						logger::info("Got a BGSSceneActionNPCResponseDialogue.");
 						// Another framework check...
 						npcResponseInfo = GetNPCResponseInfo(npcResponseAction, i);
 					}
 				}
 
+				logger::info("Fifth step.");
+
 				// Get scene links for response.
 				TOPIC_INFO_SCENEDATA* sceneData = npcResponseInfo ? GetSceneData(npcResponseInfo) : nullptr;
+
+				logger::info("Sixth step.");
 
 				DialogueOption option = {};
 				option.optionID = i;
@@ -470,7 +541,7 @@ namespace RE
 			}
 		}
 
-		logger::info("GetDialogueOptions: Got %i options when checking scene %s", options.size(), GetFormIDAsString(GetPlayerCharacter()->GetCurrentScene()->formID).c_str());
+		logger::info(FMT_STRING("GetDialogueOptions: Got {:s} options when checking scene {:s}"), std::to_string(options.size()), GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
 		return options;
 	}
 
@@ -479,7 +550,7 @@ namespace RE
 		auto entry = GetAllSceneListMap().find(topicInfo);
 		if (entry != GetAllSceneListMap().end()) {
 			return &(entry->second);
-		}		
+		}
 
 		return nullptr;
 	}

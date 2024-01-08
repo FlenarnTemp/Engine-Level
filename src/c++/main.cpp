@@ -131,18 +131,17 @@ extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_
 		return false;
 	}
 
-	const auto scaleform = F4SE::GetScaleformInterface();
-	if (!scaleform)
-	{
-		logger::critical("Failed to register scaleform interface, marking as incompatible."sv);
-		return false;
-	}
+	    const auto scaleform = F4SE::GetScaleformInterface();
+    if (!scaleform->Register("BakaScrapHeap", RE::RegisterScaleform))
+    {
+        logger::critical("Failed to register scaleform callback, marking as incompatible."sv);
+        return false;
+    }
 
-	if (scaleform->Register("CAS_Dialogue", RE::RegisterScaleform));
+	if (!RE::DialogueMenuEx::Install())
 	{
-		logger::info("Registered Scaleform.");
+		logger::warn("DialogueMenu - failed to install hooks.");
 	}
-
 
 	Patches::Install();
 	ObScript::Install();

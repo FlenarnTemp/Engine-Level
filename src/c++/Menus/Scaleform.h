@@ -97,6 +97,7 @@ namespace RE
 			if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
 			{
 				a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
+				logger::info("root.XDI_Init");
 			}
 		}
 		return true;
@@ -178,6 +179,8 @@ namespace RE
 						{
 							Scaleform::GFx::Value optionIDValue, promptValue, responseValue, enabledValue, saidValue, challengeLevelValue, challengeResultValue, linkedToSelfValue;
 
+							logger::info(FMT_STRING("Prompt: {:s}"), option.prompText.c_str());
+
 							optionIDValue = option.optionID;
 							promptValue = option.prompText.c_str();
 							responseValue = option.reseponseText.c_str();
@@ -208,16 +211,20 @@ namespace RE
 						logger::warn("Player dialogue not currently available. No dialogue will be retrieved.");
 					}
 				}
+				logger::info("Done with GetDialogueOptions");
+				break;
 
 			case 7:
-				logger::info("DialogueMenu - SetDialogueOptions");
-				if (a_params.argCount < 1) return;
+				if (a_params.retVal)
+				{
+					logger::info("DialogueMenu - SetDialogueOptions");
+					if (a_params.argCount < 1) return;
 
-				if (a_params.args[0].GetType() != Scaleform::GFx::Value::ValueType::kInt) return;
+					if (a_params.args[0].GetType() != Scaleform::GFx::Value::ValueType::kInt) return;
 
-				std::uint32_t selectedOption = a_params.args[0].GetInt();
-
-				*a_params.retVal = SelectDialogueOption(selectedOption);
+					std::uint32_t selectedOption = a_params.args[0].GetInt();
+					*a_params.retVal = SelectDialogueOption(selectedOption);
+				}
 				break;
 
 			default:

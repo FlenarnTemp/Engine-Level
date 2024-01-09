@@ -669,7 +669,7 @@ namespace RE
 				}
 
 				result << "         \"Value\" : ";
-				result << std::setprecision (17) << (ConvertPercentageToFloat(tint.value)) << std::endl;
+				result << std::setprecision (17) << (RE::Cascadia::ConvertPercentageToFloat(tint.value)) << std::endl;
 
 				if (i == (tints.size() - 1))
 				{

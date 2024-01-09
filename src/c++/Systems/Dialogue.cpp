@@ -21,7 +21,7 @@ namespace RE
 	{
 		BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction();
 		if (!playerDialogue) return;
-		BGSScene* currentScene = GetPlayerCharacter()->GetCurrentScene();
+		BGSScene* currentScene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
 
 		// If we already have a map for this scene + scene action then return.
 		if (!force && g_dialogueHolder.scene == currentScene && g_dialogueHolder.playerDialogue == playerDialogue) return;
@@ -301,7 +301,7 @@ namespace RE
 	// Returns the currently executing player dialogue cation, or NULL if no player dialogue action is currenctly active.
 	BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction()
 	{
-		BGSScene* scene = GetPlayerCharacter()->GetCurrentScene();
+		BGSScene* scene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
 		if (scene)
 		{
 			for (std::uint32_t i = 0; i < scene->actions.size(); i++)
@@ -325,7 +325,7 @@ namespace RE
 		if (auto playerDialogue = GetCurrentPlayerDialogueAction()) 
 		{
 			// We're using option 5 and up for additional options. (Options 5 = Option 0).
-			GetPlayerCharacter()->SetLastDialogueInput(option + 5);
+			RE::Cascadia::GetPlayerCharacter()->SetLastDialogueInput(option + 5);
 			return true;
 		}
 		else 
@@ -338,7 +338,7 @@ namespace RE
 	{
 		if (auto playerDialogue = GetCurrentPlayerDialogueAction())
 		{
-			BGSScene* scene = GetPlayerCharacter()->GetCurrentScene();
+			BGSScene* scene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
 
 			BSPointerHandle<TESObjectREFR>* targetHandle = 0;
 			TESObjectREFR* targetREFR = nullptr;
@@ -392,7 +392,7 @@ namespace RE
 
 		BSPointerHandle<TESObjectREFR> targetHandle;
 		TESObjectREFR* targetREFR = nullptr;
-		BGSScene* scene = GetPlayerCharacter()->GetCurrentScene();
+		BGSScene* scene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
 
 		logger::info("EvaluateInfoConditions - second step");
 		if (scene)
@@ -409,7 +409,7 @@ namespace RE
 		}
 		else
 		{
-			targetREFR = GetPlayerCharacter();
+			targetREFR = RE::Cascadia::GetPlayerCharacter();
 		}
 
 		logger::info("EvaluateInfoConditions - fourth step");
@@ -418,13 +418,13 @@ namespace RE
 		TESObjectREFR* refA, * refB;
 		if (!swap)
 		{
-			refA = GetPlayerCharacter();
+			refA = RE::Cascadia::GetPlayerCharacter();
 			refB = targetREFR;
 		}
 		else
 		{
 			refA = targetREFR;
-			refB = GetPlayerCharacter();
+			refB = RE::Cascadia::GetPlayerCharacter();
 		}
 
 		return conditions.IsTrue(refA, refB);
@@ -439,7 +439,7 @@ namespace RE
 			logger::info("Found player dialogue.");
 			std::vector<TESTopicInfo*> infos = GetPlayerInfos();
 
-			BGSScene* currentScene = GetPlayerCharacter()->GetCurrentScene();
+			BGSScene* currentScene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
 
 			for (std::uint32_t i = 0; i < infos.size(); i++)
 			{
@@ -477,6 +477,10 @@ namespace RE
 					logger::info("Set prompt");
 					prompt = idx->second;
 				}
+				else
+				{
+					logger::info("No prompt.");
+				}
 
 				logger::info("Second step.");
 
@@ -494,11 +498,11 @@ namespace RE
 
 					if (info->parentTopic && info->parentTopic->ownerQuest)
 					{
-						//logger::info("Entered into doom.");
 						BGSQuestInstanceText::ParseString(&response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 						//info->parentTopic->ownerQuest->instanceData[info->parentTopic->ownerQuest->currentInstanceID]->ParseString(response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 					}
 					responseText = response.data();
+					logger::info(FMT_STRING("Response: {:s}"), responseText);
 				}
 				logger::info("Fourth step.");
 
@@ -542,7 +546,7 @@ namespace RE
 			}
 		}
 
-		logger::info(FMT_STRING("GetDialogueOptions: Got {:s} options when checking scene {:s}"), std::to_string(options.size()), GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
+		logger::info(FMT_STRING("GetDialogueOptions: Got {:s} options when checking scene {:s}."), std::to_string(options.size()), RE::Cascadia::GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
 		return options;
 	}
 

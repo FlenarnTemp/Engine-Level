@@ -210,22 +210,22 @@ void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float fSetAmou
 
 float GetPlayerAVValue(RE::ActorValueInfo* myAV)
 {
-	return GetAVValue(GetPlayerCharacter(), myAV);
+	return GetAVValue(RE::Cascadia::GetPlayerCharacter(), myAV);
 }
 
 float GetPlayerBaseAVValue(RE::ActorValueInfo* myAV)
 {
-	return GetBaseAVValue(GetPlayerCharacter(), myAV);
+	return GetBaseAVValue(RE::Cascadia::GetPlayerCharacter(), myAV);
 }
 
 void ModPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fModAmount)
 {
-	ModBaseAVValue(GetPlayerCharacter(), myAV, fModAmount);
+	ModBaseAVValue(RE::Cascadia::GetPlayerCharacter(), myAV, fModAmount);
 }
 
 void SetPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fSetAmount)
 {
-	SetBaseAVValue(GetPlayerCharacter(), myAV, fSetAmount);
+	SetBaseAVValue(RE::Cascadia::GetPlayerCharacter(), myAV, fSetAmount);
 }
 
 bool DefineSkillsFormsFromGame()

@@ -102,8 +102,8 @@ namespace Patches
 			InstallHook<RE::TESObjectLIGH>();
 			InstallHook<RE::TESObjectMISC>();
 			InstallHook<RE::TESObjectSTAT>();
-			// InstallHook<RE::BGSStaticCollection>();
-			// InstallHook<RE::BGSMovableStatic>();
+			InstallHook<RE::BGSStaticCollection>();
+			InstallHook<RE::BGSMovableStatic>();
 			InstallHook<RE::TESGrass>();
 			InstallHook<RE::TESObjectTREE>();
 			InstallHook<RE::TESFlora>();
@@ -132,7 +132,7 @@ namespace Patches
 			// InstallHook<RE::TESObjectREFR>();
 			InstallHook<RE::Explosion>();
 			InstallHook<RE::Projectile>();
-			InstallHook<RE::Actor>();
+			//InstallHook<RE::Actor>();
 			InstallHook<RE::PlayerCharacter>();
 			InstallHook<RE::MissileProjectile>();
 			InstallHook<RE::ArrowProjectile>();

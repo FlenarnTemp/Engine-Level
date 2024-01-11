@@ -8,6 +8,8 @@
 
 namespace
 {
+	const F4SE::ScaleformInterface* scaleform;
+
 	void InitializeLog()
 	{
 		auto path = logger::log_directory();
@@ -43,9 +45,9 @@ namespace
 		switch (a_msg->type)
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
-			if (DefineSkillsFormsFromGame()) {
+			/**if (DefineSkillsFormsFromGame()) {
 				Skills::RegisterForSkillLink();
-			}
+			}*/
 			//logger::info(FMT_STRING("{:s} - kGameDataReady"), Version::PROJECT);
 			break;
 
@@ -131,17 +133,13 @@ extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_
 		return false;
 	}
 
-	    const auto scaleform = F4SE::GetScaleformInterface();
-    if (!scaleform->Register("BakaScrapHeap", RE::RegisterScaleform))
+	const F4SE::ScaleformInterface* scaleform = F4SE::GetScaleformInterface();
+
+    if (!scaleform->Register("f4se_cascadia_clib", RE::RegisterScaleform))
     {
         logger::critical("Failed to register scaleform callback, marking as incompatible."sv);
         return false;
     }
-
-	if (!RE::DialogueMenuEx::Install())
-	{
-		logger::warn("DialogueMenu - failed to install hooks.");
-	}
 
 	Patches::Install();
 	ObScript::Install();

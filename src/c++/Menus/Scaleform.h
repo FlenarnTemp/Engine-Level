@@ -89,20 +89,6 @@ namespace RE
 		}
 	}
 
-	bool RegisterScaleform(Scaleform::GFx::Movie* a_view, Scaleform::GFx::Value* a_value)
-	{
-		Scaleform::GFx::Value currentSWFPath;
-		if (a_view->asMovieRoot->GetVariable(&currentSWFPath, "root.loaderInfo.url"))
-		{
-			if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
-			{
-				a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
-				logger::info("root.XDI_Init");
-			}
-		}
-		return true;
-	}
-
 	class DialogueMenuEx
 	{
 	public:
@@ -117,14 +103,13 @@ namespace RE
 	private:
 		static void DialogueMenu__Call(DialogueMenu* a_this, const Scaleform::GFx::FunctionHandler::Params& a_params)
 		{
-			logger::info("DialogueMenu__Call");
+			logger::info(FMT_STRING("DialogueMenu__Call, code: {:s}"), std::to_string(reinterpret_cast<std::uint64_t>(a_params.userData)));
 			switch (reinterpret_cast<std::uint64_t>(a_params.userData))
 			{
 
 			case 3:
 			{
 				logger::info("DialogueMenu - IsFrameworkActive");
-
 				if (a_params.retVal)
 				{
 					// We "cheat" here, we always return true, since we're a TC, our theoretical impact
@@ -138,14 +123,14 @@ namespace RE
 				logger::info("DialogueMenu - GetTargetName");
 				if (a_params.retVal)
 				{
-					// TODO
-					/*const char* result = "";
+					
+					const char* result = "";
 					if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
 					{
 						result = target->GetDisplayFullName();
-					}*/
+					}
 
-					*a_params.retVal = "result";
+					*a_params.retVal = result;
 				}
 				break;
 
@@ -200,24 +185,23 @@ namespace RE
 							dialogueValue.SetMember("challengeLevel", &challengeLevelValue);
 							dialogueValue.SetMember("challengeResult", &challengeResultValue);
 							dialogueValue.SetMember("linkedToSelf", &linkedToSelfValue);
-							dialogueValue.SetMember("endsScene", Scaleform::GFx::Value(option.endsScene));
-							dialogueValue.SetMember("isBarterOption", Scaleform::GFx::Value(option.isBarterOption));
-							dialogueValue.SetMember("isInventoryOption", Scaleform::GFx::Value(option.isInventoryOption));
+							dialogueValue.SetMember("endsScene", Scaleform::GFx::Value(&option.endsScene));
+							dialogueValue.SetMember("isBarterOption", Scaleform::GFx::Value(&option.isBarterOption));
+							dialogueValue.SetMember("isInventoryOption", Scaleform::GFx::Value(&option.isInventoryOption));
 							a_params.retVal->PushBack(&dialogueValue);
 						}
 					}
 					else
 					{
-						logger::warn("Player dialogue not currently available. No dialogue will be retrieved.");
+						logger::warn("GetDialogueOptions - Player dialogue not currently available. No dialogue will be retrieved.");
 					}
 				}
-				logger::info("Done with GetDialogueOptions");
 				break;
 
 			case 7:
+				logger::info("DialogueMenu - SetDialogueOptions");
 				if (a_params.retVal)
 				{
-					logger::info("DialogueMenu - SetDialogueOptions");
 					if (a_params.argCount < 1) return;
 
 					if (a_params.args[0].GetType() != Scaleform::GFx::Value::ValueType::kInt) return;
@@ -225,6 +209,60 @@ namespace RE
 					std::uint32_t selectedOption = a_params.args[0].GetInt();
 					*a_params.retVal = SelectDialogueOption(selectedOption);
 				}
+				break;
+
+			case 8:
+				logger::info("DialogueMenu - GetINISetting");
+				if (a_params.retVal)
+				{
+					INISettingCollection* iniSettings = INISettingCollection::GetSingleton();
+
+					if (iniSettings)
+					{
+						Setting* setting = iniSettings->GetSetting(a_params.args[0].GetString());
+						if (setting)
+						{
+							*a_params.retVal = setting->GetInt();
+						}
+					}
+					
+				}
+				break;
+
+			case 9:
+				logger::info("DialogueMenu - GetModSetting");
+				if (a_params.retVal)
+				{
+					logger::info(FMT_STRING("Requested setting: {:s}"), a_params.args[0].GetString());
+				}
+				break;
+
+			case 10:
+				logger::info("DialogueMenu - GetSubtitlePosition");
+				break;
+
+			case 11:
+				logger::info("DialogueMenu - SetSubtitlePosition");
+				break;
+
+			case 12:
+				logger::info("DialogueMenu - SetXDIResult");
+				break;
+
+			case 13:
+				logger::info("DialogueMenu - SetWheelZoomEnabled");
+				break;
+
+			case 14:
+				logger::info("DialogueMenu - SetFavoritesEnabled");
+				break;
+
+			case 15:
+				logger::info("DialogueMenu - SetMovementEnabled");
+				break;
+
+			case 16:
+				logger::info("DialogueMenu - SetPlayerControls");
 				break;
 
 			default:
@@ -246,9 +284,42 @@ namespace RE
 			a_this->MapCodeMethodToASFunction("GetTargetType", 5);
 			a_this->MapCodeMethodToASFunction("GetDialogueOptions", 6);
 			a_this->MapCodeMethodToASFunction("SelectDialogueOption", 7);
+
+			a_this->MapCodeMethodToASFunction("GetINISetting", 8); 
+			a_this->MapCodeMethodToASFunction("GetModSetting", 9); // TODO
+			a_this->MapCodeMethodToASFunction("GetSubtitlePosition", 10); // TODO
+			a_this->MapCodeMethodToASFunction("SetSubtitlePosition", 11); // TODO
+
+			// Misc
+			a_this->MapCodeMethodToASFunction("SetXDIResult", 12); // TODO
+
+			// Input - TODO
+			a_this->MapCodeMethodToASFunction("SetWheelZoomEnabled", 13);
+			a_this->MapCodeMethodToASFunction("SetFavoritesEnabled", 14);
+			a_this->MapCodeMethodToASFunction("SetMovementEnabled", 15);
+			a_this->MapCodeMethodToASFunction("SetPlayerControls", 16);
 		}
 
 		inline static REL::Relocation<decltype(DialogueMenu__MapCodeObjectFunctions)> _DialogueMenu__MapCodeObjectFunctions;
 		inline static REL::Relocation<decltype(DialogueMenu__Call)> _DialogueMenu_Call;
 	};
+
+	bool RegisterScaleform(Scaleform::GFx::Movie* a_view, Scaleform::GFx::Value* a_value)
+	{
+		Scaleform::GFx::Value currentSWFPath;
+		if (a_view->asMovieRoot->GetVariable(&currentSWFPath, "root.loaderInfo.url"))
+		{
+			if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
+			{
+				if (!DialogueMenuEx::Install())
+				{
+					logger::warn("DialogueMenu - failed to install hooks.");
+				}
+
+				a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
+				logger::info("root.XDI_Init");
+			}
+		}
+		return true;
+	}
 }

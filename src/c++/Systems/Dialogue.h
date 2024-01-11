@@ -49,7 +49,7 @@ namespace RE
 
 	bool IsSceneActionWithinPhase(BGSSceneAction* action, std::uint32_t phase);
 	TESObjectREFR* GetActionREFR(BGSScene* scene, BGSSceneAction* action);
-	bool EvaluateInfoConditions(TESTopicInfo* a_info, BGSSceneAction* a_action, bool swap);
+	bool EvaluateInfoConditions(TESTopicInfo* a_info, BGSSceneAction* a_action, bool swap = false);
 	TOPIC_INFO_SCENEDATA* GetSceneData(TESTopicInfo* topicInfo);
 
 	BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();

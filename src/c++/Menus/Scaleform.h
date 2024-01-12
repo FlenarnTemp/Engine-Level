@@ -4,46 +4,51 @@
 
 namespace RE
 {
-	std::pair<double, double> GetSubtitlePosition()
+	namespace Cascadia
 	{
-		std::pair<double, double> position;
-
-		BSFixedString menuString("HUDMenu");
-		if (UI::GetSingleton()->GetMenuOpen(menuString))
+		std::pair<double, double> GetSubtitlePosition()
 		{
-			IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
-			Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
+			std::pair<double, double> position;
 
-			Scaleform::GFx::Value subtitleX; movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
-			Scaleform::GFx::Value subtitleY; movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
+			BSFixedString menuString("HUDMenu");
+			if (UI::GetSingleton()->GetMenuOpen(menuString))
+			{
+				IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+				Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
 
-			position.first = subtitleX.GetNumber();
-			position.second = subtitleY.GetNumber();
+				Scaleform::GFx::Value subtitleX; movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
+				Scaleform::GFx::Value subtitleY; movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
+
+				position.first = subtitleX.GetNumber();
+				position.second = subtitleY.GetNumber();
+			}
+			else
+			{
+				logger::warn("WARNING: Unable to retrieve the subtitle position because 'HUDMenu' is not open.");
+			}
+
+			return position;
 		}
-		else
+
+		bool SetSubtitlePosition(double x, double y)
 		{
-			logger::warn("WARNING: Unable to retrieve the subtitle position because 'HUDMenu' is not open.");
-		}
+			BSFixedString menuString("HUDMenu");
+			if (UI::GetSingleton()->GetMenuOpen(menuString))
+			{
+				IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+				Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
 
-		return position;
+				Scaleform::GFx::Value subtitle; movieRoot->GetVariable(&subtitle, "root.BottomCenterGroup_mc.SubtitleText_mc");
+				subtitle.SetMember("x", Scaleform::GFx::Value(x));
+				subtitle.SetMember("y", Scaleform::GFx::Value(y));
+				return true;
+			}
+
+			return false;
+		}
 	}
 
-	bool SetSubtitlePosition(double x, double y)
-	{
-		BSFixedString menuString("HUDMenu");
-		if (UI::GetSingleton()->GetMenuOpen(menuString))
-		{
-			IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
-			Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
 
-			Scaleform::GFx::Value subtitle; movieRoot->GetVariable(&subtitle, "root.BottomCenterGroup_mc,SubtitleText_mc");
-			subtitle.SetMember("x", Scaleform::GFx::Value(x));
-			subtitle.SetMember("y", Scaleform::GFx::Value(y));
-			return true;
-		}
-
-		return false;
-	}
 
 	void GetDialogueGFxValue(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase>* movieRoot, Scaleform::GFx::Value* outValue)
 	{
@@ -85,7 +90,7 @@ namespace RE
 		else
 		{
 			// Player dialogue option not currently available.
-			logger::warn("WARNING: Player dialogue not currently available. No dialogue will be retrieved.");
+			logger::warn("Player dialogue not currently available.No dialogue will be retrieved.");
 		}
 	}
 
@@ -108,22 +113,19 @@ namespace RE
 			{
 
 			case 3:
-			{
 				logger::info("DialogueMenu - IsFrameworkActive");
 				if (a_params.retVal)
 				{
-					// We "cheat" here, we always return true, since we're a TC, our theoretical impact
-					// on the retail game does not matter.
+					// We "cheat" here, we always return true, since we're a TC, our theoretical impact on the retail game does not matter.
 					*a_params.retVal = true;
 				}
 				break;
-			}
 
 			case 4:
 				logger::info("DialogueMenu - GetTargetName");
 				if (a_params.retVal)
 				{
-					
+
 					const char* result = "";
 					if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
 					{
@@ -225,7 +227,6 @@ namespace RE
 							*a_params.retVal = setting->GetInt();
 						}
 					}
-					
 				}
 				break;
 
@@ -239,6 +240,25 @@ namespace RE
 
 			case 10:
 				logger::info("DialogueMenu - GetSubtitlePosition");
+				if (a_params.retVal)
+				{
+					*a_params.retVal = nullptr;
+
+					BSFixedString menuString("HUDMenu");
+					if (UI::GetSingleton()->GetMenuOpen(menuString))
+					{
+						IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+						Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
+
+						movieRoot->CreateArray(a_params.retVal);
+
+						Scaleform::GFx::Value subtitleX; movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
+						Scaleform::GFx::Value subtitleY; movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
+						
+						a_params.retVal->PushBack(subtitleX);
+						a_params.retVal->PushBack(subtitleY);
+					}
+				}
 				break;
 
 			case 11:
@@ -285,9 +305,9 @@ namespace RE
 			a_this->MapCodeMethodToASFunction("GetDialogueOptions", 6);
 			a_this->MapCodeMethodToASFunction("SelectDialogueOption", 7);
 
-			a_this->MapCodeMethodToASFunction("GetINISetting", 8); 
+			a_this->MapCodeMethodToASFunction("GetINISetting", 8);
 			a_this->MapCodeMethodToASFunction("GetModSetting", 9); // TODO
-			a_this->MapCodeMethodToASFunction("GetSubtitlePosition", 10); // TODO
+			a_this->MapCodeMethodToASFunction("GetSubtitlePosition", 10);
 			a_this->MapCodeMethodToASFunction("SetSubtitlePosition", 11); // TODO
 
 			// Misc
@@ -311,11 +331,6 @@ namespace RE
 		{
 			if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
 			{
-				if (!DialogueMenuEx::Install())
-				{
-					logger::warn("DialogueMenu - failed to install hooks.");
-				}
-
 				a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
 				logger::info("root.XDI_Init");
 			}

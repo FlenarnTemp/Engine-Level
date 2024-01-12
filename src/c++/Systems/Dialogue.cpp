@@ -3,8 +3,6 @@
 
 #include "RE/Bethesda/BSPointerHandle.h"
 
-//DialogueHolder g_dialogueHolder;
-
 namespace RE
 {
 	// Internal
@@ -20,7 +18,7 @@ namespace RE
 	void BuildDialogueMap(bool force)
 	{
 		BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction();
-		if (!playerDialogue) return;
+		if (!playerDialogue) { return; }
 		BGSScene* currentScene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
 
 		// If we already have a map for this scene + scene action then return.
@@ -108,7 +106,7 @@ namespace RE
 	TESTopicInfo* GetNPCInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID)
 	{
 		BuildDialogueMap();
-		auto npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
+		std::vector<TESTopicInfo*> npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
 
 		TESTopicInfo* infoHolder;
 		BSTArray<TESTopicInfo*> randomOptions{};
@@ -117,8 +115,8 @@ namespace RE
 
 		for (TESTopicInfo* info : npcInfos)
 		{
-			if ((info->formFlags >> 5) & 1) continue;
-			if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) continue;
+			if ((info->formFlags >> 5) & 1) { continue; }
+			if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) { continue; }
 
 			if (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom)
 			{
@@ -172,7 +170,7 @@ namespace RE
 		}
 
 		// All infos failed their condition checks.
-		logger::info("All infos failed their condition checks");
+		logger::debug("All infos failed their condition checks");
 		return nullptr;
 	}
 
@@ -294,7 +292,8 @@ namespace RE
 	}
 
 	bool SelectDialogueOption(std::uint32_t option) {
-		if (!(MenuTopicManager::GetSingleton()->bAllowInput)) return false;
+		if (!(MenuTopicManager::GetSingleton()->bAllowInput)) { return false; }
+
 		if (auto playerDialogue = GetCurrentPlayerDialogueAction())
 		{
 			// We're using option 5 and up for additional options. (Options 5 = Option 0).
@@ -347,7 +346,6 @@ namespace RE
 
 		if (scene)
 		{
-
 			scene->parentQuest->GetAliasedRef(&targetHandle, action->actorID);
 		}
 
@@ -366,10 +364,7 @@ namespace RE
 	bool EvaluateInfoConditions(TESTopicInfo* a_info, BGSSceneAction* a_action, bool swap)
 	{
 		TESCondition conditions = a_info->objConditions;
-		if (!conditions)
-		{
-			return true;
-		}
+		if (!conditions) { return true; }
 
 		BSPointerHandle<TESObjectREFR> targetHandle;
 		TESObjectREFR* targetREFR = nullptr;
@@ -427,9 +422,9 @@ namespace RE
 					info = info->dataInfo;
 				}
 
+				// Skip INFOs with 'kSayOnce' & 'kDialogueInfoSaid' flags set.
 				if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid))
 				{
-					logger::info("SayOnce & DialogueInfoSaid, continuing.");
 					continue;
 				}
 

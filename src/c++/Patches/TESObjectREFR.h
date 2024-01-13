@@ -1,33 +1,41 @@
 #pragma once
 
-namespace Patches
+namespace RE
 {
-	class TESObjectREFR_ConsoleName
+	namespace Cascadia
 	{
-	private:
-		template<class Form>
-		static void InstallHook()
+		namespace Patches
 		{
-			REL::Relocation<std::uintptr_t> vtbl{ Form::VTABLE[0] };
-			_GetFormEditorID = vtbl.write_vfunc(0x3A, GetFormEditorID);
-		}
-
-		static const char* GetFormEditorID(RE::TESObjectREFR* a_this)
-		{
-			if (a_this)
+			class TESObjectREFR_ConsoleName
 			{
-				const char* fullName = a_this->data.objectReference->GetFormEditorID();
-				return fullName ? fullName : "";
-			}
-			return "";
-		}
+			private:
+				template<class Form>
+				static void InstallHook()
+				{
+					REL::Relocation<std::uintptr_t> vtbl{ Form::VTABLE[0] };
+					_GetFormEditorID = vtbl.write_vfunc(0x3A, GetFormEditorID);
+				}
 
-		inline static REL::Relocation<decltype(&RE::TESObjectREFR::GetFormEditorID)> _GetFormEditorID;
+				static const char* GetFormEditorID(TESObjectREFR* a_this)
+				{
+					if (a_this)
+					{
+						const char* fullName = a_this->data.objectReference->GetFormEditorID();
+						return fullName ? fullName : "";
+					}
+					return "";
+				}
 
-	public:
-		static void Install()
-		{
-			InstallHook<RE::TESObjectREFR>();
+				inline static REL::Relocation<decltype(&TESObjectREFR::GetFormEditorID)> _GetFormEditorID;
+
+			public:
+				static void Install()
+				{
+					InstallHook<TESObjectREFR>();
+				}
+			};
 		}
-	};
+	}
 }
+
+

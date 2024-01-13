@@ -1,5 +1,6 @@
 #include "SharedFunctions.h"
 #include "Systems/ItemDegradation.h"
+using namespace RE::BSScript;
 
 namespace RE
 {
@@ -8,7 +9,6 @@ namespace RE
 		// Returns true is FormID is base game OR dynamically placed ("FF" index)
 		// Assumes all DLC is installed (Excluding DLCUltraHighResolution.esm as it is empty and "safe" to ignore).
 		// TODO - Better handling for the "FF" index, list span of "official" .esl's?
-
 		bool IsFormIDStringBaseGame(std::string formIDString)
 		{
 			std::string formIndex = formIDString.substr(0, 2);
@@ -25,7 +25,6 @@ namespace RE
 			{
 				return true;
 			}
-
 			return false;
 		}
 
@@ -81,7 +80,6 @@ namespace RE
 		{
 			return GetActorSex(GetPlayerCharacter());
 		}
-
 
 		// Takes a Float and converts it to a Precise String.
 		// eg. FloatToPreciseString(3.141592, 2) would return "3.14"
@@ -343,6 +341,13 @@ namespace RE
 		float ConvertPercentageToFloat(std::uint8_t percentage)
 		{
 			return (percentage / static_cast<float>(100));
+		}
+
+		bool HasVMScript(TESForm* form, const char* scriptName)
+		{
+			// TODO - the rest of this function needs more declaration of the IVM.
+
+			return false;
 		}
 	}
 }

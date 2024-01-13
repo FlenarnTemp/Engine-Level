@@ -4,12 +4,18 @@
 #include "Patches/OnStoryCraftItem.h"
 #include "Patches/TESObjectREFR.h"
 
-namespace Patches
+namespace RE
 {
-	void Install()
+	namespace Cascadia
 	{
-		LoadEditorIDs::Install();
-		OnStoryCraftItem::Install();
-		TESObjectREFR_ConsoleName::Install();
+		namespace Patches
+		{
+			void Install()
+			{
+				LoadEditorIDs::Install();
+				OnStoryCraftItem::Install();
+				TESObjectREFR_ConsoleName::Install();
+			}
+		}
 	}
 }

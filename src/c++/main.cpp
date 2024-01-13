@@ -8,8 +8,6 @@
 
 namespace
 {
-	const F4SE::ScaleformInterface* scaleform;
-
 	void InitializeLog()
 	{
 		auto path = logger::log_directory();
@@ -126,11 +124,6 @@ extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_
 	F4SE::Init(a_F4SE);
 	F4SE::AllocTrampoline(1u << 10);
 
-	if (!RE::DialogueMenuEx::Install())
-	{
-		logger::warn("DialogueMenu - failed to install hooks.");
-	}
-
 	const auto messaging = F4SE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(MessageHandler))
 	{
@@ -140,13 +133,18 @@ extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_
 
 	const F4SE::ScaleformInterface* scaleform = F4SE::GetScaleformInterface();
 
-	if (!scaleform->Register("f4se_cascadia_clib", RE::RegisterScaleform))
+	if (!RE::Cascadia::CAS_DialogueMenu::Install())
+	{
+		logger::warn("DialogueMenu - failed to install hooks.");
+	}
+
+	if (!scaleform->Register("Cascadia", RE::Cascadia::RegisterScaleform))
 	{
 		logger::critical("Failed to register scaleform callback, marking as incompatible."sv);
 		return false;
 	}
 
-	Patches::Install();
+	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 
 	logger::info(FMT_STRING("{:s} finished loading."), Version::PROJECT);

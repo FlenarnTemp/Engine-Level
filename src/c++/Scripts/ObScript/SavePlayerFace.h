@@ -76,20 +76,20 @@ namespace ObScript
 			RE::Actor* a_actor = RE::PlayerCharacter::GetSingleton();
 			RE::TESNPC* npc = a_actor->GetNPC();
 
-			RE::NPCFile npcFile{};
+			RE::Cascadia::NPCFile npcFile{};
 
-			npcFile.bodyMorphRegionsA = RE::GetBodyMorphRegionsFromNPC(npc);					// Body Morph Regions
+			npcFile.bodyMorphRegionsA = RE::Cascadia::GetBodyMorphRegionsFromNPC(npc);					// Body Morph Regions
 			logger::debug("Body Morph Regions");
 			npcFile.facialBoneMorphIntensity = npc->GetFacialBoneMorphIntensity();				// Facial Bone Morph Intensity
 			logger::debug("Facial Bone Morph Intensity");
-			npcFile.facialBoneRegionsA = GetFacialBoneRegionsFromNPC(npc);						// Facial Bone Regions
+			npcFile.facialBoneRegionsA = RE::Cascadia::GetFacialBoneRegionsFromNPC(npc);						// Facial Bone Regions
 			logger::debug("Facial Bone Regions");
-			npcFile.morphSlidersA = GetMorphSliderValuesFromNPC(npc);							//Morph Sliders
+			npcFile.morphSlidersA = RE::Cascadia::GetMorphSliderValuesFromNPC(npc);							//Morph Sliders
 			logger::debug("Morph Sliders");
-			npcFile.tintEntriesA = GetTintEntriesFromNPC(npc, npc->GetSex());					// Tint Entries
+			npcFile.tintEntriesA = RE::Cascadia::GetTintEntriesFromNPC(npc, npc->GetSex());					// Tint Entries
 			logger::debug("Tint Entries");
 
-			RE::NPCFileExport::ExportNPCFile(npcFile, rawComment.data());
+			RE::Cascadia::NPCFileExport::ExportNPCFile(npcFile, rawComment.data());
 
 			return true;
 		}

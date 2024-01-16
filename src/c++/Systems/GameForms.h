@@ -1,75 +1,77 @@
 #pragma once
 
+namespace RE
+{
+	namespace Cascadia
+	{
 
 #ifndef VanillaAVStruct
 #define VanillaAVStruct
 
-
-//RE::ActorValue* avSingleton = RE::ActorValue::GetSingleton();
-
-struct VanillaAV_Struct
-{
-	// Vanilla SPECIAL Values
-	RE::ActorValueInfo* Strength;
-	RE::ActorValueInfo* Perception;
-	RE::ActorValueInfo* Endurance;
-	RE::ActorValueInfo* Charisma;
-	RE::ActorValueInfo* Intelligence;
-	RE::ActorValueInfo* Agility;
-	RE::ActorValueInfo* Luck;
-};
+		struct VanillaAV_Struct
+		{
+			// Vanilla SPECIAL Values
+			ActorValueInfo* Strength;
+			ActorValueInfo* Perception;
+			ActorValueInfo* Endurance;
+			ActorValueInfo* Charisma;
+			ActorValueInfo* Intelligence;
+			ActorValueInfo* Agility;
+			ActorValueInfo* Luck;
+		};
 #endif
-extern VanillaAV_Struct VanillaActorValues;
+		extern VanillaAV_Struct VanillaActorValues;
 
 #ifndef CascadiaAVStruct
 #define CascadiaAVStruct
-struct CascadiaAV_Struct
-{
-	// Skill Values
-	RE::ActorValueInfo* Barter;
-	RE::ActorValueInfo* EnergyWeapons;
-	RE::ActorValueInfo* Explosives;
-	RE::ActorValueInfo* Lockpick;
-	RE::ActorValueInfo* Medicine;
-	RE::ActorValueInfo* MeleeWeapons;
-	RE::ActorValueInfo* Repair;
-	RE::ActorValueInfo* Science;
-	RE::ActorValueInfo* Guns;
-	RE::ActorValueInfo* Sneak;
-	RE::ActorValueInfo* Speech;
-	RE::ActorValueInfo* Unarmed;
-	RE::ActorValueInfo* Survival;
-
-	RE::ActorValueInfo* WeaponCNDResist;
-};
+		struct CascadiaAV_Struct
+		{
+			// Skill Values
+			ActorValueInfo* Barter;
+			ActorValueInfo* EnergyWeapons;
+			ActorValueInfo* Explosives;
+			ActorValueInfo* Lockpick;
+			ActorValueInfo* Medicine;
+			ActorValueInfo* MeleeWeapons;
+			ActorValueInfo* Repair;
+			ActorValueInfo* Science;
+			ActorValueInfo* Guns;
+			ActorValueInfo* Sneak;
+			ActorValueInfo* Speech;
+			ActorValueInfo* Unarmed;
+			ActorValueInfo* Survival;
+			ActorValueInfo* WeaponCNDResist;
+		};
 #endif
-extern CascadiaAV_Struct CascadiaActorValues;
+		extern CascadiaAV_Struct CascadiaActorValues;
 
 #ifndef CascadiaGlobalsStruct
 #define CascadiaGlobalsStruct
-struct CascadiaGlobals_Struct
-{
-	// Globals
-	RE::TESGlobal* TutorialWPNCND;
-};
+		struct CascadiaGlobals_Struct
+		{
+			// Globals
+			TESGlobal* TutorialWPNCND;
+		};
 #endif
-extern CascadiaGlobals_Struct CascadiaGlobals;
+		extern CascadiaGlobals_Struct CascadiaGlobals;
 
 #ifndef CascadiaPerksStruct
 #define CascadiaPerksStruct
-struct CascadiaPerks_Struct 
-{
+		struct CascadiaPerks_Struct
+		{
 
-	// Weapon Type Perks
-	RE::BGSPerk* WeaponTypeEnergyWeaponsPerk;
-	RE::BGSPerk* WeaponTypeExplosivesPerk;
-	RE::BGSPerk* WeaponTypeMeleeWeaponsPerk;
-	RE::BGSPerk* WeaponTypeGunsPerk;
-	RE::BGSPerk* WeaponTypeUnarmedPerk;
+			// Weapon Type Perks
+			BGSPerk* WeaponTypeEnergyWeaponsPerk;
+			BGSPerk* WeaponTypeExplosivesPerk;
+			BGSPerk* WeaponTypeMeleeWeaponsPerk;
+			BGSPerk* WeaponTypeGunsPerk;
+			BGSPerk* WeaponTypeUnarmedPerk;
 
-	// Handler Perks
-	RE::BGSPerk* WeaponConditionHandlerPerk;
-};
+			// Handler Perks
+			BGSPerk* WeaponConditionHandlerPerk;
+		};
 #endif
-extern CascadiaPerks_Struct CascadiaPerks;
+		extern CascadiaPerks_Struct CascadiaPerks;
 
+	}
+}

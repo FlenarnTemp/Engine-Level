@@ -1,3 +1,5 @@
+#include "Events/TESInitScriptEvent.h"
+
 #include "Menus/Scaleform.h"
 
 #include "Patches/Patches.h"
@@ -43,10 +45,16 @@ namespace
 		switch (a_msg->type)
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
-			/**if (DefineSkillsFormsFromGame()) {
-				Skills::RegisterForSkillLink();
-			}*/
-			//logger::info(FMT_STRING("{:s} - kGameDataReady"), Version::PROJECT);
+			if (RE::Cascadia::Skills::DefineSkillsFormsFromGame()) {
+				RE::Cascadia::Skills::RegisterForSkillLink();
+			}
+			else
+			{
+				logger::warn("Failed to define skills.");
+			}
+
+			RE::Cascadia::RegisterTESInitScriptEventSink();
+
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:

@@ -2,44 +2,48 @@
 
 #include "GameForms.h"
 
-typedef std::vector<RE::ActorValueInfo*> AVVector;
-
-
-enum SPECIALFormIDs 
+namespace RE
 {
-	StrengthID = 706,
-	PerceptionID,
-	EnduranceID,
-	CharismaID,
-	IntelligenceID,
-	AgilityID,
-	LuckID,
-	ExperienceID
-};
+	namespace Cascadia
+	{
+		namespace Skills
+		{
+			typedef std::vector<ActorValueInfo*> AVVector;
 
-namespace Skills
-{
-	RE::ActorValueInfo* GetSkillByName(std::string mySkill);
-	float GetSkillByValueName(RE::Actor* myActor, std::string mySkill);
-	float GetBaseSkillValueByName(RE::Actor* myActor, std::string mySkill);
+			enum SPECIALFormIDs
+			{
+				StrengthID = 706,
+				PerceptionID,
+				EnduranceID,
+				CharismaID,
+				IntelligenceID,
+				AgilityID,
+				LuckID,
+				ExperienceID
+			};
 
-	RE::ActorValueInfo* GetDependantAV(RE::ActorValueInfo* myAV);
-	void AddDependentAV(RE::ActorValueInfo* myAV, RE::ActorValueInfo* dependantAV);
-	void RegisterDerivedAV(RE::ActorValueInfo* myAV, std::function<float(const RE::ActorValueOwner*, RE::ActorValueInfo&)> CalcFunction);
-	void RegisterLinkedAV(RE::ActorValueInfo* myAV, float(*CalcFunction)(const RE::ActorValueOwner*, RE::ActorValueInfo&), RE::ActorValueInfo* av1, RE::ActorValueInfo* av2);
-	float CalculateSkillOffset(const RE::ActorValueOwner* myAVOwner, RE::ActorValueInfo& myAV);
-	void RegisterForSkillLink();
+			ActorValueInfo* GetSkillByName(std::string mySkill);
+			float GetSkillByValueName(Actor* myActor, std::string mySkill);
+			float GetBaseSkillValueByName(Actor* myActor, std::string mySkill);
+
+			ActorValueInfo* GetDependantAV(ActorValueInfo* myAV);
+			void AddDependentAV(ActorValueInfo* myAV, ActorValueInfo* dependantAV);
+			void RegisterDerivedAV(ActorValueInfo* myAV, std::function<float(const ActorValueOwner*, ActorValueInfo&)> CalcFunction);
+			void RegisterLinkedAV(ActorValueInfo* myAV, float(*CalcFunction)(const ActorValueOwner*, ActorValueInfo&), ActorValueInfo* av1, ActorValueInfo* av2);
+			float CalculateSkillOffset(const ActorValueOwner* myAVOwner, ActorValueInfo& myAV);
+			void RegisterForSkillLink();
+
+			float GetAVValue(Actor* myActor, ActorValueInfo* myAV);
+			float GetBaseAVValue(Actor* myActor, ActorValueInfo* myAV);
+			void ModBaseAVValue(Actor* myActor, ActorValueInfo* myAV, float fModAmount);
+			void SetBaseAVValue(Actor* myActor, ActorValueInfo* myAV, float fSetAmount);
+
+			float GetPlayerAVValue(ActorValueInfo* myAV);
+			float GetPlayerBaseAVValue(ActorValueInfo* myAV);
+			void ModPlayerBaseAVValue(ActorValueInfo* myAV, float fModAmount);
+			void SetPlayerBaseAVValue(ActorValueInfo* myAV, float fSetAmount);
+
+			bool DefineSkillsFormsFromGame();
+		}
+	}
 }
-
-float GetAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV);
-float GetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV);
-void ModBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float fModAmount);
-void SetBaseAVValue(RE::Actor* myActor, RE::ActorValueInfo* myAV, float fSetAmount);
-
-float GetPlayerAVValue(RE::ActorValueInfo* myAV);
-float GetPlayerBaseAVValue(RE::ActorValueInfo* myAV);
-void ModPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fModAmount);
-void SetPlayerBaseAVValue(RE::ActorValueInfo* myAV, float fSetAmount);
-
-bool DefineSkillsFormsFromGame();
-

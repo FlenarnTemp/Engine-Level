@@ -1,8 +1,18 @@
 #pragma once
+
+namespace RE
+{
+	namespace Cascadia
+	{
+		void DefineItemDegradationFormsFromGame();
+		void InitializeWeaponCondition(TESObjectREFR* weaponREFR);
+	}
+}
+
 /**
 #ifndef ItemDegradationStruct
 #define ItemDegradationStruct
-struct ItemDegradation_Struct 
+struct ItemDegradation_Struct
 {
 	// Holds our weapon condition on the weapon form in Creation Kit.
 	RE::BGSDamageType* weaponConditionHealthMaxDMGT;
@@ -16,7 +26,7 @@ struct ItemDegradation_Struct
 #endif
 extern ItemDegradation_Struct ItemDegradationForms;
 
-struct WeaponConditionData 
+struct WeaponConditionData
 {
 	WeaponConditionData();
 	WeaponConditionData(RE::TESForm* form, RE::ExtraDataList* extraData);
@@ -44,10 +54,4 @@ struct ArmorConditionData
 	RE::ExtraDataList					extraData;
 	RE::TESObjectARMO::InstanceData		instance;
 };
-
-RE::TESObjectWEAP::InstanceData* GetWeaponInstanceData(RE::ExtraDataList* myExtraDataList);
-void DefineItemDegradationFormsFromGame();
-
-float CalculateUpdatedDamageValue(float baseDamage, float minimum, float conditionPercent, float skillBonus);
-float CalculateUpdatedRateOfFireValue(WeaponConditionData myConditionData, float currentCondition);
 */

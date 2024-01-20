@@ -330,6 +330,7 @@ namespace RE
 
 			return nullptr;
 		}
+		return nullptr;
 	}
 
 	// Check to see whether the given scene action is active in the given phase.

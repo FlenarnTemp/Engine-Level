@@ -18,16 +18,18 @@ namespace RE
 					switch (event.hObjectInitialized->data.objectReference->formType.underlying())
 					{
 					case static_cast<std::uint32_t>(ENUM_FORM_ID::kCONT):
+						InitializeContainerCondition(event.hObjectInitialized);
 						logger::info("InitializeInventoryCondition");
 						break;
 
 					case static_cast<std::uint32_t>(ENUM_FORM_ID::kARMO):
-						logger::info("InitializeArmorCondition");
+						InitializeArmorCondition(event.hObjectInitialized);
+						logger::debug("InitializeArmorCondition");
 						break;
 
 					case static_cast<std::uint32_t>(ENUM_FORM_ID::kWEAP):
 						InitializeWeaponCondition(event.hObjectInitialized);
-						logger::info("InitializeWeaponCondition");
+						logger::debug("InitializeWeaponCondition");
 						break;
 
 					default:

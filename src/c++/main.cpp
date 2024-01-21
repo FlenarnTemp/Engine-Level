@@ -53,6 +53,8 @@ namespace
 				logger::warn("Failed to define skills.");
 			}
 
+			RE::Cascadia::DefineItemDegradationFormsFromGame();
+
 			RE::Cascadia::RegisterTESInitScriptEventSink();
 
 			break;

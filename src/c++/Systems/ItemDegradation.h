@@ -8,7 +8,9 @@ namespace RE
 	namespace Cascadia
 	{
 		void DefineItemDegradationFormsFromGame();
+		void InitializeContainerCondition(TESObjectREFR* containerREFR);
 		void InitializeWeaponCondition(TESObjectREFR* weaponREFR);
+		void InitializeArmorCondition(TESObjectREFR* armorREFR);
 	}
 }
 

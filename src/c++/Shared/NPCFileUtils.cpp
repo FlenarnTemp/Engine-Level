@@ -295,11 +295,11 @@ namespace RE
 				{
 					BGSCharacterTint::PaletteEntry* palette = static_cast<BGSCharacterTint::PaletteEntry*>(entry);
 
-					currentTintEntry.color = palette->uiTintingColor;
-					currentTintEntry.swatch = palette->usSwatchID;
+					currentTintEntry.color = palette->tintingColor;
+					currentTintEntry.swatch = palette->swatchID;
 				}
 
-				currentTintEntry.id = entry->usIDLink;
+				currentTintEntry.id = entry->idLink;
 
 				for (std::uint32_t j = 0; j < tintIDSet.size(); j++)
 				{
@@ -310,7 +310,7 @@ namespace RE
 					}
 				}
 
-				currentTintEntry.value = entry->cTingingValue;
+				currentTintEntry.value = entry->tingingValue;
 
 				result.push_back(currentTintEntry);
 			}
@@ -708,5 +708,3 @@ namespace RE
 		}
 	}
 }
-
-

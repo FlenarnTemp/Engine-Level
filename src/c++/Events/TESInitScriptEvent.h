@@ -18,7 +18,7 @@ namespace RE
 					switch (event.hObjectInitialized->data.objectReference->formType.underlying())
 					{
 					case static_cast<std::uint32_t>(ENUM_FORM_ID::kCONT):
-						InitializeContainerCondition(event.hObjectInitialized);
+						//InitializeContainerCondition(event.hObjectInitialized);
 						logger::info("InitializeInventoryCondition");
 						break;
 

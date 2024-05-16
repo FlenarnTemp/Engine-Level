@@ -20,7 +20,7 @@ namespace Settings
 		try
 		{
 			const auto table = toml::parse_file(
-				fmt::format(FMT_STRING("Data/F4SE/Plugins/{:s}.toml"sv), Version::PROJECT));
+				fmt::format(FMT_STRING("Data/F4SE/Plugins/{:s}.toml"sv), "0.1.0"));
 			for (const auto& setting : ISetting::get_settings())
 			{
 				setting->load(table);

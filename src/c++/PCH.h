@@ -13,7 +13,25 @@
 
 #undef GetComptuerName
 
-#define DLLEXPORT __declspec(dllexport)
+#define DLLEXPORT extern "C" [[maybe_unused]] __declspec(dllexport)
+
+inline constexpr auto Version = 0 * 1000 + 1 * 100 + 0;
+
+DLLEXPORT constinit auto F4SEPlugin_Version = []() noexcept
+{
+		F4SE::PluginVersionData data{};
+
+	data.PluginVersion(Version);
+	data.PluginName("Cascadia Gameplay Systems");
+	data.AuthorName("Fallout Cascadia Development Team");
+	data.UsesAddressLibrary(true);
+	data.UsesSigScanning(false);
+	data.IsLayoutDependent(true);
+	data.HasNoStructUse(false);
+	data.CompatibleVersions({ F4SE::RUNTIME_LATEST });
+
+		return data;
+}();
 
 using namespace std::literals;
 

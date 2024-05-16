@@ -18,7 +18,7 @@ namespace
 			stl::report_and_fail("Failed to find standard logging directory"sv);
 		}
 
-		*path /= fmt::format(FMT_STRING("{:s}.log"sv), Version::PROJECT);
+		*path /= fmt::format(FMT_STRING("{:s}.log"sv), "Cascadia");
 		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 
 		auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
@@ -32,7 +32,7 @@ namespace
 		spdlog::set_default_logger(std::move(log));
 		spdlog::set_pattern("[%m/%d/%Y - %T] [%^%l%$] %v"s);
 
-		logger::info(FMT_STRING("{:s} v{:s}"sv), Version::PROJECT, Version::NAME);
+		logger::info(FMT_STRING("{:s} v{:s}"sv), "Cascadia Gameplay Systems", "0.1.0");
 	}
 
 	void MessageHandler(F4SE::MessagingInterface::Message* a_msg)
@@ -45,6 +45,7 @@ namespace
 		switch (a_msg->type)
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
+			logger::info(FMT_STRING("{:s} - kGameDataReady"), "Cascadia Gameplay Systems");
 			if (RE::Cascadia::Skills::DefineSkillsFormsFromGame()) {
 				RE::Cascadia::Skills::RegisterForSkillLink();
 			}
@@ -60,43 +61,43 @@ namespace
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:
-			//logger::info(FMT_STRING("{:s} - kGameLoaded"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kGameLoaded"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostLoad:
-			//logger::info(FMT_STRING("{:s} - kPostLoad"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kPostLoad"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostLoadGame:
-			//logger::info(FMT_STRING("{:s} - kPostLoadGame"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kPostLoadGame"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostPostLoad:
-			//logger::info(FMT_STRING("{:s} - kPostPostLoad"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kPostPostLoad"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostSaveGame:
-			//logger::info(FMT_STRING("{:s} - kPostSaveGame"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kPostSaveGame"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kDeleteGame:
-			//logger::info(FMT_STRING("{:s} - kDeleteGame"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kDeleteGame"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kNewGame:
-			//logger::info(FMT_STRING("{:s} - kNewGame"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kNewGame"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kInputLoaded:
-			//logger::info(FMT_STRING("{:s} - kInputLoaded"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kInputLoaded"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPreLoadGame:
-			//logger::info(FMT_STRING("{:s} - kPreLoadGame"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kPreLoadGame"), "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPreSaveGame:
-			//logger::info(FMT_STRING("{:s} - kPreSaveGame"), Version::PROJECT);
+			logger::info(FMT_STRING("{:s} - kPreSaveGame"), "Cascadia Gameplay Systems");
 			break;
 
 		default:
@@ -105,30 +106,15 @@ namespace
 	}
 }
 
-extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Query(const F4SE::QueryInterface * a_F4SE, F4SE::PluginInfo * a_info)
+DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_F4SE)
 {
-	a_info->infoVersion = F4SE::PluginInfo::kVersion;
-	a_info->name = Version::PROJECT.data();
-	a_info->version = Version::MAJOR;
+#ifndef NDEBUG
+	MessageBoxA(NULL, "Loaded. You can now attach the debugger or continue execution.", "Cascadia Gameplay Systems", NULL);
+#endif
 
-	const auto rtv = a_F4SE->RuntimeVersion();
-	if (rtv < F4SE::RUNTIME_LATEST)
-	{
-		stl::report_and_fail(
-			fmt::format(
-				FMT_STRING("{:s} does not support runtime v{:s}."sv),
-				Version::PROJECT,
-				rtv.string()));
-	}
-
-	return true;
-}
-
-extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_F4SE)
-{
 	InitializeLog();
 
-	logger::info(FMT_STRING("{:s} started loading."), Version::PROJECT);
+	logger::info(FMT_STRING("{:s} started loading."), "Cascadia Gameplay Systems");
 	logger::debug("Debug logging enabled.");
 
 	F4SE::Init(a_F4SE);
@@ -143,21 +129,25 @@ extern "C" DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_
 
 	const F4SE::ScaleformInterface* scaleform = F4SE::GetScaleformInterface();
 
-	if (!RE::Cascadia::CAS_DialogueMenu::Install())
+	/*if (!RE::Cascadia::CAS_DialogueMenu::Install())
 	{
 		logger::warn("DialogueMenu - failed to install hooks.");
-	}
+	}*/
 
 	if (!scaleform->Register("Cascadia", RE::Cascadia::RegisterScaleform))
 	{
 		logger::critical("Failed to register scaleform callback, marking as incompatible."sv);
 		return false;
 	}
+	else 
+	{
+		logger::info("Registered scaleform callback.");
+	}
 
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 
-	logger::info(FMT_STRING("{:s} finished loading."), Version::PROJECT);
+	logger::info(("{:s} finished loading."), "Cascadia Gameplay Systems");
 
 	return true;
 }

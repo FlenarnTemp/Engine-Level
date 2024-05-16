@@ -292,7 +292,7 @@ namespace RE
 	}
 
 	bool SelectDialogueOption(std::uint32_t option) {
-		if (!(MenuTopicManager::GetSingleton()->bAllowInput)) { return false; }
+		if (!(MenuTopicManager::GetSingleton()->allowInput)) { return false; }
 
 		if (auto playerDialogue = GetCurrentPlayerDialogueAction())
 		{

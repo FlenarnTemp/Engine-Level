@@ -78,6 +78,96 @@ namespace RE
 			{
 				inventory->rwLock.lock_read();
 				inventory->rwLock.lock_write();
+
+				for (std::uint32_t i = 0; i < inventory->data.size(); i++)
+				{
+					BGSInventoryItem iterator;
+					iterator = inventory->data[i];
+
+					switch (iterator.object->formType.underlying())
+					{
+					case static_cast<std::uint32_t>(ENUM_FORM_ID::kARMO):
+					{
+						if (iterator.stackData)
+						{
+							std::uint32_t iterationCount = 0;
+							for (BGSInventoryItem::Stack* traverse = iterator.stackData.get(); traverse; traverse->nextStack)
+							{
+								if (!traverse)
+								{
+									break;
+								}
+
+								if (!traverse->extra)
+								{
+									break;
+								}
+
+								if (!traverse->extra.get()->HasType(kHealth))
+								{
+									//InitializeArmorCondition(iterator.object.); TODO - It's all sorts of angry.
+								}
+								else
+								{
+									// TODO - UpdateArmorStats
+								}
+
+								iterationCount++;
+
+								if (iterationCount > traverse->count)
+								{
+									break;
+								}
+							}
+						}
+						break;
+					}
+					case static_cast<std::uint32_t>(ENUM_FORM_ID::kWEAP):
+					{
+						if (iterator.stackData)
+						{
+							std::uint32_t iterationCount = 0;
+
+							for (BGSInventoryItem::Stack* traverse = iterator.stackData.get(); traverse; traverse->nextStack)
+							{
+								if (!traverse)
+								{
+									break;
+								}
+
+								if (!traverse->extra)
+								{
+									break;
+								}
+
+								if (!traverse->extra.get()->HasType(kHealth))
+								{
+									//InitializeWeaponCondition(iterator.object.); TODO - It's all sorts of angry.
+								}
+								else
+								{
+									// TODO - UpdateWEaponStats
+								}
+
+								iterationCount++;
+
+								if (iterationCount > traverse->count)
+								{
+									break;
+								}
+							}
+						}
+
+						break;
+					}
+
+					default:
+						break;
+					}
+				}
+
+				inventory->rwLock.unlock_read();
+				inventory->rwLock.unlock_write();
 			}
 			else
 			{
@@ -105,18 +195,18 @@ namespace RE
 
 			// Check for ExtraData.
 			if (weaponREFR->extraList.get()) {
-				if (weaponREFR->extraList->GetHealthPerc() == -1.0f)
+				if (!weaponREFR->extraList->HasType(RE::kHealth))
 				{
 					float value = RNG(0.55f, 0.85f);
 
 					auto extraHealth = new ExtraHealth(value);
 					weaponREFR->extraList->AddExtra(extraHealth);
-					logger::debug(FMT_STRING("InitializeWeaponCondition: Data initialized: {:s}"), std::to_string(value));
+					logger::info(("InitializeWeaponCondition: Data initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
 					return;
 				}
 				else
 				{
-					logger::debug(FMT_STRING("InitializeWeaponCondition: Data already initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
+					logger::info(("InitializeWeaponCondition: Data already initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
 					return;
 				}
 			}
@@ -142,14 +232,16 @@ namespace RE
 				{
 					float value = RNG(0.55f, 0.85f);
 
-					auto extraHealth = new ExtraHealth(value);
-					armorREFR->extraList->AddExtra(extraHealth);
-					logger::info(FMT_STRING("IntializeArmorCondition: Data initialized: {:s}"), std::to_string(value));
+					//armorREFR->SetHealthPerc(value);
+
+					//auto extraHealth = new ExtraHealth(value);
+					//armorREFR->extraList->AddExtra(extraHealth);
+					logger::info(("IntializeArmorCondition: Data initialized: {:s}"), std::to_string(value));
 					return;
 				}
 				else
 				{
-					logger::info(FMT_STRING("IntializeArmorCondition: Data already initialized: {:s}"), std::to_string(armorREFR->extraList->GetHealthPerc()));
+					logger::info(("IntializeArmorCondition: Data already initialized: {:s}"), std::to_string(armorREFR->extraList->GetHealthPerc()));
 					return;
 				}
 			}
@@ -158,6 +250,20 @@ namespace RE
 				logger::debug("InitializeArmorCondition: No ExtraData.");
 				return;
 			}
+		}
+
+		float CalculateSkillBonusFromActor(TESObjectWEAP* myWeapon)
+		{
+			float actorSkillValue = 1.0f;
+
+			if (myWeapon->weaponData.skill != nullptr)
+			{
+				actorSkillValue = (RE::Cascadia::GetPlayerCharacter()->GetActorValue(*myWeapon->weaponData.skill) / 100);
+			}
+
+			float result = (fDamageSkillBase + fDamageSkillMult * actorSkillValue);
+
+			return result;
 		}
 	}
 }
@@ -206,9 +312,6 @@ namespace RE
 	   result = (RE::TESObjectARMO::InstanceData*)myInstanceData;
 	   return result;
    }
-
-
-
 
    float GetWeaponDamage(WeaponConditionData myConditionData)
    {
@@ -270,30 +373,9 @@ namespace RE
 
 	   float newDamage = CalculateUpdatedDamageValue(baseDamage, minimum, currentCondition, CalculateSkillBonusFromActor(myConditionData));
 	   return newDamage;
-   }
+   }*/
 
-   float CalculateSkillBonusFromActor(WeaponConditionData myConditionData)
-   {
-	   float actorSkillValue = 1.0f;
-
-	   RE::TESObjectWEAP* myWeapon = myConditionData.Form->As<RE::TESObjectWEAP>();
-
-	   if (myWeapon->weaponData.skill != nullptr)
-	   {
-		   if (myConditionData.actor != nullptr)
-		   {
-			   actorSkillValue = (myConditionData.actor->GetActorValue(*myWeapon->weaponData.skill) / 100);
-		   }
-		   else
-		   {
-			   actorSkillValue = (GetPlayerCharacter()->GetActorValue(*myWeapon->weaponData.skill) / 100);
-		   }
-	   }
-
-	   float result = (fDamageSkillBase + fDamageSkillMult * actorSkillValue);
-
-	   return result;
-   }
+   /**
 
    float CalculateUpdatedDamageValue(float baseDamage, float minimum, float conditionPercent, float skillBonus)
    {

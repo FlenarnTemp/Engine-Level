@@ -13,7 +13,6 @@ namespace RE
 			void Install()
 			{
 				LoadEditorIDs::Install();
-				OnStoryCraftItem::Install();
 				TESObjectREFR_ConsoleName::Install();
 			}
 		}

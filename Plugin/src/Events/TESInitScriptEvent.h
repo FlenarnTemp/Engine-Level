@@ -13,8 +13,8 @@ namespace RE
 		{
 			virtual BSEventNotifyControl ProcessEvent(const TESInitScriptEvent& event, BSTEventSource<TESInitScriptEvent>*) override
 			{
-				if (event.hObjectInitialized) {
-
+				if (event.hObjectInitialized)
+				{
 					switch (event.hObjectInitialized->data.objectReference->formType.underlying())
 					{
 					case static_cast<std::uint32_t>(ENUM_FORM_ID::kCONT):

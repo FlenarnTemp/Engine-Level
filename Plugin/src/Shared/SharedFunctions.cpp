@@ -13,15 +13,15 @@ namespace RE
 		{
 			std::string formIndex = formIDString.substr(0, 2);
 			if (
-				formIndex == "00" || // Fallout4.esm
-				formIndex == "01" || // DLCRobot.esm
-				formIndex == "02" || // DLCworkshop01.esm
-				formIndex == "03" || // DLCCoast.esm
-				formIndex == "04" || // DLCworkshop02.esm
-				formIndex == "05" || // DLCworkshop03.esm
-				formIndex == "06" || // DLCNukaWorld.esm
-				formIndex == "ff"    // Dynamic content, FF - Creation Club primarily(?)
-				)
+				formIndex == "00" ||  // Fallout4.esm
+				formIndex == "01" ||  // DLCRobot.esm
+				formIndex == "02" ||  // DLCworkshop01.esm
+				formIndex == "03" ||  // DLCCoast.esm
+				formIndex == "04" ||  // DLCworkshop02.esm
+				formIndex == "05" ||  // DLCworkshop03.esm
+				formIndex == "06" ||  // DLCNukaWorld.esm
+				formIndex == "ff"     // Dynamic content, FF - Creation Club primarily(?)
+			)
 			{
 				return true;
 			}
@@ -235,17 +235,8 @@ namespace RE
 		bool IsInMenuMode()
 		{
 			UI* g_ui = UI::GetSingleton();
-			return(
-				(g_ui->menuMode >= 1)
-				|| g_ui->GetMenuOpen(BSFixedString("CookingMenu"))
-				|| g_ui->GetMenuOpen(BSFixedString("FaderMenu"))
-				|| g_ui->GetMenuOpen(BSFixedString("FavoritesMenu"))
-				|| g_ui->GetMenuOpen(BSFixedString("PowerArmorModMenu"))
-				|| g_ui->GetMenuOpen(BSFixedString("RobotModMenu"))
-				|| g_ui->GetMenuOpen(BSFixedString("VATSMenu"))
-				|| g_ui->GetMenuOpen(BSFixedString("WorkshopMenu"))
-				|| g_ui->GetMenuOpen(BSFixedString("DialogueMenu"))
-				);
+			return (
+				(g_ui->menuMode >= 1) || g_ui->GetMenuOpen(BSFixedString("CookingMenu")) || g_ui->GetMenuOpen(BSFixedString("FaderMenu")) || g_ui->GetMenuOpen(BSFixedString("FavoritesMenu")) || g_ui->GetMenuOpen(BSFixedString("PowerArmorModMenu")) || g_ui->GetMenuOpen(BSFixedString("RobotModMenu")) || g_ui->GetMenuOpen(BSFixedString("VATSMenu")) || g_ui->GetMenuOpen(BSFixedString("WorkshopMenu")) || g_ui->GetMenuOpen(BSFixedString("DialogueMenu")));
 		}
 
 		// Get Inxed in FormList

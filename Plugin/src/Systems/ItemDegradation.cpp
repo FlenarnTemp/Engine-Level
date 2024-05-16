@@ -55,16 +55,17 @@ namespace RE
 			fWeaponConditionRateOfFire10 = GetGMST("fWeaponConditionRateOfFire10");
 
 			// Armor Type Keywords
-			armorTypePowerArmor = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(317601, "Fallout4.esm");			//HEX: 4D8A1
-			armorBodyPartChest = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(442604, "Fallout4.esm");			//HEX: 6C0EC
-			armorBodyPartHead = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(1098776, "Fallout4.esm");			//HEX: 10C418
-			armorBodyPartLeftArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170118, "FalloutCascadia.esm");	//HEX: 211D06
-			armorBodyPartRightArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170120, "FalloutCascadia.esm");	//HEX: 211D08
-			armorBodyPartLeftLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170119, "FalloutCascadia.esm");	//HEX: 211D07
-			armorBodyPartRightLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170121, "FalloutCascadia.esm");	//HEX: 211D09
+			armorTypePowerArmor = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(317601, "Fallout4.esm");            //HEX: 4D8A1
+			armorBodyPartChest = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(442604, "Fallout4.esm");             //HEX: 6C0EC
+			armorBodyPartHead = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(1098776, "Fallout4.esm");             //HEX: 10C418
+			armorBodyPartLeftArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170118, "FalloutCascadia.esm");   //HEX: 211D06
+			armorBodyPartRightArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170120, "FalloutCascadia.esm");  //HEX: 211D08
+			armorBodyPartLeftLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170119, "FalloutCascadia.esm");   //HEX: 211D07
+			armorBodyPartRightLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170121, "FalloutCascadia.esm");  //HEX: 211D09
 
 			logger::info("Item Degradation: Finished linking degradation forms.");
 		}
+
 		// Container Condition
 		void InitializeContainerCondition(TESObjectREFR* containerREFR)
 		{
@@ -194,7 +195,8 @@ namespace RE
 			}
 
 			// Check for ExtraData.
-			if (weaponREFR->extraList.get()) {
+			if (weaponREFR->extraList.get())
+			{
 				if (!weaponREFR->extraList->HasType(RE::kHealth))
 				{
 					float value = RNG(0.55f, 0.85f);
@@ -375,7 +377,7 @@ namespace RE
 	   return newDamage;
    }*/
 
-   /**
+/**
 
    float CalculateUpdatedDamageValue(float baseDamage, float minimum, float conditionPercent, float skillBonus)
    {

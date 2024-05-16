@@ -8,7 +8,6 @@ namespace RE
 		{
 			virtual BSEventNotifyControl ProcessEvent(MenuOpenCloseEvent& event, BSTEventSource<MenuOpenCloseEvent>*) override
 			{
-
 			}
 		};
 	}

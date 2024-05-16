@@ -6,51 +6,51 @@ namespace RE
 	{
 		struct BodyMorphRegions
 		{
-			float	head;
-			float	upperTorso;
-			float	arms;
-			float	lowerTorso;
-			float	legs;
+			float head;
+			float upperTorso;
+			float arms;
+			float lowerTorso;
+			float legs;
 		};
 
 		struct FacialBoneRegion
 		{
-			std::uint32_t	id;
-			NiPoint3		position;
-			NiPoint3		rotation;
-			NiPoint3		scale;
+			std::uint32_t id;
+			NiPoint3 position;
+			NiPoint3 rotation;
+			NiPoint3 scale;
 		};
 
 		struct MorphSlider
 		{
-			std::uint32_t	id;
-			float			value;
+			std::uint32_t id;
+			float value;
 		};
 
 		struct TintEntry
 		{
-			std::uint32_t	color;
-			std::uint32_t	id;
-			std::string		name;
-			std::uint32_t	swatch;
-			std::uint8_t	value; // Divide by 100 for NPCFile{};
-			BGSCharacterTint::Template::Entry* entry; // Only use if for randomization.
+			std::uint32_t color;
+			std::uint32_t id;
+			std::string name;
+			std::uint32_t swatch;
+			std::uint8_t value;                        // Divide by 100 for NPCFile{};
+			BGSCharacterTint::Template::Entry* entry;  // Only use if for randomization.
 		};
 
 		struct TintIDSet
 		{
-			std::uint16_t	id;
-			std::string		name;
-			std::string		category;
+			std::uint16_t id;
+			std::string name;
+			std::string category;
 		};
 
 		struct NPCFile
 		{
-			BodyMorphRegions				bodyMorphRegionsA;
-			float							facialBoneMorphIntensity;
-			std::vector<FacialBoneRegion>	facialBoneRegionsA;
-			std::vector<MorphSlider>		morphSlidersA;
-			std::vector<TintEntry>			tintEntriesA;
+			BodyMorphRegions bodyMorphRegionsA;
+			float facialBoneMorphIntensity;
+			std::vector<FacialBoneRegion> facialBoneRegionsA;
+			std::vector<MorphSlider> morphSlidersA;
+			std::vector<TintEntry> tintEntriesA;
 		};
 
 		namespace NPCFileDefaults

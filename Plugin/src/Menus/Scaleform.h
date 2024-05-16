@@ -16,8 +16,10 @@ namespace RE
 				IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
 				Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
 
-				Scaleform::GFx::Value subtitleX; movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
-				Scaleform::GFx::Value subtitleY; movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
+				Scaleform::GFx::Value subtitleX;
+				movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
+				Scaleform::GFx::Value subtitleY;
+				movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
 
 				position.first = subtitleX.GetNumber();
 				position.second = subtitleY.GetNumber();
@@ -38,7 +40,8 @@ namespace RE
 				IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
 				Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
 
-				Scaleform::GFx::Value subtitle; movieRoot->GetVariable(&subtitle, "root.BottomCenterGroup_mc.SubtitleText_mc");
+				Scaleform::GFx::Value subtitle;
+				movieRoot->GetVariable(&subtitle, "root.BottomCenterGroup_mc.SubtitleText_mc");
 				subtitle.SetMember("x", Scaleform::GFx::Value(x));
 				subtitle.SetMember("y", Scaleform::GFx::Value(y));
 				return true;
@@ -65,7 +68,6 @@ namespace RE
 				logger::info(FMT_STRING("DialogueMenu__Call, code: {:s}"), std::to_string(reinterpret_cast<std::uint64_t>(a_params.userData)));
 				switch (reinterpret_cast<std::uint64_t>(a_params.userData))
 				{
-
 				case 3:
 					logger::info("DialogueMenu - IsFrameworkActive");
 					if (a_params.retVal)
@@ -157,9 +159,11 @@ namespace RE
 					logger::info("DialogueMenu - SetDialogueOptions");
 					if (a_params.retVal)
 					{
-						if (a_params.argCount < 1) return;
+						if (a_params.argCount < 1)
+							return;
 
-						if (a_params.args[0].GetType() != Scaleform::GFx::Value::ValueType::kInt) return;
+						if (a_params.args[0].GetType() != Scaleform::GFx::Value::ValueType::kInt)
+							return;
 
 						std::uint32_t selectedOption = a_params.args[0].GetInt();
 						*a_params.retVal = SelectDialogueOption(selectedOption);
@@ -205,8 +209,10 @@ namespace RE
 
 							movieRoot->CreateArray(a_params.retVal);
 
-							Scaleform::GFx::Value subtitleX; movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
-							Scaleform::GFx::Value subtitleY; movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
+							Scaleform::GFx::Value subtitleX;
+							movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
+							Scaleform::GFx::Value subtitleY;
+							movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
 
 							a_params.retVal->PushBack(subtitleX);
 							a_params.retVal->PushBack(subtitleY);
@@ -259,12 +265,12 @@ namespace RE
 				a_this->MapCodeMethodToASFunction("GetDialogueOptions", 6);
 				a_this->MapCodeMethodToASFunction("SelectDialogueOption", 7);
 				a_this->MapCodeMethodToASFunction("GetINISetting", 8);
-				a_this->MapCodeMethodToASFunction("GetModSetting", 9); // TODO
+				a_this->MapCodeMethodToASFunction("GetModSetting", 9);  // TODO
 				a_this->MapCodeMethodToASFunction("GetSubtitlePosition", 10);
-				a_this->MapCodeMethodToASFunction("SetSubtitlePosition", 11); // TODO
+				a_this->MapCodeMethodToASFunction("SetSubtitlePosition", 11);  // TODO
 
 				// Misc
-				a_this->MapCodeMethodToASFunction("SetXDIResult", 12); // TODO
+				a_this->MapCodeMethodToASFunction("SetXDIResult", 12);  // TODO
 
 				// Input - TODO
 				a_this->MapCodeMethodToASFunction("SetWheelZoomEnabled", 13);

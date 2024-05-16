@@ -19,7 +19,7 @@ inline constexpr auto Version = 0 * 1000 + 1 * 100 + 0;
 
 DLLEXPORT constinit auto F4SEPlugin_Version = []() noexcept
 {
-		F4SE::PluginVersionData data{};
+	F4SE::PluginVersionData data{};
 
 	data.PluginVersion(Version);
 	data.PluginName("Cascadia Gameplay Systems");
@@ -30,7 +30,7 @@ DLLEXPORT constinit auto F4SEPlugin_Version = []() noexcept
 	data.HasNoStructUse(false);
 	data.CompatibleVersions({ F4SE::RUNTIME_LATEST });
 
-		return data;
+	return data;
 }();
 
 using namespace std::literals;

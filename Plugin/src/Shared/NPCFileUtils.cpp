@@ -173,31 +173,37 @@ namespace RE
 			BodyMorphRegions result{};
 
 			auto headIter = npc->morphSliderValues->find(0);
-			if (headIter != npc->morphSliderValues->end()) {
+			if (headIter != npc->morphSliderValues->end())
+			{
 				result.head = headIter->second;
 			}
 
 			auto upperTorsoIter = npc->morphSliderValues->find(1);
-			if (upperTorsoIter != npc->morphSliderValues->end()) {
+			if (upperTorsoIter != npc->morphSliderValues->end())
+			{
 				result.upperTorso = upperTorsoIter->second;
 			}
 
 			auto armsIter = npc->morphSliderValues->find(2);
-			if (armsIter != npc->morphSliderValues->end()) {
+			if (armsIter != npc->morphSliderValues->end())
+			{
 				result.arms = armsIter->second;
 			}
 
 			auto lowerTorsoIter = npc->morphSliderValues->find(3);
-			if (lowerTorsoIter != npc->morphSliderValues->end()) {
+			if (lowerTorsoIter != npc->morphSliderValues->end())
+			{
 				result.lowerTorso = lowerTorsoIter->second;
 			}
 
 			auto legsIter = npc->morphSliderValues->find(4);
-			if (legsIter != npc->morphSliderValues->end()) {
+			if (legsIter != npc->morphSliderValues->end())
+			{
 				result.legs = legsIter->second;
 			}
 
-			if (result.head == 0.0f && result.upperTorso == 0.0f && result.arms == 0.0f && result.lowerTorso == 0.0f && result.legs == 0.0f) {
+			if (result.head == 0.0f && result.upperTorso == 0.0f && result.arms == 0.0f && result.lowerTorso == 0.0f && result.legs == 0.0f)
+			{
 				return NPCFileDefaults::DefaultBodyMorphRegions(npc->GetSex());
 			}
 
@@ -395,7 +401,8 @@ namespace RE
 					result << "";
 				}
 
-				result << "\"," << std::endl;;
+				result << "\"," << std::endl;
+				;
 
 				return result.str();
 			}
@@ -408,7 +415,8 @@ namespace RE
 
 				result << "   \"FacialBoneMorphIntensity\" : ";
 				result << std::setprecision(17) << (morphIntensity);
-				result << "," << std::endl;;
+				result << "," << std::endl;
+				;
 
 				return result.str();
 			}
@@ -540,7 +548,8 @@ namespace RE
 
 				result << "   \"" << partName << "\" : \"";
 
-				for (std::int8_t i = 0; i < numHeadParts; i++) {
+				for (std::int8_t i = 0; i < numHeadParts; i++)
+				{
 					BGSHeadPart* currentHeadPart = headParts[i];
 
 					if (currentHeadPart->type.get() == type)

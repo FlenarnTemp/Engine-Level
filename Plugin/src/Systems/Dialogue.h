@@ -31,6 +31,7 @@ namespace RE
 		BGSScene* pScene;
 		std::uint32_t uiPhase;
 	};
+
 	static_assert(sizeof(TOPIC_INFO_SCENEDATA) == 0x10);
 
 	// Verified
@@ -53,7 +54,7 @@ namespace RE
 	TOPIC_INFO_SCENEDATA* GetSceneData(TESTopicInfo* topicInfo);
 
 	BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction();
-	
+
 	bool SelectDialogueOption(std::uint32_t option);
 	TESObjectREFR* GetCurrentPlayerDialogueTarget();
 

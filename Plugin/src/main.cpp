@@ -23,8 +23,8 @@ namespace
 
 		auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
 		auto lvl = *Settings::General::EnableDebugLogging
-			? spdlog::level::trace
-			: spdlog::level::info;
+		             ? spdlog::level::trace
+		             : spdlog::level::info;
 
 		log->set_level(lvl);
 		log->flush_on(lvl);
@@ -46,7 +46,8 @@ namespace
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
 			logger::info(FMT_STRING("{:s} - kGameDataReady"), "Cascadia Gameplay Systems");
-			if (RE::Cascadia::Skills::DefineSkillsFormsFromGame()) {
+			if (RE::Cascadia::Skills::DefineSkillsFormsFromGame())
+			{
 				RE::Cascadia::Skills::RegisterForSkillLink();
 			}
 			else
@@ -106,7 +107,7 @@ namespace
 	}
 }
 
-DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_F4SE)
+DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 {
 #ifndef NDEBUG
 	MessageBoxA(NULL, "Loaded. You can now attach the debugger or continue execution.", "Cascadia Gameplay Systems", NULL);
@@ -139,7 +140,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface * a_F4SE)
 		logger::critical("Failed to register scaleform callback, marking as incompatible."sv);
 		return false;
 	}
-	else 
+	else
 	{
 		logger::info("Registered scaleform callback.");
 	}

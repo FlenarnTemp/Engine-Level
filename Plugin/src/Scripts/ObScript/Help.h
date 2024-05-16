@@ -19,9 +19,9 @@ namespace ObScript
 			if (it != functions.end())
 			{
 				static std::array params{
-					RE::SCRIPT_PARAMETER{ "matchstring (optional)", RE::SCRIPT_PARAM_TYPE::kChar, true },
-					RE::SCRIPT_PARAMETER{ "filter (optional)", RE::SCRIPT_PARAM_TYPE::kInt, true },
-					RE::SCRIPT_PARAMETER{ "form type (optional)", RE::SCRIPT_PARAM_TYPE::kChar, true },
+					RE::SCRIPT_PARAMETER{"matchstring (optional)", RE::SCRIPT_PARAM_TYPE::kChar, true},
+					RE::SCRIPT_PARAMETER{ "filter (optional)",     RE::SCRIPT_PARAM_TYPE::kInt,  true},
+					RE::SCRIPT_PARAMETER{ "form type (optional)",  RE::SCRIPT_PARAM_TYPE::kChar, true},
 				};
 
 				*it = RE::SCRIPT_FUNCTION{ "Help", "", it->output };
@@ -128,37 +128,37 @@ namespace ObScript
 
 			switch (idx)
 			{
-				case 0:
-					ShowHelp_Funcs();
-					ShowHelp_Settings();
-					ShowHelp_Globs();
-					ShowHelp_Forms();
-					ShowHelp_Usage();
-					break;
+			case 0:
+				ShowHelp_Funcs();
+				ShowHelp_Settings();
+				ShowHelp_Globs();
+				ShowHelp_Forms();
+				ShowHelp_Usage();
+				break;
 
-				case 1:
-					ShowHelp_Funcs();
-					ShowHelp_Usage();
-					break;
+			case 1:
+				ShowHelp_Funcs();
+				ShowHelp_Usage();
+				break;
 
-				case 2:
-					ShowHelp_Settings();
-					ShowHelp_Usage();
-					break;
+			case 2:
+				ShowHelp_Settings();
+				ShowHelp_Usage();
+				break;
 
-				case 3:
-					ShowHelp_Globs();
-					ShowHelp_Usage();
-					break;
+			case 3:
+				ShowHelp_Globs();
+				ShowHelp_Usage();
+				break;
 
-				case 4:
-					ShowHelp_Forms();
-					ShowHelp_Usage();
-					break;
+			case 4:
+				ShowHelp_Forms();
+				ShowHelp_Usage();
+				break;
 
-				default:
-					ShowHelp_Usage();
-					break;
+			default:
+				ShowHelp_Usage();
+				break;
 			}
 
 			return true;
@@ -245,85 +245,85 @@ namespace ObScript
 			std::string match;
 			switch (a_setting->GetType())
 			{
-				case RE::Setting::SETTING_TYPE::kBinary:
-					match = fmt::format(
-						("{:s} = {:s}"sv),
-						a_setting->GetKey(),
-						a_setting->GetBinary());
-					break;
+			case RE::Setting::SETTING_TYPE::kBinary:
+				match = fmt::format(
+					("{:s} = {:s}"sv),
+					a_setting->GetKey(),
+					a_setting->GetBinary());
+				break;
 
-				case RE::Setting::SETTING_TYPE::kChar:
-					match = fmt::format(
-						("{:s} = {:d}"sv),
-						a_setting->GetKey(),
-						a_setting->GetChar());
-					break;
+			case RE::Setting::SETTING_TYPE::kChar:
+				match = fmt::format(
+					("{:s} = {:d}"sv),
+					a_setting->GetKey(),
+					a_setting->GetChar());
+				break;
 
-				case RE::Setting::SETTING_TYPE::kUChar:
-					match = fmt::format(
-						("{:s} = {:d}"sv),
-						a_setting->GetKey(),
-						a_setting->GetUChar());
-					break;
+			case RE::Setting::SETTING_TYPE::kUChar:
+				match = fmt::format(
+					("{:s} = {:d}"sv),
+					a_setting->GetKey(),
+					a_setting->GetUChar());
+				break;
 
-				case RE::Setting::SETTING_TYPE::kInt:
-					match = fmt::format(
-						("{:s} = {:d}"sv),
-						a_setting->GetKey(),
-						a_setting->GetInt());
-					break;
+			case RE::Setting::SETTING_TYPE::kInt:
+				match = fmt::format(
+					("{:s} = {:d}"sv),
+					a_setting->GetKey(),
+					a_setting->GetInt());
+				break;
 
-				case RE::Setting::SETTING_TYPE::kUInt:
-					match = fmt::format(
-						("{:s} = {:d}"sv),
-						a_setting->GetKey(),
-						a_setting->GetUInt());
-					break;
+			case RE::Setting::SETTING_TYPE::kUInt:
+				match = fmt::format(
+					("{:s} = {:d}"sv),
+					a_setting->GetKey(),
+					a_setting->GetUInt());
+				break;
 
-				case RE::Setting::SETTING_TYPE::kFloat:
-					match = fmt::format(
-						("{:s} = {:0.2f}"sv),
-						a_setting->GetKey(),
-						a_setting->GetFloat());
-					break;
+			case RE::Setting::SETTING_TYPE::kFloat:
+				match = fmt::format(
+					("{:s} = {:0.2f}"sv),
+					a_setting->GetKey(),
+					a_setting->GetFloat());
+				break;
 
-				case RE::Setting::SETTING_TYPE::kString:
-					match = fmt::format(
-						("{:s} = {:s}"sv),
-						a_setting->GetKey(),
-						a_setting->GetString());
-					break;
+			case RE::Setting::SETTING_TYPE::kString:
+				match = fmt::format(
+					("{:s} = {:s}"sv),
+					a_setting->GetKey(),
+					a_setting->GetString());
+				break;
 
-				case RE::Setting::SETTING_TYPE::kRGB:
-					{
-						auto color = a_setting->GetRGB();
-						match = fmt::format(
-							("{:s} = R:{:d} G:{:d} B:{:d}"sv),
-							a_setting->GetKey(),
-							color[0],
-							color[1],
-							color[2]);
-					}
-					break;
+			case RE::Setting::SETTING_TYPE::kRGB:
+			{
+				auto color = a_setting->GetRGB();
+				match = fmt::format(
+					("{:s} = R:{:d} G:{:d} B:{:d}"sv),
+					a_setting->GetKey(),
+					color[0],
+					color[1],
+					color[2]);
+			}
+			break;
 
-				case RE::Setting::SETTING_TYPE::kRGBA:
-					{
-						auto color = a_setting->GetRGBA();
-						match = fmt::format(
-							("{:s} = R:{:d} G:{:d} B:{:d} A:{:d}"sv),
-							a_setting->GetKey(),
-							color[0],
-							color[1],
-							color[2],
-							color[3]);
-					}
-					break;
+			case RE::Setting::SETTING_TYPE::kRGBA:
+			{
+				auto color = a_setting->GetRGBA();
+				match = fmt::format(
+					("{:s} = R:{:d} G:{:d} B:{:d} A:{:d}"sv),
+					a_setting->GetKey(),
+					color[0],
+					color[1],
+					color[2],
+					color[3]);
+			}
+			break;
 
-				default:
-					match = fmt::format(
-						("{:s} = <UNKNOWN>"sv),
-						a_setting->GetKey());
-					break;
+			default:
+				match = fmt::format(
+					("{:s} = <UNKNOWN>"sv),
+					a_setting->GetKey());
+				break;
 			}
 
 			RE::ConsoleLog::GetSingleton()->PrintLine(match.data());
@@ -445,29 +445,29 @@ namespace ObScript
 		{
 			switch (a_form->GetFormType())
 			{
-				case RE::ENUM_FORM_ID::kGLOB:
+			case RE::ENUM_FORM_ID::kGLOB:
+				break;
+
+			case RE::ENUM_FORM_ID::kCELL:
+			{
+				auto cell = a_form->As<RE::TESObjectCELL>();
+				if (cell && cell->IsExterior())
+				{
 					break;
+				}
+			}
 
-				case RE::ENUM_FORM_ID::kCELL:
-					{
-						auto cell = a_form->As<RE::TESObjectCELL>();
-						if (cell && cell->IsExterior())
-						{
-							break;
-						}
-					}
+			default:
+			{
+				auto edid = a_form->GetFormEditorID();
+				auto name = RE::TESFullName::GetFullName(*a_form);
 
-				default:
-					{
-						auto edid = a_form->GetFormEditorID();
-						auto name = RE::TESFullName::GetFullName(*a_form);
-
-						if ((edid && detail::strvicmp(edid, m_MatchString)) || (!name.empty() && detail::strvicmp(name, m_MatchString)))
-						{
-							m_Forms.emplace_back(a_form);
-						}
-					}
-					break;
+				if ((edid && detail::strvicmp(edid, m_MatchString)) || (!name.empty() && detail::strvicmp(name, m_MatchString)))
+				{
+					m_Forms.emplace_back(a_form);
+				}
+			}
+			break;
 			}
 		}
 
@@ -562,26 +562,26 @@ namespace ObScript
 					{
 						switch (a_file->GetTESChunk())
 						{
-							case 'DIDE':
-								gotEDID = a_file->GetChunkData(edid, a_file->actualChunkSize);
-								if (gotEDID && gotDATA && ((data & 1) == 0))
-								{
-									m_CellMap.insert_or_assign(std::make_pair(cidx, edid), a_file->filename);
-									continue;
-								}
-								break;
+						case 'DIDE':
+							gotEDID = a_file->GetChunkData(edid, a_file->actualChunkSize);
+							if (gotEDID && gotDATA && ((data & 1) == 0))
+							{
+								m_CellMap.insert_or_assign(std::make_pair(cidx, edid), a_file->filename);
+								continue;
+							}
+							break;
 
-							case 'ATAD':
-								gotDATA = a_file->GetChunkData(&data, a_file->actualChunkSize);
-								if (gotEDID && gotDATA && ((data & 1) == 0))
-								{
-									m_CellMap.insert_or_assign(std::make_pair(cidx, edid), a_file->filename);
-									continue;
-								}
-								break;
+						case 'ATAD':
+							gotDATA = a_file->GetChunkData(&data, a_file->actualChunkSize);
+							if (gotEDID && gotDATA && ((data & 1) == 0))
+							{
+								m_CellMap.insert_or_assign(std::make_pair(cidx, edid), a_file->filename);
+								continue;
+							}
+							break;
 
-							default:
-								break;
+						default:
+							break;
 						}
 					}
 					while (a_file->NextChunk());

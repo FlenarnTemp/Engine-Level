@@ -29,7 +29,7 @@ namespace RE
 			ActorValueInfo* GetDependantAV(ActorValueInfo* myAV);
 			void AddDependentAV(ActorValueInfo* myAV, ActorValueInfo* dependantAV);
 			void RegisterDerivedAV(ActorValueInfo* myAV, std::function<float(const ActorValueOwner*, ActorValueInfo&)> CalcFunction);
-			void RegisterLinkedAV(ActorValueInfo* myAV, float(*CalcFunction)(const ActorValueOwner*, ActorValueInfo&), ActorValueInfo* av1, ActorValueInfo* av2);
+			void RegisterLinkedAV(ActorValueInfo* myAV, float (*CalcFunction)(const ActorValueOwner*, ActorValueInfo&), ActorValueInfo* av1, ActorValueInfo* av2);
 			float CalculateSkillOffset(const ActorValueOwner* myAVOwner, ActorValueInfo& myAV);
 			void RegisterForSkillLink();
 

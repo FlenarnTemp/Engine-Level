@@ -6,7 +6,8 @@
 namespace RE
 {
 	// Internal
-	namespace {
+	namespace
+	{
 		DialogueHolder g_dialogueHolder;
 
 		std::pair<float, float> savedSubtitlePosition;
@@ -18,11 +19,15 @@ namespace RE
 	void BuildDialogueMap(bool force)
 	{
 		BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction();
-		if (!playerDialogue) { return; }
+		if (!playerDialogue)
+		{
+			return;
+		}
 		BGSScene* currentScene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
 
 		// If we already have a map for this scene + scene action then return.
-		if (!force && g_dialogueHolder.scene == currentScene && g_dialogueHolder.playerDialogue == playerDialogue) return;
+		if (!force && g_dialogueHolder.scene == currentScene && g_dialogueHolder.playerDialogue == playerDialogue)
+			return;
 
 		g_dialogueHolder.dialogueMap.clear();
 
@@ -37,7 +42,8 @@ namespace RE
 			for (std::uint32_t i = 0; i < playerInfoCount; i++)
 			{
 				TESTopicInfo* playerInfo = playerTopic->topicInfos[i];
-				if (!playerInfo->responses.head && !playerInfo->dataInfo) continue; // Skip over infos with no content.
+				if (!playerInfo->responses.head && !playerInfo->dataInfo)
+					continue;  // Skip over infos with no content.
 
 				std::vector<TESTopicInfo*> npcResponses;
 
@@ -112,11 +118,16 @@ namespace RE
 		BSTArray<TESTopicInfo*> randomOptions{};
 		std::uint32_t randomRoll;
 
-
 		for (TESTopicInfo* info : npcInfos)
 		{
-			if ((info->formFlags >> 5) & 1) { continue; }
-			if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) { continue; }
+			if ((info->formFlags >> 5) & 1)
+			{
+				continue;
+			}
+			if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid))
+			{
+				continue;
+			}
 
 			if (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom)
 			{
@@ -183,9 +194,10 @@ namespace RE
 		std::vector<std::vector<TESTopicInfo*>> infos(optionID + 1, std::vector<TESTopicInfo*>());
 
 		std::map<TESTopicInfo*, std::uint32_t> infoGroupMap;
-		std::uint32_t index = 0; // The next available free slot in the vector.
+		std::uint32_t index = 0;  // The next available free slot in the vector.
 
-		for (std::uint32_t c = 0; c < 4; c++) {
+		for (std::uint32_t c = 0; c < 4; c++)
+		{
 			TESTopic* topic = a_npcDialogue->responseTopics[c];
 			std::uint32_t infoCount = topic ? topic->numTopicInfos : 0;
 
@@ -211,7 +223,8 @@ namespace RE
 							infos[idx->second].push_back(info);
 						}
 					}
-					else {
+					else
+					{
 						// No parent, add normally.
 						if (index <= optionID)
 						{
@@ -239,7 +252,7 @@ namespace RE
 				}
 				else
 				{
-					return nullptr; // Return nullptr if this is an empty info.
+					return nullptr;  // Return nullptr if this is an empty info.
 				}
 			}
 		}
@@ -291,8 +304,12 @@ namespace RE
 		return nullptr;
 	}
 
-	bool SelectDialogueOption(std::uint32_t option) {
-		if (!(MenuTopicManager::GetSingleton()->allowInput)) { return false; }
+	bool SelectDialogueOption(std::uint32_t option)
+	{
+		if (!(MenuTopicManager::GetSingleton()->allowInput))
+		{
+			return false;
+		}
 
 		if (auto playerDialogue = GetCurrentPlayerDialogueAction())
 		{
@@ -365,7 +382,10 @@ namespace RE
 	bool EvaluateInfoConditions(TESTopicInfo* a_info, BGSSceneAction* a_action, bool swap)
 	{
 		TESCondition conditions = a_info->objConditions;
-		if (!conditions) { return true; }
+		if (!conditions)
+		{
+			return true;
+		}
 
 		BSPointerHandle<TESObjectREFR> targetHandle;
 		TESObjectREFR* targetREFR = nullptr;
@@ -388,7 +408,7 @@ namespace RE
 		}
 
 		// Test against conditions - (subject = player)
-		TESObjectREFR* refA, * refB;
+		TESObjectREFR *refA, *refB;
 		if (!swap)
 		{
 			refA = RE::Cascadia::GetPlayerCharacter();
@@ -415,7 +435,10 @@ namespace RE
 			for (std::uint32_t i = 0; i < infos.size(); i++)
 			{
 				TESTopicInfo* info = infos[i];
-				if (!info) { continue; }
+				if (!info)
+				{
+					continue;
+				}
 
 				TESTopicInfo* originalInfo = info;
 				while (info->dataInfo)
@@ -443,7 +466,8 @@ namespace RE
 
 				// Get response and perform text replacement.
 				const char* responseText = "";
-				if (info->responses.head != nullptr) {
+				if (info->responses.head != nullptr)
+				{
 					responseText = info->responses.head->GetResponseText();
 					BSStringT<char> response;
 					response.Set(responseText, 500);
@@ -483,8 +507,8 @@ namespace RE
 				option.challengeResult = info->GetSuccessLevel();
 				option.linkedToSelf = sceneData ? (currentScene == sceneData->pScene && playerDialogue->startPhase >= sceneData->uiPhase && playerDialogue->endPhase <= sceneData->uiPhase) : false;
 				option.endsScene = npcResponseInfo ? (npcResponseInfo->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kEndRunningScene)) != 0 : false;
-				option.isBarterOption = false; // npcResponseInfo ? TODO : false; -TODO
-				option.isInventoryOption = false; // npcResponseInfo ? TODO : false; - TODO
+				option.isBarterOption = false;     // npcResponseInfo ? TODO : false; -TODO
+				option.isInventoryOption = false;  // npcResponseInfo ? TODO : false; - TODO
 				options.push_back(option);
 			}
 		}
@@ -507,7 +531,8 @@ namespace RE
 	// Unused, ported over in case a need ever comes up.
 	void SetSceneData(TESTopicInfo* topicInfo, BGSScene* scene, std::uint32_t phase)
 	{
-		if (!topicInfo) return;
+		if (!topicInfo)
+			return;
 
 		auto& sceneListMap = GetAllSceneListMap();
 		auto sceneDataIter = sceneListMap.find(topicInfo);

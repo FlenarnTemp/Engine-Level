@@ -9,7 +9,7 @@ namespace RE
 			class TESObjectREFR_ConsoleName
 			{
 			private:
-				template<class Form>
+				template <class Form>
 				static void InstallHook()
 				{
 					REL::Relocation<std::uintptr_t> vtbl{ Form::VTABLE[0] };

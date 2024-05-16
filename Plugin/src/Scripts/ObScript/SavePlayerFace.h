@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Shared/SharedFunctions.h"
 #include "Shared/NPCFileUtils.h"
+#include "Shared/SharedFunctions.h"
 
 namespace ObScript
 {
@@ -22,7 +22,7 @@ namespace ObScript
 			if (it != functions.end())
 			{
 				static std::array params{
-					RE::SCRIPT_PARAMETER{ "String", RE::SCRIPT_PARAM_TYPE::kChar, false },
+					RE::SCRIPT_PARAMETER{"String", RE::SCRIPT_PARAM_TYPE::kChar, false},
 				};
 
 				*it = RE::SCRIPT_FUNCTION{ LONG_NAME.data(), SHORT_NAME.data(), it->output };
@@ -51,7 +51,6 @@ namespace ObScript
 			float&,
 			std::uint32_t& a_offset)
 		{
-
 			std::array<char, 0x200> rawComment{ '\0' };
 			auto result = RE::Script::ParseParameters(
 				a_parameters,
@@ -78,22 +77,21 @@ namespace ObScript
 
 			RE::Cascadia::NPCFile npcFile{};
 
-			npcFile.bodyMorphRegionsA = RE::Cascadia::GetBodyMorphRegionsFromNPC(npc);					// Body Morph Regions
+			npcFile.bodyMorphRegionsA = RE::Cascadia::GetBodyMorphRegionsFromNPC(npc);  // Body Morph Regions
 			logger::debug("Body Morph Regions");
-			npcFile.facialBoneMorphIntensity = npc->GetFacialBoneMorphIntensity();				// Facial Bone Morph Intensity
+			npcFile.facialBoneMorphIntensity = npc->GetFacialBoneMorphIntensity();  // Facial Bone Morph Intensity
 			logger::debug("Facial Bone Morph Intensity");
-			npcFile.facialBoneRegionsA = RE::Cascadia::GetFacialBoneRegionsFromNPC(npc);						// Facial Bone Regions
+			npcFile.facialBoneRegionsA = RE::Cascadia::GetFacialBoneRegionsFromNPC(npc);  // Facial Bone Regions
 			logger::debug("Facial Bone Regions");
-			npcFile.morphSlidersA = RE::Cascadia::GetMorphSliderValuesFromNPC(npc);							//Morph Sliders
+			npcFile.morphSlidersA = RE::Cascadia::GetMorphSliderValuesFromNPC(npc);  //Morph Sliders
 			logger::debug("Morph Sliders");
-			npcFile.tintEntriesA = RE::Cascadia::GetTintEntriesFromNPC(npc, npc->GetSex());					// Tint Entries
+			npcFile.tintEntriesA = RE::Cascadia::GetTintEntriesFromNPC(npc, npc->GetSex());  // Tint Entries
 			logger::debug("Tint Entries");
 
 			RE::Cascadia::NPCFileExport::ExportNPCFile(npcFile, rawComment.data());
 
 			return true;
 		}
-		
 
 		[[nodiscard]] static const std::string& HelpString()
 		{

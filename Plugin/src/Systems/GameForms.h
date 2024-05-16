@@ -6,7 +6,7 @@ namespace RE
 	{
 
 #ifndef VanillaAVStruct
-#define VanillaAVStruct
+#	define VanillaAVStruct
 
 		struct VanillaAV_Struct
 		{
@@ -23,7 +23,8 @@ namespace RE
 		extern VanillaAV_Struct VanillaActorValues;
 
 #ifndef CascadiaAVStruct
-#define CascadiaAVStruct
+#	define CascadiaAVStruct
+
 		struct CascadiaAV_Struct
 		{
 			// Skill Values
@@ -46,7 +47,8 @@ namespace RE
 		extern CascadiaAV_Struct CascadiaActorValues;
 
 #ifndef CascadiaGlobalsStruct
-#define CascadiaGlobalsStruct
+#	define CascadiaGlobalsStruct
+
 		struct CascadiaGlobals_Struct
 		{
 			// Globals
@@ -56,10 +58,10 @@ namespace RE
 		extern CascadiaGlobals_Struct CascadiaGlobals;
 
 #ifndef CascadiaPerksStruct
-#define CascadiaPerksStruct
+#	define CascadiaPerksStruct
+
 		struct CascadiaPerks_Struct
 		{
-
 			// Weapon Type Perks
 			BGSPerk* WeaponTypeEnergyWeaponsPerk;
 			BGSPerk* WeaponTypeExplosivesPerk;

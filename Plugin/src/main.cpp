@@ -98,14 +98,13 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 		return false;
 	}
 
-	const F4SE::ScaleformInterface* scaleform = F4SE::GetScaleformInterface();
-
 	/*if (!RE::Cascadia::CAS_DialogueMenu::Install())
 	{
 		WARN("DialogueMenu - failed to install hooks.");
 	}*/
 
-	if (!scaleform->Register("Cascadia", RE::Cascadia::RegisterScaleform))
+	const auto scaleform = F4SE::GetScaleformInterface();
+	if (!scaleform || !scaleform->Register("Cascadia", RE::Cascadia::RegisterScaleform))
 	{
 		FATAL("Failed to register scaleform callback, marking as incompatible."sv);
 		return false;

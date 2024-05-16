@@ -285,15 +285,15 @@ namespace RE
 
 		bool RegisterScaleform(Scaleform::GFx::Movie* a_view, Scaleform::GFx::Value* a_value)
 		{
-			Scaleform::GFx::Value currentSWFPath;
-			if (a_view->asMovieRoot->GetVariable(&currentSWFPath, "root.loaderInfo.url"))
-			{
-				if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
-				{
-					a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
-					INFO("root.XDI_Init");
-				}
-			}
+		//	Scaleform::GFx::Value currentSWFPath;
+		//	if (a_view->asMovieRoot->GetVariable(&currentSWFPath, "root.loaderInfo.url"))
+		//	{
+		//		if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
+		//		{
+		//			a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
+		//			INFO("root.XDI_Init");
+		//		}
+		//	}
 			return true;
 		}
 	}

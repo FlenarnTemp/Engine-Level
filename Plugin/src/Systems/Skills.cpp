@@ -228,27 +228,27 @@ namespace RE
 			bool DefineSkillsFormsFromGame()
 			{
 				// Cascadia Actor Values
-				CascadiaActorValues.Barter = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996845, "FalloutCascadia.esm");         //HEX: F35ED
-				CascadiaActorValues.EnergyWeapons = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996846, "FalloutCascadia.esm");  //HEX: F35EE
-				CascadiaActorValues.Explosives = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996847, "FalloutCascadia.esm");     //HEX: F35EF
-				CascadiaActorValues.Guns = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996848, "FalloutCascadia.esm");           //HEX: F35F0
-				CascadiaActorValues.Lockpick = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996849, "FalloutCascadia.esm");       //HEX: F35F1
-				CascadiaActorValues.Medicine = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996850, "FalloutCascadia.esm");       //HEX: F35F2
-				CascadiaActorValues.MeleeWeapons = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996851, "FalloutCascadia.esm");   //HEX: F35F3
-				CascadiaActorValues.Repair = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996852, "FalloutCascadia.esm");         //HEX: F35F4
-				CascadiaActorValues.Science = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996853, "FalloutCascadia.esm");        //HEX: F35F5
-				CascadiaActorValues.Sneak = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996854, "FalloutCascadia.esm");          //HEX: F35F6
-				CascadiaActorValues.Speech = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996855, "FalloutCascadia.esm");         //HEX: F35F7
-				CascadiaActorValues.Survival = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996856, "FalloutCascadia.esm");       //HEX: F35F8
-				CascadiaActorValues.Unarmed = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(996857, "FalloutCascadia.esm");        //HEX: F35F9
+				CascadiaActorValues.Barter = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35ED, "FalloutCascadia.esm");
+				CascadiaActorValues.EnergyWeapons = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35EE, "FalloutCascadia.esm");
+				CascadiaActorValues.Explosives = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35EF, "FalloutCascadia.esm");
+				CascadiaActorValues.Guns = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F0, "FalloutCascadia.esm");
+				CascadiaActorValues.Lockpick = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F1, "FalloutCascadia.esm");
+				CascadiaActorValues.Medicine = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F2, "FalloutCascadia.esm");
+				CascadiaActorValues.MeleeWeapons = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F3, "FalloutCascadia.esm");
+				CascadiaActorValues.Repair = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F4, "FalloutCascadia.esm");
+				CascadiaActorValues.Science = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F5, "FalloutCascadia.esm");
+				CascadiaActorValues.Sneak = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F6, "FalloutCascadia.esm");
+				CascadiaActorValues.Speech = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F7, "FalloutCascadia.esm");
+				CascadiaActorValues.Survival = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F8, "FalloutCascadia.esm");
+				CascadiaActorValues.Unarmed = TESDataHandler::GetSingleton()->LookupForm<ActorValueInfo>(0x0F35F9, "FalloutCascadia.esm");        
 
 				// Cascadia Perks
-				CascadiaPerks.WeaponTypeEnergyWeaponsPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(35626494, "FalloutCascadia.esm");  //HEX: 21F9DFE
-				CascadiaPerks.WeaponTypeExplosivesPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(35626495, "FalloutCascadia.esm");     //HEX: 21F9DFF
-				CascadiaPerks.WeaponTypeMeleeWeaponsPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(35626496, "FalloutCascadia.esm");   //HEX: 21F9E00
-				CascadiaPerks.WeaponTypeGunsPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(35626497, "FalloutCascadia.esm");           //HEX: 21F9E01
-				CascadiaPerks.WeaponTypeUnarmedPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(35626498, "FalloutCascadia.esm");        //HEX: 21F9E02
-				CascadiaPerks.WeaponConditionHandlerPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(35626499, "FalloutCascadia.esm");   //HEX: 21F9E04
+				CascadiaPerks.WeaponTypeEnergyWeaponsPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(0x1F9DFE, "FalloutCascadia.esm");
+				CascadiaPerks.WeaponTypeExplosivesPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(0x1F9DFF, "FalloutCascadia.esm");
+				CascadiaPerks.WeaponTypeMeleeWeaponsPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(0x1F9E00, "FalloutCascadia.esm");
+				CascadiaPerks.WeaponTypeGunsPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(0x1F9E01, "FalloutCascadia.esm");
+				CascadiaPerks.WeaponTypeUnarmedPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(0x1F9E02, "FalloutCascadia.esm");
+				CascadiaPerks.WeaponConditionHandlerPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(0x1F9E04, "FalloutCascadia.esm");   
 
 				// Cascadia Skills List
 				CascadiaSkillsList.emplace_back(CascadiaActorValues.Barter);

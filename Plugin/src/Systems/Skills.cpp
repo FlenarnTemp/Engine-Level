@@ -1,5 +1,4 @@
 #include "Systems/Skills.h"
-#include "../../../build/src/c++/CommonLibF4/workaround.h"
 #include "Shared/SharedFunctions.h"
 
 namespace RE
@@ -47,7 +46,7 @@ namespace RE
 			//	Link: https://github.com/shad0wshayd3/F4SE-dev/tree/master/f4se/f4se_plugins/ProjectMassachusetts
 			//	Rewrite Link: https://github.com/shad0wshayd3/F4SE-dev/tree/pm-rewrite
 
-			std::unordered_multimap<ActorValueInfo*, ActorValueInfo*> skillsLinkMap;
+			std::unordered_multimap<const ActorValueInfo*, ActorValueInfo*> skillsLinkMap;
 			std::unordered_multimap<std::string, ActorValueInfo*> strSkillMap;
 
 			AVVector CascadiaSkillsList;
@@ -93,7 +92,7 @@ namespace RE
 			}
 
 			// Gets given Actor Values Dependant Actor Value (if none, returns nullptr)
-			ActorValueInfo* GetDependantAV(ActorValueInfo* myAV)
+			ActorValueInfo* GetDependantAV(const ActorValueInfo* myAV)
 			{
 				auto result = skillsLinkMap.find(myAV);
 				if (result != skillsLinkMap.end())
@@ -126,7 +125,7 @@ namespace RE
 			}
 
 			// Returns calculation of the offset of the
-			float CalculateSkillOffset(const ActorValueOwner* a_actor, ActorValueInfo& a_info)
+			float CalculateSkillOffset(const ActorValueOwner* a_actor, const ActorValueInfo& a_info)
 			{
 				if (!a_actor || !&a_info)
 				{

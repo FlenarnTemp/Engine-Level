@@ -126,7 +126,7 @@ namespace ObScript
 
 		static bool PrintCurrentTime(std::stringstream& a_buf)
 		{
-			auto currentTime_t = std::time(nullptr);
+			auto currentTime_t = std::chrono::system_clock::now();
 			auto currentTime = std::format("{:%m/%d/%y (%H:%M)}"sv, currentTime_t);
 			DEBUG("CurrentTime: {:s}"sv, currentTime);
 
@@ -292,7 +292,7 @@ namespace ObScript
 			return help;
 		}
 
-		[[nodiscard]] static std::time_t GetFileTime(RE::TESFile* a_file)
+		[[nodiscard]] static std::chrono::system_clock::time_point GetFileTime(RE::TESFile* a_file)
 		{
 			union
 			{
@@ -308,7 +308,8 @@ namespace ObScript
 			ull.s.LowPart = a_file->fileInfo.modifyTime.lo;
 			ull.s.HighPart = a_file->fileInfo.modifyTime.hi;
 
-			return static_cast<std::time_t>(ull.QuadPart / 10000000ULL - 11644473600ULL);
+			auto time_t = static_cast<std::time_t>(ull.QuadPart / 10000000ULL - 11644473600ULL);
+			return std::chrono::system_clock::from_time_t(time_t);
 		}
 
 		static constexpr auto LONG_NAME = "BetaComment"sv;

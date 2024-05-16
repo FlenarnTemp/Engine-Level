@@ -478,7 +478,7 @@ namespace RE
 						//info->parentTopic->ownerQuest->instanceData[info->parentTopic->ownerQuest->currentInstanceID]->ParseString(response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 					}
 					responseText = response.data();
-					INFO("Response: {:s}"), responseText);
+					INFO("Response: {:s}", responseText);
 				}
 
 				// Get NPC response TopicInfo for dialogue cues.
@@ -513,7 +513,7 @@ namespace RE
 			}
 		}
 
-		INFO("GetDialogueOptions: Got {:s} options when checking scene {:s}."), std::to_string(options.size()), RE::Cascadia::GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
+		INFO("GetDialogueOptions: Got {:s} options when checking scene {:s}.", std::to_string(options.size()), RE::Cascadia::GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
 		return options;
 	}
 

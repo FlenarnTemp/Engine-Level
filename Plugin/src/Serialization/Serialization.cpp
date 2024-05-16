@@ -1,5 +1,5 @@
-#include "Shared/SharedFunctions.h"
 #include "Serialization.h"
+#include "Shared/SharedFunctions.h"
 
 namespace Serialization
 {

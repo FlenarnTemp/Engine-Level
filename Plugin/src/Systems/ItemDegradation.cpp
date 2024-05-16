@@ -36,7 +36,7 @@ namespace RE
 
 		void DefineItemDegradationFormsFromGame()
 		{
-			logger::info("Item Degradation: Linking degradation forms.");
+			INFO("Item Degradation: Linking degradation forms.");
 
 			fDamageSkillBase = 0.5f;
 			fDamageSkillMult = 0.5f;
@@ -63,7 +63,7 @@ namespace RE
 			armorBodyPartLeftLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170119, "FalloutCascadia.esm");   //HEX: 211D07
 			armorBodyPartRightLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170121, "FalloutCascadia.esm");  //HEX: 211D09
 
-			logger::info("Item Degradation: Finished linking degradation forms.");
+			INFO("Item Degradation: Finished linking degradation forms.");
 		}
 
 		// Container Condition
@@ -71,7 +71,7 @@ namespace RE
 		{
 			if (!containerREFR)
 			{
-				logger::info("InitializeContainerCondition: Invalid REFR pointer.");
+				INFO("InitializeContainerCondition: Invalid REFR pointer.");
 				return;
 			}
 
@@ -172,7 +172,7 @@ namespace RE
 			}
 			else
 			{
-				logger::info("InitializeContainerCondition: No inventory available");
+				INFO("InitializeContainerCondition: No inventory available");
 				return;
 			}
 		}
@@ -182,7 +182,7 @@ namespace RE
 		{
 			if (!weaponREFR)
 			{
-				logger::debug("InitializeWeaponCondition: Invalid REFR pointer.");
+				DEBUG("InitializeWeaponCondition: Invalid REFR pointer.");
 				return;
 			}
 
@@ -190,7 +190,7 @@ namespace RE
 			TESObjectWEAP* tempWeaponREFR = (TESObjectWEAP*)weaponREFR;
 			if (tempWeaponREFR->weaponData.type == WEAPON_TYPE::kGrenade || tempWeaponREFR->weaponData.type == WEAPON_TYPE::kMine)
 			{
-				logger::debug("InitializeWeaponCondition: REFR grenade/mine weapon type.");
+				DEBUG("InitializeWeaponCondition: REFR grenade/mine weapon type.");
 				return;
 			}
 
@@ -203,18 +203,18 @@ namespace RE
 
 					auto extraHealth = new ExtraHealth(value);
 					weaponREFR->extraList->AddExtra(extraHealth);
-					logger::info(("InitializeWeaponCondition: Data initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
+					INFO(("InitializeWeaponCondition: Data initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
 					return;
 				}
 				else
 				{
-					logger::info(("InitializeWeaponCondition: Data already initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
+					INFO(("InitializeWeaponCondition: Data already initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
 					return;
 				}
 			}
 			else
 			{
-				logger::debug("InitializeWeaponCondition: No ExtraData.");
+				DEBUG("InitializeWeaponCondition: No ExtraData.");
 				return;
 			}
 		}
@@ -224,7 +224,7 @@ namespace RE
 		{
 			if (!armorREFR)
 			{
-				logger::debug("IntializeArmorCondition: Invalid REFR pointer.");
+				DEBUG("IntializeArmorCondition: Invalid REFR pointer.");
 				return;
 			}
 
@@ -238,18 +238,18 @@ namespace RE
 
 					//auto extraHealth = new ExtraHealth(value);
 					//armorREFR->extraList->AddExtra(extraHealth);
-					logger::info(("IntializeArmorCondition: Data initialized: {:s}"), std::to_string(value));
+					INFO(("IntializeArmorCondition: Data initialized: {:s}"), std::to_string(value));
 					return;
 				}
 				else
 				{
-					logger::info(("IntializeArmorCondition: Data already initialized: {:s}"), std::to_string(armorREFR->extraList->GetHealthPerc()));
+					INFO(("IntializeArmorCondition: Data already initialized: {:s}"), std::to_string(armorREFR->extraList->GetHealthPerc()));
 					return;
 				}
 			}
 			else
 			{
-				logger::debug("InitializeArmorCondition: No ExtraData.");
+				DEBUG("InitializeArmorCondition: No ExtraData.");
 				return;
 			}
 		}

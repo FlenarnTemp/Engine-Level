@@ -1,23 +1,19 @@
-#include <fstream>
-
 #include "Shared/SharedFunctions.h"
-
 #include "Serialization.h"
-#include <set>
 
 namespace Serialization
 {
 	/* Level Up Menu Related */
-	INT32 playerSkillPoints = 0;
-	std::set<UINT32> taggedSkills;
+	std::int32_t playerSkillPoints = 0;
+	std::set<std::uint32_t> taggedSkills;
 	bool playerReadyToLevelUp = false;
 
-	INT32 GetSkillPoints()
+	std::int32_t GetSkillPoints()
 	{
 		return playerSkillPoints;
 	}
 
-	void SetSkillPoints(INT32 setValue)
+	void SetSkillPoints(std::int32_t setValue)
 	{
 		playerSkillPoints = setValue;
 	}

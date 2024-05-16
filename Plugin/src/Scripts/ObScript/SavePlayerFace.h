@@ -32,11 +32,11 @@ namespace ObScript
 				it->parameters = params.data();
 				it->executeFunction = Execute;
 
-				logger::debug("Registered SavePCFace."sv);
+				DEBUG("Registered SavePCFace."sv);
 			}
 			else
 			{
-				logger::warn("WARNING: Failed to register SavePCFace."sv);
+				WARN("WARNING: Failed to register SavePCFace."sv);
 			}
 		}
 
@@ -78,15 +78,15 @@ namespace ObScript
 			RE::Cascadia::NPCFile npcFile{};
 
 			npcFile.bodyMorphRegionsA = RE::Cascadia::GetBodyMorphRegionsFromNPC(npc);  // Body Morph Regions
-			logger::debug("Body Morph Regions");
+			DEBUG("Body Morph Regions");
 			npcFile.facialBoneMorphIntensity = npc->GetFacialBoneMorphIntensity();  // Facial Bone Morph Intensity
-			logger::debug("Facial Bone Morph Intensity");
+			DEBUG("Facial Bone Morph Intensity");
 			npcFile.facialBoneRegionsA = RE::Cascadia::GetFacialBoneRegionsFromNPC(npc);  // Facial Bone Regions
-			logger::debug("Facial Bone Regions");
+			DEBUG("Facial Bone Regions");
 			npcFile.morphSlidersA = RE::Cascadia::GetMorphSliderValuesFromNPC(npc);  //Morph Sliders
-			logger::debug("Morph Sliders");
+			DEBUG("Morph Sliders");
 			npcFile.tintEntriesA = RE::Cascadia::GetTintEntriesFromNPC(npc, npc->GetSex());  // Tint Entries
-			logger::debug("Tint Entries");
+			DEBUG("Tint Entries");
 
 			RE::Cascadia::NPCFileExport::ExportNPCFile(npcFile, rawComment.data());
 

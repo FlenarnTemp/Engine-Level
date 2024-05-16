@@ -112,16 +112,12 @@ namespace RE
 				}
 			}
 
-			void RegisterDerivedAV(ActorValueInfo* myAV, std::function<float(const ActorValueOwner*, ActorValueInfo&)> CalcFunction)
+			void RegisterDerivedAV(ActorValueInfo* myAV, std::function<RE::ActorValueInfo::DerivationFunction_t> CalcFunction)
 			{
-				using underlying_t = msvc::workaround::function<float(ActorValueOwner*, ActorValueInfo&)>;
-
-				auto& func = *reinterpret_cast<underlying_t*>(&myAV->derivationFunction);
-				func._fn = new underlying_t::proxy_t();
-				func._fn->_badHack = CalcFunction;
+				myAV->derivationFunction = CalcFunction;
 			}
 
-			void RegisterLinkedAV(ActorValueInfo* myAV, float (*CalcFunction)(const ActorValueOwner*, ActorValueInfo&), ActorValueInfo* av1, ActorValueInfo* av2)
+			void RegisterLinkedAV(ActorValueInfo* myAV, std::function<RE::ActorValueInfo::DerivationFunction_t> CalcFunction, ActorValueInfo* av1, ActorValueInfo* av2)
 			{
 				RegisterDerivedAV(myAV, CalcFunction);
 				AddDependentAV(myAV, av1);
@@ -145,7 +141,7 @@ namespace RE
 
 			void RegisterForSkillLink()
 			{
-				logger::info("Skills: Linking Skills from FalloutCascadia.esm");
+				INFO("Skills: Linking Skills from FalloutCascadia.esm");
 
 				skillsLinkMap.clear();
 				strSkillMap.clear();

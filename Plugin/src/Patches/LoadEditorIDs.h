@@ -51,8 +51,8 @@ namespace RE
 						{
 							if (iter->second->GetFormID() != a_this->GetFormID())
 							{
-								logger::warn(
-									FMT_STRING("EditorID Conflict: {:08X} and {:08X} are both {:s}"sv),
+								WARN(
+									"EditorID Conflict: {:08X} and {:08X} are both {:s}"sv,
 									iter->second->GetFormID(),
 									a_this->GetFormID(),
 									a_editorID);
@@ -226,7 +226,7 @@ namespace RE
 					InstallHook<BGSLensFlare>();
 					InstallHook<BGSGodRays>();
 
-					logger::debug("Installed Patch: LoadEditorIDs"sv);
+					DEBUG("Installed Patch: LoadEditorIDs"sv);
 				}
 			};
 		}

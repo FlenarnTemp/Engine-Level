@@ -26,7 +26,7 @@ namespace RE
 			}
 			else
 			{
-				logger::warn("WARNING: Unable to retrieve the subtitle position because 'HUDMenu' is not open.");
+				WARN("WARNING: Unable to retrieve the subtitle position because 'HUDMenu' is not open.");
 			}
 
 			return position;
@@ -58,18 +58,18 @@ namespace RE
 				static REL::Relocation<std::uintptr_t> target{ VTABLE::DialogueMenu[0] };
 				_DialogueMenu_Call = target.write_vfunc(0x01, reinterpret_cast<std::uintptr_t>(DialogueMenu__Call));
 				_DialogueMenu__MapCodeObjectFunctions = target.write_vfunc(0x02, reinterpret_cast<std::uintptr_t>(DialogueMenu__MapCodeObjectFunctions));
-				logger::info("DialogueMenu hooks installed.");
+				INFO("DialogueMenu hooks installed.");
 				return true;
 			}
 
 		private:
 			static void DialogueMenu__Call(DialogueMenu* a_this, const Scaleform::GFx::FunctionHandler::Params& a_params)
 			{
-				logger::info(FMT_STRING("DialogueMenu__Call, code: {:s}"), std::to_string(reinterpret_cast<std::uint64_t>(a_params.userData)));
+				INFO("DialogueMenu__Call, code: {:s}", std::to_string(reinterpret_cast<std::uint64_t>(a_params.userData)));
 				switch (reinterpret_cast<std::uint64_t>(a_params.userData))
 				{
 				case 3:
-					logger::info("DialogueMenu - IsFrameworkActive");
+					INFO("DialogueMenu - IsFrameworkActive");
 					if (a_params.retVal)
 					{
 						// We "cheat" here, we always return true, since we're a TC, our theoretical impact on the retail game does not matter.
@@ -78,7 +78,7 @@ namespace RE
 					break;
 
 				case 4:
-					logger::info("DialogueMenu - GetTargetName");
+					INFO("DialogueMenu - GetTargetName");
 					if (a_params.retVal)
 					{
 						const char* result = "";
@@ -92,7 +92,7 @@ namespace RE
 					break;
 
 				case 5:
-					logger::info("DialogueMenu - GetTargetType");
+					INFO("DialogueMenu - GetTargetType");
 					if (a_params.retVal)
 					{
 						std::uint8_t result = 0;
@@ -106,7 +106,7 @@ namespace RE
 					break;
 
 				case 6:
-					logger::info("DialogueMenu - GetDialogueOptions");
+					INFO("DialogueMenu - GetDialogueOptions");
 					if (a_params.retVal)
 					{
 						Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = a_this->uiMovie->asMovieRoot;
@@ -121,7 +121,7 @@ namespace RE
 							{
 								Scaleform::GFx::Value optionIDValue, promptValue, responseValue, enabledValue, saidValue, challengeLevelValue, challengeResultValue, linkedToSelfValue;
 
-								logger::info(FMT_STRING("Prompt: {:s}, enabled: {:s}"), option.prompText.c_str(), std::to_string(option.enabled));
+								INFO("Prompt: {:s}, enabled: {:s}", option.prompText.c_str(), std::to_string(option.enabled));
 
 								optionIDValue = option.optionID;
 								promptValue = option.prompText.c_str();
@@ -150,13 +150,13 @@ namespace RE
 						}
 						else
 						{
-							logger::warn("GetDialogueOptions - Player dialogue not currently available. No dialogue will be retrieved.");
+							WARN("GetDialogueOptions - Player dialogue not currently available. No dialogue will be retrieved.");
 						}
 					}
 					break;
 
 				case 7:
-					logger::info("DialogueMenu - SetDialogueOptions");
+					INFO("DialogueMenu - SetDialogueOptions");
 					if (a_params.retVal)
 					{
 						if (a_params.argCount < 1)
@@ -171,7 +171,7 @@ namespace RE
 					break;
 
 				case 8:
-					logger::info("DialogueMenu - GetINISetting");
+					INFO("DialogueMenu - GetINISetting");
 					if (a_params.retVal)
 					{
 						INISettingCollection* iniSettings = INISettingCollection::GetSingleton();
@@ -188,15 +188,15 @@ namespace RE
 					break;
 
 				case 9:
-					logger::info("DialogueMenu - GetModSetting");
+					INFO("DialogueMenu - GetModSetting");
 					if (a_params.retVal)
 					{
-						logger::info(FMT_STRING("Requested setting: {:s}"), a_params.args[0].GetString());
+						INFO("Requested setting: {:s}", a_params.args[0].GetString());
 					}
 					break;
 
 				case 10:
-					logger::info("DialogueMenu - GetSubtitlePosition");
+					INFO("DialogueMenu - GetSubtitlePosition");
 					if (a_params.retVal)
 					{
 						*a_params.retVal = nullptr;
@@ -221,27 +221,27 @@ namespace RE
 					break;
 
 				case 11:
-					logger::info("DialogueMenu - SetSubtitlePosition");
+					INFO("DialogueMenu - SetSubtitlePosition");
 					break;
 
 				case 12:
-					logger::info("DialogueMenu - SetXDIResult");
+					INFO("DialogueMenu - SetXDIResult");
 					break;
 
 				case 13:
-					logger::info("DialogueMenu - SetWheelZoomEnabled");
+					INFO("DialogueMenu - SetWheelZoomEnabled");
 					break;
 
 				case 14:
-					logger::info("DialogueMenu - SetFavoritesEnabled");
+					INFO("DialogueMenu - SetFavoritesEnabled");
 					break;
 
 				case 15:
-					logger::info("DialogueMenu - SetMovementEnabled");
+					INFO("DialogueMenu - SetMovementEnabled");
 					break;
 
 				case 16:
-					logger::info("DialogueMenu - SetPlayerControls");
+					INFO("DialogueMenu - SetPlayerControls");
 					break;
 
 				default:
@@ -251,7 +251,7 @@ namespace RE
 
 			static void DialogueMenu__MapCodeObjectFunctions(DialogueMenu* a_this)
 			{
-				logger::info("DialogueMenu__MapCodeObjectFunctions");
+				INFO("DialogueMenu__MapCodeObjectFunctions");
 
 				// Retail
 				a_this->MapCodeMethodToASFunction("registerObjects", 0);
@@ -291,7 +291,7 @@ namespace RE
 				if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
 				{
 					a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
-					logger::info("root.XDI_Init");
+					INFO("root.XDI_Init");
 				}
 			}
 			return true;

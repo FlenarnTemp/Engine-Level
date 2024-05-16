@@ -4,9 +4,10 @@ namespace RE
 {
 	namespace Cascadia
 	{
-		class MenuOpenCloseEventWatcher : public BSTEventSink<MenuOpenCloseEvent>
+		class MenuOpenCloseEventWatcher :
+			public BSTEventSink<MenuOpenCloseEvent>
 		{
-			virtual BSEventNotifyControl ProcessEvent(MenuOpenCloseEvent& event, BSTEventSource<MenuOpenCloseEvent>*) override
+			virtual BSEventNotifyControl ProcessEvent(const MenuOpenCloseEvent& a_event, BSTEventSource<MenuOpenCloseEvent>*) override
 			{
 			}
 		};

@@ -181,7 +181,7 @@ namespace RE
 		}
 
 		// All infos failed their condition checks.
-		logger::debug("All infos failed their condition checks");
+		DEBUG("All infos failed their condition checks");
 		return nullptr;
 	}
 
@@ -478,7 +478,7 @@ namespace RE
 						//info->parentTopic->ownerQuest->instanceData[info->parentTopic->ownerQuest->currentInstanceID]->ParseString(response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 					}
 					responseText = response.data();
-					logger::info(FMT_STRING("Response: {:s}"), responseText);
+					INFO("Response: {:s}"), responseText);
 				}
 
 				// Get NPC response TopicInfo for dialogue cues.
@@ -513,7 +513,7 @@ namespace RE
 			}
 		}
 
-		logger::info(FMT_STRING("GetDialogueOptions: Got {:s} options when checking scene {:s}."), std::to_string(options.size()), RE::Cascadia::GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
+		INFO("GetDialogueOptions: Got {:s} options when checking scene {:s}."), std::to_string(options.size()), RE::Cascadia::GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
 		return options;
 	}
 

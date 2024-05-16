@@ -3,7 +3,7 @@
 namespace Serialization
 {
 	// Skill Point Functions
-	INT32 GetSkillPoints();
+	std::int32_t GetSkillPoints();
 
 	// Tag Skill Functions
 

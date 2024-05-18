@@ -82,10 +82,11 @@ namespace RE
 					if (a_params.retVal)
 					{
 						const char* result = "";
-						if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
-						{
-							result = target->GetDisplayFullName();
-						}
+						//if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
+						//{
+							//DEBUG("DialogueMenu - Prior to GetFullName");
+							//result = target->GetDisplayFullName();
+						//}
 
 						*a_params.retVal = result;
 					}
@@ -217,11 +218,32 @@ namespace RE
 							a_params.retVal->PushBack(subtitleX);
 							a_params.retVal->PushBack(subtitleY);
 						}
+						else
+						{
+							DEBUG("Unable to retrieve the subtitle position because `HUDMenu` is not open.");
+						}
 					}
 					break;
 
 				case 11:
 					INFO("DialogueMenu - SetSubtitlePosition");
+					if (a_params.retVal)
+					{
+						*a_params.retVal = nullptr;
+
+						BSFixedString menuString("HUDMenu");
+						if (UI::GetSingleton()->GetMenuOpen(menuString))
+						{
+							IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+							Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
+							
+							Scaleform::GFx::Value subtitle;
+							movieRoot->GetVariable(&subtitle, "root.BottomCenterGroup_mc.SubtitleText_mc");
+							
+							// TODO - set member variables of `subtitle`.
+						}
+					}
+
 					break;
 
 				case 12:
@@ -285,15 +307,15 @@ namespace RE
 
 		bool RegisterScaleform(Scaleform::GFx::Movie* a_view, Scaleform::GFx::Value* a_value)
 		{
-			//	Scaleform::GFx::Value currentSWFPath;
-			//	if (a_view->asMovieRoot->GetVariable(&currentSWFPath, "root.loaderInfo.url"))
-			//	{
-			//		if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
-			//		{
-			//			a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
-			//			INFO("root.XDI_Init");
-			//		}
-			//	}
+				Scaleform::GFx::Value currentSWFPath;
+				if (a_view->asMovieRoot->GetVariable(&currentSWFPath, "root.loaderInfo.url"))
+				{
+					if (_stricmp(currentSWFPath.GetString(), "Interface/DialogueMenu.swf") == 0)
+					{
+						a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
+						INFO("root.XDI_Init");
+					}
+				}
 			return true;
 		}
 	}

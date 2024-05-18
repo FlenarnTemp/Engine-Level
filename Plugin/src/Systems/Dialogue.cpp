@@ -296,11 +296,13 @@ namespace RE
 				{
 					if (action->status & BGSSceneAction::Status::kRunning || IsSceneActionWithinPhase(action, scene->currentActivePhase))
 					{
+						DEBUG("GetCurrentPlayerDialogueAction - return non-null.");
 						return (BGSSceneActionPlayerDialogue*)(action);
 					}
 				}
 			}
 		}
+		DEBUG("GetCurrentPlayerDialogueAction - return `nullptr`.");
 		return nullptr;
 	}
 
@@ -407,7 +409,7 @@ namespace RE
 			targetREFR = RE::Cascadia::GetPlayerCharacter();
 		}
 
-		// Test against conditions - (subject = player)
+		// Test against conditions
 		TESObjectREFR *refA, *refB;
 		if (!swap)
 		{
@@ -507,8 +509,8 @@ namespace RE
 				option.challengeResult = info->GetSuccessLevel();
 				option.linkedToSelf = sceneData ? (currentScene == sceneData->pScene && playerDialogue->startPhase >= sceneData->uiPhase && playerDialogue->endPhase <= sceneData->uiPhase) : false;
 				option.endsScene = npcResponseInfo ? (npcResponseInfo->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kEndRunningScene)) != 0 : false;
-				option.isBarterOption = false;     // npcResponseInfo ? TODO : false; -TODO
-				option.isInventoryOption = false;  // npcResponseInfo ? TODO : false; - TODO
+				option.isBarterOption = false;     // npcResponseInfo ? TODO : false; -TODO https://github.com/reg2k/xdi/blob/3bfc141a20a0f9162c04c38fdc8350a7912dc09e/src/GameUtils.cpp#L17
+				option.isInventoryOption = false;  // npcResponseInfo ? TODO : false; - TODO https://github.com/reg2k/xdi/blob/3bfc141a20a0f9162c04c38fdc8350a7912dc09e/src/GameUtils.cpp#L17
 				options.push_back(option);
 			}
 		}
@@ -532,7 +534,9 @@ namespace RE
 	void SetSceneData(TESTopicInfo* topicInfo, BGSScene* scene, std::uint32_t phase)
 	{
 		if (!topicInfo)
+		{
 			return;
+		}
 
 		auto& sceneListMap = GetAllSceneListMap();
 		auto sceneDataIter = sceneListMap.find(topicInfo);

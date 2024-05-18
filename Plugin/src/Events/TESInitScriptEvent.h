@@ -20,21 +20,21 @@ namespace RE
 					{
 					case static_cast<std::uint32_t>(ENUM_FORM_ID::kCONT):
 						//InitializeContainerCondition(event.hObjectInitialized);
-						INFO("InitializeInventoryCondition");
+						//INFO("InitializeInventoryCondition");
 						break;
 
 					case static_cast<std::uint32_t>(ENUM_FORM_ID::kARMO):
 						InitializeArmorCondition(a_event.hObjectInitialized);
-						DEBUG("InitializeArmorCondition");
+						//DEBUG("InitializeArmorCondition");
 						break;
 
 					case static_cast<std::uint32_t>(ENUM_FORM_ID::kWEAP):
 						InitializeWeaponCondition(a_event.hObjectInitialized);
-						DEBUG("InitializeWeaponCondition");
+						//DEBUG("InitializeWeaponCondition");
 						break;
 
 					default:
-						DEBUG("Form type: {:s}", std::to_string(a_event.hObjectInitialized->data.objectReference->formType.underlying()));
+						//DEBUG("Form type: {:s}", std::to_string(a_event.hObjectInitialized->data.objectReference->formType.underlying()));
 						break;
 					}
 				}

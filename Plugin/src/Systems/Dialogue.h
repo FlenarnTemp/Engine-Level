@@ -34,17 +34,15 @@ namespace RE
 
 	static_assert(sizeof(TOPIC_INFO_SCENEDATA) == 0x10);
 
-	// Verified
 	[[nodiscard]] inline BSTHashMap<const TESTopicInfo*, BGSLocalizedString>& GetAllPromptMap()
 	{
-		REL::Relocation<BSTHashMap<const TESTopicInfo*, BGSLocalizedString>*> AllPromptMap{ REL::ID(73894), -0x28 };
+		REL::Relocation<BSTHashMap<const TESTopicInfo*, BGSLocalizedString>*> AllPromptMap{ REL::ID(2662553), -0x28 };
 		return *AllPromptMap;
 	}
 
-	// Verified
 	[[nodiscard]] inline BSTHashMap<const TESTopicInfo*, TOPIC_INFO_SCENEDATA>& GetAllSceneListMap()
 	{
-		REL::Relocation<BSTHashMap<const TESTopicInfo*, TOPIC_INFO_SCENEDATA>*> AllSceneListsMap{ REL::ID(1123956), -0x28 };
+		REL::Relocation<BSTHashMap<const TESTopicInfo*, TOPIC_INFO_SCENEDATA>*> AllSceneListsMap{ REL::ID(2662565), -0x28 };
 		return *AllSceneListsMap;
 	}
 

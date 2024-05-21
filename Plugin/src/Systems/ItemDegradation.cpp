@@ -55,13 +55,13 @@ namespace RE
 			fWeaponConditionRateOfFire10 = GetGMST("fWeaponConditionRateOfFire10");
 
 			// Armor Type Keywords
-			armorTypePowerArmor = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(317601, "Fallout4.esm");            //HEX: 4D8A1
-			armorBodyPartChest = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(442604, "Fallout4.esm");             //HEX: 6C0EC
-			armorBodyPartHead = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(1098776, "Fallout4.esm");             //HEX: 10C418
-			armorBodyPartLeftArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170118, "FalloutCascadia.esm");   //HEX: 211D06
-			armorBodyPartRightArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170120, "FalloutCascadia.esm");  //HEX: 211D08
-			armorBodyPartLeftLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170119, "FalloutCascadia.esm");   //HEX: 211D07
-			armorBodyPartRightLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(2170121, "FalloutCascadia.esm");  //HEX: 211D09
+			armorTypePowerArmor = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x04D8A1, "Fallout4.esm");
+			armorBodyPartChest = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x06C0EC, "Fallout4.esm");
+			armorBodyPartHead = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x10C418, "Fallout4.esm");
+			armorBodyPartLeftArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x211D06, "FalloutCascadia.esm");
+			armorBodyPartRightArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x211D08, "FalloutCascadia.esm");
+			armorBodyPartLeftLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x211D07, "FalloutCascadia.esm");
+			armorBodyPartRightLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x211D09, "FalloutCascadia.esm");
 
 			INFO("Item Degradation: Finished linking degradation forms.");
 		}
@@ -197,12 +197,11 @@ namespace RE
 			// Check for ExtraData.
 			if (weaponREFR->extraList.get())
 			{
-				if (!weaponREFR->extraList->HasType(RE::kHealth))
+				// GetHealthPerc returns -1.0 if it can't find the kHealth type.
+				if (weaponREFR->extraList->GetHealthPerc() < 0)
 				{
 					float value = RNG(0.55f, 0.85f);
-
-					auto extraHealth = new ExtraHealth(value);
-					weaponREFR->extraList->AddExtra(extraHealth);
+					weaponREFR->extraList->SetHealthPerc(value);
 					INFO(("InitializeWeaponCondition: Data initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
 					return;
 				}
@@ -230,14 +229,12 @@ namespace RE
 
 			if (armorREFR->extraList.get())
 			{
-				if (!armorREFR->extraList->HasType(RE::kHealth))
+				// GetHealthPerc returns -1.0 if it can't find the kHealth type.
+				if (armorREFR->extraList->GetHealthPerc() < 0)
 				{
 					float value = RNG(0.55f, 0.85f);
 
-					//armorREFR->SetHealthPerc(value);
-
-					//auto extraHealth = new ExtraHealth(value);
-					//armorREFR->extraList->AddExtra(extraHealth);
+					armorREFR->extraList->SetHealthPerc(value);
 					INFO(("IntializeArmorCondition: Data initialized: {:s}"), std::to_string(value));
 					return;
 				}
@@ -266,6 +263,18 @@ namespace RE
 			float result = (fDamageSkillBase + fDamageSkillMult * actorSkillValue);
 
 			return result;
+		}
+
+		void ModWeaponCondition(TESObjectREFR* myWeapon, float a_value)
+		{
+			if (RE::Cascadia::GetPlayerCharacter()->IsGodMode())
+			{
+				DEBUG("God Mode enabled, ignoring weapon degradation.");
+				return;
+			}
+
+			auto currentWeapon = RE::Cascadia::GetPlayerCharacter()->GetCurrent
+
 		}
 	}
 }

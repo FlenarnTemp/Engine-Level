@@ -150,7 +150,7 @@ namespace RE
 				continue;
 			}
 
-			if (!(info->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom)) && !(info->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd)) && randomOptions.size() != 0)
+			if (!(info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom) && !(info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd) && randomOptions.size() != 0)
 			{
 				if (randomOptions.size() == 1)
 				{
@@ -171,6 +171,7 @@ namespace RE
 		// Do a random roll if the last info topic is 'random' flagged, but not 'randomEnd'.
 		if (randomOptions.size() != 0)
 		{
+			// Shortcut, skip rand() if only one option available.
 			if (randomOptions.size() == 1)
 			{
 				return randomOptions[0];

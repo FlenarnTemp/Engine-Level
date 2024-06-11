@@ -113,14 +113,11 @@ namespace RE
 	{
 		BuildDialogueMap();
 		std::vector<TESTopicInfo*> npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
-
-		TESTopicInfo* infoHolder;
 		BSTArray<TESTopicInfo*> randomOptions{};
-		std::uint32_t randomRoll;
 
 		for (TESTopicInfo* info : npcInfos)
 		{
-			if ((info->formFlags >> 5) & 1)
+			if ((info->formFlags >> 5) & 1) // Check if 'Deleted'.
 			{
 				continue;
 			}
@@ -136,30 +133,16 @@ namespace RE
 					randomOptions.push_back(info);
 				}
 
-				if (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd)
+				if (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd && randomOptions.size() > 0)
 				{
-					if (randomOptions.size() == 1)
-					{
-						return randomOptions[0];
-					}
-
-					randomRoll = rand() & randomOptions.size();
-					infoHolder = randomOptions[randomRoll];
-					return infoHolder;
+					return randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())];
 				}
 				continue;
 			}
 
-			if (!(info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandom) && !(info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd) && randomOptions.size() != 0)
+			if (randomOptions.size() > 0)
 			{
-				if (randomOptions.size() == 1)
-				{
-					return randomOptions[0];
-				}
-
-				randomRoll = rand() % randomOptions.size();
-				infoHolder = randomOptions[randomRoll];
-				return infoHolder;
+				return randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())];
 			}
 
 			if (EvaluateInfoConditions(info, playerDialogue, true))
@@ -176,9 +159,7 @@ namespace RE
 			{
 				return randomOptions[0];
 			}
-			randomRoll = rand() % randomOptions.size();
-			infoHolder = randomOptions[randomRoll];
-			return infoHolder;
+			return randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())];
 		}
 
 		// All infos failed their condition checks.

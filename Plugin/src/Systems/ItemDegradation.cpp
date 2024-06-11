@@ -272,9 +272,6 @@ namespace RE
 				DEBUG("God Mode enabled, ignoring weapon degradation.");
 				return;
 			}
-
-			auto currentWeapon = RE::Cascadia::GetPlayerCharacter()->GetCurrent
-
 		}
 	}
 }

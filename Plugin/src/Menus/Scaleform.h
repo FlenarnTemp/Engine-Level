@@ -82,11 +82,11 @@ namespace RE
 					if (a_params.retVal)
 					{
 						const char* result = "";
-						//if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
-						//{
-							//DEBUG("DialogueMenu - Prior to GetFullName");
-							//result = target->GetDisplayFullName();
-						//}
+						if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
+						{
+							result = target->GetDisplayFullName();
+							DEBUG(result);
+						}
 
 						*a_params.retVal = result;
 					}

@@ -55,7 +55,7 @@ namespace RE
 			TESNPC* a_actorBase = a_actor->GetNPC();
 			if (a_actorBase)
 			{
-				gender = a_actorBase->GetSex();
+				gender = std::to_underlying(a_actorBase->GetSex());
 			}
 			return gender;
 		}

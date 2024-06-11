@@ -167,7 +167,7 @@ namespace RE
 		{
 			if (!npc->morphSliderValues || npc->morphSliderValues->size() == 0)
 			{
-				return NPCFileDefaults::DefaultBodyMorphRegions(npc->GetSex());
+				return NPCFileDefaults::DefaultBodyMorphRegions(std::to_underlying(npc->GetSex()));
 			}
 
 			BodyMorphRegions result{};
@@ -204,7 +204,7 @@ namespace RE
 
 			if (result.head == 0.0f && result.upperTorso == 0.0f && result.arms == 0.0f && result.lowerTorso == 0.0f && result.legs == 0.0f)
 			{
-				return NPCFileDefaults::DefaultBodyMorphRegions(npc->GetSex());
+				return NPCFileDefaults::DefaultBodyMorphRegions(std::to_underlying(npc->GetSex()));
 			}
 
 			return result;
@@ -618,7 +618,7 @@ namespace RE
 
 			std::string GenerateSex(TESNPC* npc)
 			{
-				std::uint32_t sex = npc->GetSex();
+				std::uint32_t sex = std::to_underlying(npc->GetSex());
 
 				std::stringstream result;
 

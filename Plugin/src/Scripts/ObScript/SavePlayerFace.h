@@ -85,7 +85,7 @@ namespace ObScript
 			DEBUG("Facial Bone Regions");
 			npcFile.morphSlidersA = RE::Cascadia::GetMorphSliderValuesFromNPC(npc);  //Morph Sliders
 			DEBUG("Morph Sliders");
-			npcFile.tintEntriesA = RE::Cascadia::GetTintEntriesFromNPC(npc, npc->GetSex());  // Tint Entries
+			npcFile.tintEntriesA = RE::Cascadia::GetTintEntriesFromNPC(npc, std::to_underlying(npc->GetSex()));  // Tint Entries
 			DEBUG("Tint Entries");
 
 			RE::Cascadia::NPCFileExport::ExportNPCFile(npcFile, rawComment.data());

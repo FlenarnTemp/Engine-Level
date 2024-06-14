@@ -35,6 +35,9 @@ namespace RE
 		void SetFavoritesEnabled(bool enabled);
 		void SetMovementEnabled(bool enabled);
 
+		bool HasVMScript(TESForm* form, const char* scriptName);
+
+
 		//bool IsMeleeWeapon(WeaponConditionData myConditionData);
 		//float CalculateSkillBonusFromActor(WeaponConditionData myConditionData);
 
@@ -42,5 +45,6 @@ namespace RE
 
 		float ConvertPercentageToFloat(std::uint8_t percentage);
 
+		std::string trim(const std::string& str);
 	}
 }

@@ -278,7 +278,6 @@ namespace RE
 				{
 					if (action->status & BGSSceneAction::Status::kRunning || IsSceneActionWithinPhase(action, scene->currentActivePhase))
 					{
-						DEBUG("GetCurrentPlayerDialogueAction - return non-null.");
 						return (BGSSceneActionPlayerDialogue*)(action);
 					}
 				}
@@ -392,7 +391,7 @@ namespace RE
 		}
 
 		// Test against conditions
-		TESObjectREFR *refA, *refB;
+		TESObjectREFR* refA, * refB;
 		if (!swap)
 		{
 			refA = RE::Cascadia::GetPlayerCharacter();
@@ -462,7 +461,7 @@ namespace RE
 						//info->parentTopic->ownerQuest->instanceData[info->parentTopic->ownerQuest->currentInstanceID]->ParseString(response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 					}
 					responseText = response.data();
-					INFO("Response: {:s}", responseText);
+					DEBUG("Response: {:s}", responseText);
 				}
 
 				// Get NPC response TopicInfo for dialogue cues.
@@ -491,13 +490,13 @@ namespace RE
 				option.challengeResult = info->GetSuccessLevel();
 				option.linkedToSelf = sceneData ? (currentScene == sceneData->pScene && playerDialogue->startPhase >= sceneData->uiPhase && playerDialogue->endPhase <= sceneData->uiPhase) : false;
 				option.endsScene = npcResponseInfo ? (npcResponseInfo->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kEndRunningScene)) != 0 : false;
-				option.isBarterOption = false;     // npcResponseInfo ? TODO : false; -TODO https://github.com/reg2k/xdi/blob/3bfc141a20a0f9162c04c38fdc8350a7912dc09e/src/GameUtils.cpp#L17
-				option.isInventoryOption = false;  // npcResponseInfo ? TODO : false; - TODO https://github.com/reg2k/xdi/blob/3bfc141a20a0f9162c04c38fdc8350a7912dc09e/src/GameUtils.cpp#L17
+				option.isBarterOption = npcResponseInfo ? Cascadia::HasVMScript(npcResponseInfo, "VendorInfoScript") : false;
+				option.isInventoryOption = npcResponseInfo ? Cascadia::HasVMScript(npcResponseInfo, "OpenInventoryInfoScript") : false;
 				options.push_back(option);
 			}
 		}
 
-		INFO("GetDialogueOptions: Got {:s} options when checking scene {:s}.", std::to_string(options.size()), RE::Cascadia::GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
+		DEBUG("GetDialogueOptions: Got {:s} options when checking scene {:s}.", std::to_string(options.size()), RE::Cascadia::GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
 		return options;
 	}
 

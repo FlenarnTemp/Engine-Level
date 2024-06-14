@@ -21,7 +21,7 @@ namespace RE
 				formIndex == "05" ||  // DLCworkshop03.esm
 				formIndex == "06" ||  // DLCNukaWorld.esm
 				formIndex == "ff"     // Dynamic content, FF - Creation Club primarily(?)
-			)
+				)
 			{
 				return true;
 			}
@@ -336,9 +336,28 @@ namespace RE
 
 		bool HasVMScript(TESForm* form, const char* scriptName)
 		{
-			// TODO - the rest of this function needs more declaration of the IVM.
+			BSTSmartPointer<BSScript::IVirtualMachine> vm = GameVM::GetSingleton()->GetVM();
 
-			return false;
+			// BSScript::IObjectHandlePolicy
+			const auto& handlePolicy = vm->GetObjectHandlePolicy();
+			std::size_t handle = handlePolicy.GetHandleForObject(form->formType.underlying(), form);
+
+			BSTSmartPointer<Object> identifier;
+
+			if (vm->FindBoundObject(handle, scriptName, 1, identifier, 0))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		std::string trim(const std::string& str) {
+			size_t start = str.find_first_not_of(" \t\n\r");
+			size_t end = str.find_last_not_of(" \t\n\r");
+			return (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 		}
 	}
 }

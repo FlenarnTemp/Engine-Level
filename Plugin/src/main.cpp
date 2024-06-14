@@ -1,5 +1,5 @@
 #include "Events/TESInitScriptEvent.h"
-#include "Menus/Scaleform.h"
+#include "Menus/DialogueMenu.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
 #include "Systems/Skills.h"
@@ -98,13 +98,8 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 		return false;
 	}
 
-	if (!RE::Cascadia::CAS_DialogueMenu::Install())
-	{
-		WARN("DialogueMenu - failed to install hooks.");
-	}
-
 	const auto scaleform = F4SE::GetScaleformInterface();
-	if (!scaleform || !scaleform->Register("Cascadia", RE::Cascadia::RegisterScaleform))
+	if (!scaleform || !scaleform->Register("Cascadia", RE::Cascadia::DialogueMenu::RegisterScaleform))
 	{
 		FATAL("Failed to register scaleform callback, marking as incompatible."sv);
 		return false;

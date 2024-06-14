@@ -8,6 +8,31 @@ namespace RE
 	{
 		namespace DialogueMenu
 		{
+			class SetPlayerControls : public Scaleform::GFx::FunctionHandler
+			{
+			public:
+				virtual void Call(const Params& a_params)
+				{
+					DEBUG("SetPlayerControls called.");
+					if (a_params.argCount < 3) return;
+					if (!a_params.args[0].IsInt()) return;
+					if (!a_params.args[1].IsInt()) return;
+					if (!a_params.args[2].IsBoolean()) return;
+
+					std::uint32_t type = a_params.args[0].GetInt();
+					std::uint32_t flags = a_params.args[1].GetInt();
+					boolean enabled = a_params.args[2].GetBoolean();
+
+					BSFixedString menuString("DialogueMenu");
+					if (UI::GetSingleton()->GetMenuOpen(menuString))
+					{
+						auto player = Cascadia::GetPlayerCharacter();
+						player->
+						// TODO
+					}
+				}
+			};
+
 			class GetINISetting : public Scaleform::GFx::FunctionHandler
 			{
 			public:
@@ -28,13 +53,11 @@ namespace RE
 						{
 							Setting* setting = iniSettings->GetSetting(a_params.args[0].GetString());
 							std::uint32_t value;
-							
 
 							if (setting)
 							{
 								value = setting->GetInt();
 								DEBUG("Requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
-
 								*a_params.retVal = value;
 							}
 							else 
@@ -308,12 +331,16 @@ namespace RE
 					{
 						Scaleform::GFx::Value bgsCodeObj;
 						a_view->asMovieRoot->GetVariable(&bgsCodeObj, "root.Menu_mc.BGSCodeObj");
+						RegisterFunction<SetPlayerControls>(&bgsCodeObj, a_view->asMovieRoot, "SetPlayerControls");
 
 						RegisterFunction<GetINISetting>(&bgsCodeObj, a_view->asMovieRoot, "GetINISetting");
 						RegisterFunction<GetModSetting>(&bgsCodeObj, a_view->asMovieRoot, "GetModSetting");
+
 						RegisterFunction<GetSubtitlePosition_GFx>(&bgsCodeObj, a_view->asMovieRoot, "GetSubtitlePosition");
+
 						RegisterFunction<GetTargetName>(&bgsCodeObj, a_view->asMovieRoot, "GetTargetName");
 						RegisterFunction<GetTargetType>(&bgsCodeObj, a_view->asMovieRoot, "GetTargetType");
+
 						RegisterFunction<IsFrameworkActive>(&bgsCodeObj, a_view->asMovieRoot, "IsFrameworkActive");
 						RegisterFunction<SelectDialogueOption_GFx>(&bgsCodeObj, a_view->asMovieRoot, "SelectDialogueOption");
 						RegisterFunction<GetDialogueOptions_GFx>(&bgsCodeObj, a_view->asMovieRoot, "GetDialogueOptions");

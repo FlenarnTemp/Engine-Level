@@ -94,12 +94,7 @@ namespace RE
 							std::uint32_t iterationCount = 0;
 							for (BGSInventoryItem::Stack* traverse = iterator.stackData.get(); traverse; traverse->nextStack)
 							{
-								if (!traverse)
-								{
-									break;
-								}
-
-								if (!traverse->extra)
+								if (!traverse || !traverse->extra)
 								{
 									break;
 								}
@@ -131,12 +126,7 @@ namespace RE
 
 							for (BGSInventoryItem::Stack* traverse = iterator.stackData.get(); traverse; traverse->nextStack)
 							{
-								if (!traverse)
-								{
-									break;
-								}
-
-								if (!traverse->extra)
+								if (!traverse || !traverse->extra)
 								{
 									break;
 								}

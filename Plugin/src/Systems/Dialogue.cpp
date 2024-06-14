@@ -27,7 +27,9 @@ namespace RE
 
 		// If we already have a map for this scene + scene action then return.
 		if (!force && g_dialogueHolder.scene == currentScene && g_dialogueHolder.playerDialogue == playerDialogue)
+		{
 			return;
+		}
 
 		g_dialogueHolder.dialogueMap.clear();
 
@@ -294,7 +296,7 @@ namespace RE
 			return false;
 		}
 
-		if (auto playerDialogue = GetCurrentPlayerDialogueAction())
+		if (BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction())
 		{
 			// We're using option 5 and up for additional options. (Options 5 = Option 0).
 			RE::Cascadia::GetPlayerCharacter()->SetLastDialogueInput(option + 5);
@@ -534,6 +536,23 @@ namespace RE
 			newSceneData.pScene = scene;
 			newSceneData.uiPhase = phase;
 			sceneListMap.emplace(topicInfo, newSceneData);
+		}
+	}
+
+	// Vanilla has a bug where player interrupts would delay the second SetButtonText callback.
+	// One of the conditions for the second callback is when IsTalking() on the playe returns false.
+	// IsTalking only returns false when 'dialogueTimeLeft' equals 0, so if the player is speaking an interrupt then he interrupt will delay call.
+	// This hook will return false if the menu topic manager indicated that it's ready to recieve player input.
+	// Unnecessary?
+	bool IsPlayerTalking(Actor* actor)
+	{
+		if (MenuTopicManager::GetSingleton()->allowInput)
+		{
+			return false;
+		}
+		else
+		{
+			return actor->IsTalking();
 		}
 	}
 }

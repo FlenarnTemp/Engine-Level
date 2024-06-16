@@ -26,8 +26,6 @@ namespace RE
 					BSFixedString menuString("DialogueMenu");
 					if (UI::GetSingleton()->GetMenuOpen(menuString))
 					{
-						auto player = Cascadia::GetPlayerCharacter();
-						player->
 						// TODO
 					}
 				}
@@ -38,7 +36,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("GetINISetting called.")
 					if (a_params.retVal)
 					{
 						*a_params.retVal = nullptr;
@@ -57,12 +54,12 @@ namespace RE
 							if (setting)
 							{
 								value = setting->GetInt();
-								DEBUG("Requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
+								DEBUG("GetINISetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
 								*a_params.retVal = value;
 							}
 							else 
 							{
-								DEBUG("Requested setting: {:s} which was not found.", a_params.args[0].GetString());
+								DEBUG("GetINISetting called, requested setting: {:s} which was not found.", a_params.args[0].GetString());
 							}
 						}
 					}
@@ -74,7 +71,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("GetModSetting called.")
 					if (a_params.retVal)
 					{
 						*a_params.retVal = nullptr;
@@ -97,7 +93,7 @@ namespace RE
 							value = 40;
 						}
 						
-						DEBUG("Requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
+						DEBUG("GetModSetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
 						*a_params.retVal = value;
 					}
 				}

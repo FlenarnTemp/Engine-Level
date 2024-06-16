@@ -2,6 +2,7 @@
 #include "Menus/DialogueMenu.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
+#include "Systems/Dialogue.h"
 #include "Systems/Skills.h"
 
 namespace
@@ -107,6 +108,9 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
+
+	RE::Cascadia::DialogueMenu::MenuOpenCloseEventWatcher* test = new RE::Cascadia::DialogueMenu::MenuOpenCloseEventWatcher;
+	RE::UI::GetSingleton()->GetEventSource<RE::MenuOpenCloseEvent>()->RegisterSink(test);
 
 	INFO(("{:s} finished loading."), "Cascadia Gameplay Systems");
 

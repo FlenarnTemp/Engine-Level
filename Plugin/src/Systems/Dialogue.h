@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Shared/SharedFunctions.h"
+
+#include "RE/Bethesda/BSPointerHandle.h"
+
 namespace RE
 {
 	struct DialogueOption

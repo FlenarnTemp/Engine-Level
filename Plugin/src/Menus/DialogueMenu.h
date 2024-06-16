@@ -4,10 +4,14 @@
 
 namespace RE
 {
+
+
 	namespace Cascadia
 	{
 		namespace DialogueMenu
 		{
+			std::pair<float, float> savedSubtitlePosition;
+
 			class SetPlayerControls : public Scaleform::GFx::FunctionHandler
 			{
 			public:
@@ -40,7 +44,7 @@ namespace RE
 					{
 						*a_params.retVal = nullptr;
 
-						if (a_params.argCount < 1 ||!a_params.args[0].IsString())
+						if (a_params.argCount < 1 || !a_params.args[0].IsString())
 						{
 							return;
 						}
@@ -57,7 +61,7 @@ namespace RE
 								DEBUG("GetINISetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
 								*a_params.retVal = value;
 							}
-							else 
+							else
 							{
 								DEBUG("GetINISetting called, requested setting: {:s} which was not found.", a_params.args[0].GetString());
 							}
@@ -74,14 +78,14 @@ namespace RE
 					if (a_params.retVal)
 					{
 						*a_params.retVal = nullptr;
-						
+
 						if (a_params.argCount < 1 || !a_params.args[0].IsString())
 						{
 							return;
 						}
 
 						// Here we "cheat" once again, who needs configurable settings anyhow.
-						auto setting = trim( a_params.args[0].GetString());
+						auto setting = trim(a_params.args[0].GetString());
 
 						std::uint32_t value = 1;
 						if (setting == "fSubtitlesX:DialogueMenu" || setting == "bShowOptionNumbers:DialogueMenu")
@@ -92,7 +96,7 @@ namespace RE
 						{
 							value = 40;
 						}
-						
+
 						DEBUG("GetModSetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
 						*a_params.retVal = value;
 					}
@@ -105,31 +109,31 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					DEBUG("GetSubtitlePosition called.")
-					if (a_params.retVal)
-					{
-						*a_params.retVal = nullptr;
-
-						BSFixedString menuString("HUDMenu");
-						if (UI::GetSingleton()->GetMenuOpen(menuString))
+						if (a_params.retVal)
 						{
-							IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
-							Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
+							*a_params.retVal = nullptr;
 
-							movieRoot->CreateArray(a_params.retVal);
+							BSFixedString menuString("HUDMenu");
+							if (UI::GetSingleton()->GetMenuOpen(menuString))
+							{
+								IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+								Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
 
-							Scaleform::GFx::Value subtitleX;
-							movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
-							Scaleform::GFx::Value subtitleY;
-							movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
+								movieRoot->CreateArray(a_params.retVal);
 
-							a_params.retVal->PushBack(subtitleX);
-							a_params.retVal->PushBack(subtitleY);
+								Scaleform::GFx::Value subtitleX;
+								movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
+								Scaleform::GFx::Value subtitleY;
+								movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
+
+								a_params.retVal->PushBack(subtitleX);
+								a_params.retVal->PushBack(subtitleY);
+							}
+							else
+							{
+								DEBUG("Unable to retrieve the subtitle position because `HUDMenu` is not open.");
+							}
 						}
-						else
-						{
-							DEBUG("Unable to retrieve the subtitle position because `HUDMenu` is not open.");
-						}
-					}
 				}
 			};
 
@@ -138,14 +142,17 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("GetTargetName called.");
 					if (a_params.retVal)
 					{
 						const char* result = "";
 						if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
 						{
 							result = target->GetDisplayFullName();
-							DEBUG("Target name: {:s}", result);
+							DEBUG("GetTargetName called, target name: {:s}", result);
+						}
+						else
+						{
+							DEBUG("GetTargetName called, no target name found.");
 						}
 
 						*a_params.retVal = result;
@@ -165,7 +172,7 @@ namespace RE
 						if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
 						{
 							result = target->formType.underlying();
-						}	
+						}
 
 						*a_params.retVal = result;
 					}
@@ -304,6 +311,29 @@ namespace RE
 
 				return false;
 			}
+
+			// Event Handlers
+			class MenuOpenCloseEventWatcher :
+				public BSTEventSink<MenuOpenCloseEvent>
+			{
+			public:
+				virtual BSEventNotifyControl ProcessEvent(const MenuOpenCloseEvent& a_event, BSTEventSource<MenuOpenCloseEvent>*) override
+				{
+					DEBUG("MenuOpenCloseEvent, menu: '{:s}'.", a_event.menuName.c_str());
+					if (a_event.menuName == BSFixedString("DialogueMenu"))
+					{
+						if (a_event.opening)
+						{
+							savedSubtitlePosition = GetSubtitlePosition();
+						}
+						else
+						{
+							SetSubtitlePosition(savedSubtitlePosition.first, savedSubtitlePosition.second);
+						}
+					}
+					return BSEventNotifyControl::kContinue;
+				};
+			};
 
 			template <typename T>
 			void RegisterFunction(Scaleform::GFx::Value* dest, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot, const char* func_name)

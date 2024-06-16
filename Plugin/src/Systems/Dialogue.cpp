@@ -1,7 +1,4 @@
 #include "Systems/Dialogue.h"
-#include "Shared/SharedFunctions.h"
-
-#include "RE/Bethesda/BSPointerHandle.h"
 
 namespace RE
 {
@@ -9,11 +6,6 @@ namespace RE
 	namespace
 	{
 		DialogueHolder g_dialogueHolder;
-
-		std::pair<float, float> savedSubtitlePosition;
-
-		// Event Handlers
-
 	}
 
 	void BuildDialogueMap(bool force)

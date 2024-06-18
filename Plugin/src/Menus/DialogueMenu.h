@@ -264,9 +264,9 @@ namespace RE
 				}
 			};
 
-			// 
+			// =================
 			// General Functions
-			// 
+			// =================
 
 			std::pair<float, float> GetSubtitlePosition()
 			{
@@ -312,28 +312,7 @@ namespace RE
 				return false;
 			}
 
-			// Event Handlers
-			class MenuOpenCloseEventWatcher :
-				public BSTEventSink<MenuOpenCloseEvent>
-			{
-			public:
-				virtual BSEventNotifyControl ProcessEvent(const MenuOpenCloseEvent& a_event, BSTEventSource<MenuOpenCloseEvent>*) override
-				{
-					DEBUG("MenuOpenCloseEvent, menu: '{:s}'.", a_event.menuName.c_str());
-					if (a_event.menuName == BSFixedString("DialogueMenu"))
-					{
-						if (a_event.opening)
-						{
-							savedSubtitlePosition = GetSubtitlePosition();
-						}
-						else
-						{
-							SetSubtitlePosition(savedSubtitlePosition.first, savedSubtitlePosition.second);
-						}
-					}
-					return BSEventNotifyControl::kContinue;
-				};
-			};
+			// =================
 
 			template <typename T>
 			void RegisterFunction(Scaleform::GFx::Value* dest, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot, const char* func_name)

@@ -1,5 +1,5 @@
 #include "Events/TESInitScriptEvent.h"
-#include "Menus/DialogueMenu.h"
+#include "Events/MenuOpenCloseEvent.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
 #include "Systems/Dialogue.h"
@@ -106,11 +106,10 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 		return false;
 	}
 
+	RE::Cascadia::RegisterMenuOpenCloseEventSink();
+
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
-
-	RE::Cascadia::DialogueMenu::MenuOpenCloseEventWatcher* test = new RE::Cascadia::DialogueMenu::MenuOpenCloseEventWatcher;
-	RE::UI::GetSingleton()->GetEventSource<RE::MenuOpenCloseEvent>()->RegisterSink(test);
 
 	INFO(("{:s} finished loading."), "Cascadia Gameplay Systems");
 

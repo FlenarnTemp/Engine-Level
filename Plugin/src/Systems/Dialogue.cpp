@@ -442,19 +442,18 @@ namespace RE
 				}
 
 				// Get response and perform text replacement.
-				const char* responseText = "";
+				std::string responseText = "";
 				if (info->responses.head != nullptr)
 				{
-					responseText = info->responses.head->GetResponseText();
+					const char* rawResponseText = info->responses.head->GetResponseText();
 					BSStringT<char> response;
-					response.Set(responseText, 500);
+					response.Set(rawResponseText, 500);
 
 					if (info->parentTopic && info->parentTopic->ownerQuest)
 					{
 						BGSQuestInstanceText::ParseString(&response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
-						//info->parentTopic->ownerQuest->instanceData[info->parentTopic->ownerQuest->currentInstanceID]->ParseString(response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 					}
-					responseText = response.data();
+					responseText = response.c_str();
 					DEBUG("Response: {:s}", responseText);
 				}
 
@@ -476,8 +475,8 @@ namespace RE
 				DialogueOption option = {};
 				option.optionID = i;
 				option.info = info;
-				option.prompText = prompt;
-				option.reseponseText = responseText;
+				option.prompText = prompt.data();
+				option.responseText = responseText;
 				option.enabled = EvaluateInfoConditions(originalInfo, playerDialogue);
 				option.said = (info->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) != 0;
 				option.challengeLevel = info->GetSpeechChallengeLevel();

@@ -10,8 +10,8 @@ namespace RE
 	{
 		std::uint32_t optionID;
 		TESTopicInfo* info;
-		BGSLocalizedString prompText;
-		BGSLocalizedString reseponseText;
+		std::string prompText;
+		std::string responseText;
 		bool enabled;
 		bool said;
 		std::uint32_t challengeLevel;

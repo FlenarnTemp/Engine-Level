@@ -230,15 +230,21 @@ namespace RE
 							std::vector<DialogueOption> options = GetDialogueOptions();
 							for (DialogueOption dialogueOption : options)
 							{
-								Scaleform::GFx::Value optionIDValue, promptValue, responseValue, enabledValue, saidValue, challengeLevelValue, challengeResultValue, linkedToSelfValue;
+								Scaleform::GFx::Value optionIDValue, promptValue, responseValue, enabledValue, saidValue, challengeLevelValue, challengeResultValue, linkedToSelfValue, endsScene, isBarterOption, isInventoryOption;
+
 								optionIDValue = dialogueOption.optionID;
 								promptValue = dialogueOption.prompText.c_str();
-								responseValue = dialogueOption.reseponseText.c_str();
+								DEBUG("Data for AS3: {}", dialogueOption.responseText.c_str());
+								responseValue = dialogueOption.responseText.c_str();
 								enabledValue = dialogueOption.enabled;
 								saidValue = dialogueOption.said;
 								challengeLevelValue = dialogueOption.challengeLevel;
 								challengeResultValue = dialogueOption.challengeResult;
 								linkedToSelfValue = dialogueOption.linkedToSelf;
+								endsScene = dialogueOption.endsScene;
+								isBarterOption = dialogueOption.isBarterOption;
+								isInventoryOption = dialogueOption.isInventoryOption;
+
 
 								Scaleform::GFx::Value dialogueValue;
 								a_params.movie->asMovieRoot->CreateObject(&dialogueValue);
@@ -250,9 +256,9 @@ namespace RE
 								dialogueValue.SetMember("challengeLevel", &challengeLevelValue);
 								dialogueValue.SetMember("challengeResult", &challengeResultValue);
 								dialogueValue.SetMember("linkedToSelf", &linkedToSelfValue);
-								dialogueValue.SetMember("endsScene", Scaleform::GFx::Value(&dialogueOption.endsScene));
-								dialogueValue.SetMember("isBarterOption", Scaleform::GFx::Value(&dialogueOption.isBarterOption));
-								dialogueValue.SetMember("isInventoryOption", Scaleform::GFx::Value(&dialogueOption.isInventoryOption));
+								dialogueValue.SetMember("endsScene", &endsScene);
+								dialogueValue.SetMember("isBarterOption", &isBarterOption);
+								dialogueValue.SetMember("isInventoryOption", &isInventoryOption);
 								a_params.retVal->PushBack(&dialogueValue);
 							}
 						}
@@ -351,7 +357,6 @@ namespace RE
 						RegisterFunction<GetDialogueOptions_GFx>(&bgsCodeObj, a_view->asMovieRoot, "GetDialogueOptions");
 
 						a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
-						DEBUG("root.XDI_Init");
 					}
 					return true;
 				}

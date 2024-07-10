@@ -11,15 +11,7 @@ namespace RE
 		{
 			virtual BSEventNotifyControl ProcessEvent(const MenuOpenCloseEvent& a_event, BSTEventSource<MenuOpenCloseEvent>*) override
 			{
-				if (a_event.opening)
-				{
-					DEBUG("MenuOpenCloseEvent, menu: '{:s}', opening.", a_event.menuName.c_str());
-				}
-				else
-				{
-					DEBUG("MenuOpenCloseEvent, menu: '{:s}', closing.", a_event.menuName.c_str());
-				}
-
+				// Dialogue Menu - XDI.
 				if (a_event.menuName == BSFixedString("DialogueMenu"))
 				{
 					if (a_event.opening)

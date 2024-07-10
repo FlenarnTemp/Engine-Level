@@ -4,8 +4,6 @@
 
 namespace RE
 {
-
-
 	namespace Cascadia
 	{
 		namespace DialogueMenu

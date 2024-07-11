@@ -10,6 +10,50 @@ namespace RE
 		{
 			std::pair<float, float> savedSubtitlePosition;
 
+			class SetWheelZoomEnabled : public Scaleform::GFx::FunctionHandler
+			{
+			public:
+				virtual void Call(const Params& a_params)
+				{
+					DEBUG("SetWheelZoomEnabled called.");
+					if (a_params.argCount < 1) return;
+					if (!a_params.args[0].IsBoolean()) return;
+
+					bool enabled = a_params.args[0].GetBoolean();
+
+					BSFixedString menuString("DialogueMenu");
+					if (UI::GetSingleton()->GetMenuOpen(menuString))
+					{
+						Scaleform::Ptr<RE::DialogueMenu> dialogueMenu = UI::GetSingleton()->GetMenu<RE::DialogueMenu>();
+						auto menuInputLayer = dialogueMenu.get()->inputLayer;
+
+						BSInputEnableManager::GetSingleton()->EnableUserEvent(menuInputLayer->layerID, UEFlag::kWheelZoom, enabled, UserEvents::SENDER_ID::kMenu);
+					}
+				}
+			};
+
+			class SetFavoritesEnabled : public Scaleform::GFx::FunctionHandler
+			{
+			public:
+				virtual void Call(const Params& a_params)
+				{
+					DEBUG("SetFavoritesEnabled called.");
+					if (a_params.argCount < 1) return;
+					if (!a_params.args[0].IsBoolean()) return;
+
+					bool enabled = a_params.args[0].GetBoolean();
+
+					BSFixedString menuString("DialogueMenu");
+					if (UI::GetSingleton()->GetMenuOpen(menuString))
+					{
+						Scaleform::Ptr<RE::DialogueMenu> dialogueMenu = UI::GetSingleton()->GetMenu<RE::DialogueMenu>();
+						auto menuInputLayer = dialogueMenu.get()->inputLayer;
+
+						BSInputEnableManager::GetSingleton()->EnableOtherEvent(menuInputLayer->layerID, OEFlag::kFavorites, enabled, UserEvents::SENDER_ID::kMenu);
+					}
+				}
+			};
+
 			class SetPlayerControls : public Scaleform::GFx::FunctionHandler
 			{
 			public:
@@ -199,18 +243,41 @@ namespace RE
 					DEBUG("SelectDialogueOption called.");
 					if (a_params.retVal)
 					{
-						if (a_params.argCount < 1)
-						{
-							return;
-						}
-
-						if (!a_params.args[0].IsInt())
-						{
-							return;
-						}
+						if (a_params.argCount < 1) return;
+						if (!a_params.args[0].IsInt()) return;					
 
 						*a_params.retVal = SelectDialogueOption(a_params.args[0].GetInt());
 					}
+				}
+			};
+
+			class SetSubtitlePosition_GFx : public Scaleform::GFx::FunctionHandler
+			{
+			public:
+				virtual void Call(const Params& a_params)
+				{
+					DEBUG("SetSubtitlePosition called.");
+					if (a_params.retVal)
+					{
+						if (a_params.argCount < 2) return;
+						if (!a_params.args[0].IsNumber()) return;
+						if (!a_params.args[1].IsNumber()) return;
+
+						BSFixedString menuString("HUDMenu");
+						if (UI::GetSingleton()->GetMenuOpen(menuString))
+						{
+							IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+							Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
+
+							Scaleform::GFx::Value subtitle;
+							movieRoot->GetVariable(&subtitle, "root.BottomCenterGroup_mc.SubtitleText_mc");
+							subtitle.SetMember("x", a_params.args[1]);
+							subtitle.SetMember("y", a_params.args[1]);
+
+							*a_params.retVal = true;
+						}
+					}
+
 				}
 			};
 
@@ -222,7 +289,9 @@ namespace RE
 					DEBUG("GetDialogueOptions called.");
 					if (a_params.retVal)
 					{
-						a_params.movie->asMovieRoot->CreateArray(a_params.retVal);
+						Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = a_params.movie->asMovieRoot;
+
+						movieRoot->CreateArray(a_params.retVal);
 						if (BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction())
 						{
 							std::vector<DialogueOption> options = GetDialogueOptions();
@@ -232,7 +301,6 @@ namespace RE
 
 								optionIDValue = dialogueOption.optionID;
 								promptValue = dialogueOption.prompText.c_str();
-								DEBUG("Data for AS3: {}", dialogueOption.responseText.c_str());
 								responseValue = dialogueOption.responseText.c_str();
 								enabledValue = dialogueOption.enabled;
 								saidValue = dialogueOption.said;
@@ -243,21 +311,21 @@ namespace RE
 								isBarterOption = dialogueOption.isBarterOption;
 								isInventoryOption = dialogueOption.isInventoryOption;
 
-
 								Scaleform::GFx::Value dialogueValue;
-								a_params.movie->asMovieRoot->CreateObject(&dialogueValue);
-								dialogueValue.SetMember("optionID", &optionIDValue);
-								dialogueValue.SetMember("prompt", &promptValue);
-								dialogueValue.SetMember("response", &responseValue);
-								dialogueValue.SetMember("enabled", &enabledValue);
-								dialogueValue.SetMember("said", &saidValue);
-								dialogueValue.SetMember("challengeLevel", &challengeLevelValue);
-								dialogueValue.SetMember("challengeResult", &challengeResultValue);
-								dialogueValue.SetMember("linkedToSelf", &linkedToSelfValue);
-								dialogueValue.SetMember("endsScene", &endsScene);
-								dialogueValue.SetMember("isBarterOption", &isBarterOption);
-								dialogueValue.SetMember("isInventoryOption", &isInventoryOption);
-								a_params.retVal->PushBack(&dialogueValue);
+								movieRoot->CreateObject(&dialogueValue);
+								dialogueValue.SetMember("optionID", optionIDValue);
+								dialogueValue.SetMember("prompt", promptValue);
+								dialogueValue.SetMember("response", responseValue);
+								dialogueValue.SetMember("enabled", enabledValue);
+								dialogueValue.SetMember("said", saidValue);
+								dialogueValue.SetMember("challengeLevel", challengeLevelValue);
+								dialogueValue.SetMember("challengeResult", challengeResultValue);
+								dialogueValue.SetMember("linkedToSelf", linkedToSelfValue);
+								dialogueValue.SetMember("endsScene", endsScene);
+								dialogueValue.SetMember("isBarterOption", isBarterOption);
+								dialogueValue.SetMember("isInventoryOption", isInventoryOption);
+
+								a_params.retVal->PushBack(dialogueValue);
 							}
 						}
 						else
@@ -265,6 +333,18 @@ namespace RE
 							WARN("GetDialogueOptions - Player dialogue not currently available. No dialogue will be retrieved.");
 						}
 					}
+				}
+			};
+
+			class SetXDIResult : public Scaleform::GFx::FunctionHandler
+			{
+			public:
+				virtual void Call(const Params& a_params)
+				{
+					if (a_params.argCount < 1) return;
+					if (!a_params.args[0].IsNumber()) return;
+
+					float value = a_params.args[0].GetNumber();
 				}
 			};
 
@@ -346,6 +426,7 @@ namespace RE
 						RegisterFunction<GetModSetting>(&bgsCodeObj, a_view->asMovieRoot, "GetModSetting");
 
 						RegisterFunction<GetSubtitlePosition_GFx>(&bgsCodeObj, a_view->asMovieRoot, "GetSubtitlePosition");
+						RegisterFunction<SetSubtitlePosition_GFx>(&bgsCodeObj, a_view->asMovieRoot, "SetSubtitlePosition");
 
 						RegisterFunction<GetTargetName>(&bgsCodeObj, a_view->asMovieRoot, "GetTargetName");
 						RegisterFunction<GetTargetType>(&bgsCodeObj, a_view->asMovieRoot, "GetTargetType");
@@ -353,6 +434,11 @@ namespace RE
 						RegisterFunction<IsFrameworkActive>(&bgsCodeObj, a_view->asMovieRoot, "IsFrameworkActive");
 						RegisterFunction<SelectDialogueOption_GFx>(&bgsCodeObj, a_view->asMovieRoot, "SelectDialogueOption");
 						RegisterFunction<GetDialogueOptions_GFx>(&bgsCodeObj, a_view->asMovieRoot, "GetDialogueOptions");
+
+						RegisterFunction<SetWheelZoomEnabled>(&bgsCodeObj, a_view->asMovieRoot, "SetWheelZoomEnabled");
+						RegisterFunction<SetFavoritesEnabled>(&bgsCodeObj, a_view->asMovieRoot, "SetFavoritesEnabled");
+
+						RegisterFunction<SetXDIResult>(&bgsCodeObj, a_view->asMovieRoot, "SetXDIResult");
 
 						a_view->asMovieRoot->Invoke("root.XDI_Init", nullptr, nullptr, 0);
 					}

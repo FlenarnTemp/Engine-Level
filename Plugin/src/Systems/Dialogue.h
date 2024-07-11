@@ -15,7 +15,7 @@ namespace RE
 		bool enabled;
 		bool said;
 		std::uint32_t challengeLevel;	// 0: No speech challenge.
-		std::uint32_t challengeResult;	// -1: Not attempted, 0: Failed, 1: Succeeded. For repeatable challenges, always -1.
+		int32_t challengeResult;		// -1: Not attempted, 0: Failed, 1: Succeeded. For repeatable challenges, always -1.
 		bool linkedToSelf;				// Whether or not this dialogue option links to itself.
 		bool endsScene;					// Whether or not this dialogue option will end the scene.
 		bool isBarterOption;			// Whether or not this dialogue option has the VendorInfoScript attatched.

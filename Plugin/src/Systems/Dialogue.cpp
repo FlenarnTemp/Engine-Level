@@ -454,7 +454,6 @@ namespace RE
 						BGSQuestInstanceText::ParseString(&response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 					}
 					responseText = response.c_str();
-					DEBUG("Response: {:s}", responseText);
 				}
 
 				// Get NPC response TopicInfo for dialogue cues.

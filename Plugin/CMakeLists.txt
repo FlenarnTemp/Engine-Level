@@ -128,5 +128,5 @@ add_custom_command(
 	${PROJECT_NAME} 
 	POST_BUILD
 	COMMAND powershell -NoProfile -ExecutionPolicy Bypass -File 
-		"${CMAKE_CURRENT_SOURCE_DIR}/!update.ps1" "DISTRIBUTE" "${PROJECT_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}/$(ConfigurationName)" "${PROJECT_NAME}" 
+		"${CMAKE_CURRENT_SOURCE_DIR}/!update.ps1" "DISTRIBUTE" "${PROJECT_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}/$$(ConfigurationName)" "${PROJECT_NAME}" 
 )

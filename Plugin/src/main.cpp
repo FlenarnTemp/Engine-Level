@@ -2,7 +2,8 @@
 #include "Events/MenuOpenCloseEvent.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
-#include "Systems/Dialogue.h"
+#include "Shared/Hooks.h"
+
 #include "Systems/Skills.h"
 
 namespace
@@ -84,13 +85,15 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 #ifndef NDEBUG
 	MessageBoxA(NULL, "Loaded. You can now attach the debugger or continue execution.", Plugin::NAME.data(), NULL);
 #endif
-
 	F4SE::Init(a_F4SE);
 
 	DKUtil::Logger::Init(Plugin::NAME, std::to_string(Plugin::Version));
 	INFO("{} v{} loaded."sv, Plugin::NAME, Plugin::Version);
 
-	F4SE::AllocTrampoline(1u << 10);
+	auto& trampoline = F4SE::GetTrampoline();
+	trampoline.create(1024 * 64);
+
+	Cascadia::Hooks::Install(trampoline);
 
 	const auto messaging = F4SE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(MessageHandler))

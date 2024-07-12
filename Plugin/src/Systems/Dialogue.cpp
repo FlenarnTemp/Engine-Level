@@ -262,7 +262,7 @@ namespace RE
 	// Returns the currently executing player dialogue cation, or NULL if no player dialogue action is currenctly active.
 	BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction()
 	{
-		BGSScene* scene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
+		BGSScene* scene = Cascadia::GetPlayerCharacter()->GetCurrentScene();
 		if (scene)
 		{
 			for (std::uint32_t i = 0; i < scene->actions.size(); i++)
@@ -283,6 +283,7 @@ namespace RE
 
 	bool SelectDialogueOption(std::uint32_t option)
 	{
+		DEBUG("SelectDialogueOption called.")
 		if (!(MenuTopicManager::GetSingleton()->allowInput))
 		{
 			return false;
@@ -291,7 +292,7 @@ namespace RE
 		if (BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction())
 		{
 			// We're using option 5 and up for additional options. (Options 5 = Option 0).
-			RE::Cascadia::GetPlayerCharacter()->SetLastDialogueInput(option + 5);
+			Cascadia::GetPlayerCharacter()->SetLastDialogueInput(option + 5);
 			return true;
 		}
 		else
@@ -304,7 +305,7 @@ namespace RE
 	{
 		if (BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction())
 		{
-			BGSScene* scene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
+			BGSScene* scene = Cascadia::GetPlayerCharacter()->GetCurrentScene();
 
 			BSPointerHandle<TESObjectREFR> targetHandle;
 			TESObjectREFR* targetREFR = nullptr;
@@ -478,7 +479,7 @@ namespace RE
 				option.responseText = responseText;
 				option.enabled = EvaluateInfoConditions(originalInfo, playerDialogue);
 				option.said = (info->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid)) != 0;
-				option.challengeLevel = info->GetSpeechChallengeLevel();
+				option.challengeLevel = info->GetChallengeLevel();
 				option.challengeResult = info->GetSuccessLevel();
 				option.linkedToSelf = sceneData ? (currentScene == sceneData->pScene && playerDialogue->startPhase >= sceneData->uiPhase && playerDialogue->endPhase <= sceneData->uiPhase) : false;
 				option.endsScene = npcResponseInfo ? (npcResponseInfo->data.flags.underlying() & static_cast<std::uint32_t>(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kEndRunningScene)) != 0 : false;
@@ -529,20 +530,142 @@ namespace RE
 		}
 	}
 
-	// Vanilla has a bug where player interrupts would delay the second SetButtonText callback.
-	// One of the conditions for the second callback is when IsTalking() on the playe returns false.
-	// IsTalking only returns false when 'dialogueTimeLeft' equals 0, so if the player is speaking an interrupt then he interrupt will delay call.
-	// This hook will return false if the menu topic manager indicated that it's ready to recieve player input.
-	// Unnecessary?
-	bool IsPlayerTalking(Actor* actor)
+	void StartScene(BGSScene* apScene, std::uint32_t apPhase)
 	{
-		if (MenuTopicManager::GetSingleton()->allowInput)
+		if (!apScene) return;
+		BGSScene* currentScene = Cascadia::GetPlayerCharacter()->GetCurrentScene();
+
+		if (currentScene && currentScene != apScene)
 		{
-			return false;
+			currentScene->niFlags.flags |= static_cast<std::uint32_t>(BGSScene::BOOL_BITS::kQueueActive);
+			apScene->ResetAllSceneActions();
+			apScene->niFlags.flags &= static_cast<std::uint32_t>(BGSScene::BOOL_BITS::KPauseScene);
+			apScene->SetSceneActive(true);
+			apScene->startPhase = apPhase;
+		}
+	}
+
+	void SetPlayerDialogue(bool a_enable)
+	{
+		if (a_enable)
+		{
+			// Restore player dialogue starting.
+			uint8_t bytes[] = { 0x48, 0x8B, 0xC8 };
+			// StartPlayerDialogue - 2196817 + 652 offset.
+			REL::Relocation<std::uintptr_t> startPlayerDialogue{ REL::ID(2196817), 0x652 };
+			REL::safe_write<uint8_t>(startPlayerDialogue.address(), std::span{ bytes });
+
+
+			// SwitchToPlayerCC - 2214898 ID + AD5 offset.
+			REL::Relocation<std::uintptr_t> switchToPlayerCC{ REL::ID(2214898), 0xAD5 };
+			REL::safe_write<uint8_t>(switchToPlayerCC.address() + 7, 0x1);
+			
 		}
 		else
 		{
-			return actor->IsTalking();
+			// Disable player dialogue starting.
+			uint8_t bytes[] = { 0xEB, 0x1E, 0x90 };
+			// StartPlayerDialogue - 2196817 + 652 offset.
+			REL::Relocation<std::uintptr_t> startPlayerDialogue{ REL::ID(2196817), 0x652 };
+			REL::safe_write<uint8_t>(startPlayerDialogue.address(), std::span{ bytes });
+
+			// Disable dialogue camera switching to player.
+			// SwitchToPlayerCC - 2214898 ID + AD5 offset.
+			REL::Relocation<std::uintptr_t> switchToPlayerCC{ REL::ID(2214898), 0xAD5 };
+			REL::safe_write<uint8_t>(switchToPlayerCC.address() + 7, 0x2);
+
 		}
+	}
+
+	// ===============
+	//		Hooks
+	// ===============
+
+	TESTopicInfo* GetCurrentTopicInfo_Player_Hook(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType)
+	{
+		DEBUG("GetCurrentTopicInfo_Player_Hook called.");
+		// Use >5 for custom selections.
+		if (apPlayerDialogue->playerInput >= 5)
+		{
+			std::uint32_t selectedOption = apPlayerDialogue->playerInput - 5;
+			TESTopicInfo* info = GetPlayerInfo(apPlayerDialogue, selectedOption);
+
+			if (info)
+			{
+				// Disable player dialogue.
+				SetPlayerDialogue(false); 
+
+				// Mark info as 'said'.
+				info->AddChange(CHANGE_TYPE::kTopicSaidPlayer);
+				info->data.flags.set(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid);
+
+				TOPIC_INFO_SCENEDATA* sceneData = GetSceneData(info);
+				if (sceneData)
+				{
+					// This is necessary as no response => no pre/post TopicInfo will run.
+					DEBUG("Following scene link from player dialogue.");
+					StartScene(sceneData->pScene, sceneData->uiPhase);
+				}
+			}
+			else
+			{
+				// Info not found...
+				// reset playerInput to 4 so that the game doesn't keep trying to ask us for a non-existent TESTopicInfo.
+				apPlayerDialogue->playerInput = 4;
+			}
+			return info;
+		}
+		// Re-enable player dialogue.
+		SetPlayerDialogue(true);
+		DEBUG("GetCurrentTopicInfo_Player_Hook - default function return.")
+		return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
+	}
+
+	TESTopicInfo* GetCurrentTopicInfo_NPC_Hook(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType)
+	{
+		DEBUG("GetCurrentTopicInfo_NPC_Hook called.");
+		// Use >5 for custom selections.
+		if (apPlayerDialogue->playerInput >= 5)
+		{
+			std::uint32_t selectedOption = apPlayerDialogue->playerInput - 5;
+			
+			TESTopicInfo* info = GetNPCInfo(apPlayerDialogue, selectedOption);
+			if (info)
+			{
+				// If the player info was a speech challenge then trigger the post-dialogue handler to display the challenge-success animation.
+				// This needs to be done explicitly as the challenge-success animation is coded to trigger after the player dialogue-elapsed timer reaches zero.
+				// Since player dialogue length is always zero with the framework active, the timed code will not run and an explicit call needs to be made.
+				if (TESTopicInfo* playerInfo = GetPlayerInfo(apPlayerDialogue, selectedOption))
+				{
+					if (playerInfo->GetChallengeLevel() > TESTopicInfo::CC_CHALLENGE_NONE)
+					{
+						Cascadia::GetPlayerCharacter()->UpdateVoiceTimer(true);
+					}
+				}
+			}
+
+			return info;
+		}
+
+		DEBUG("GetCurrentTopicInfo_NPC_Hook - default function return.")
+		return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
+	}
+
+	TESTopicInfo* GetCurrentTopicInfo_NPCAction_Hook(BGSSceneActionNPCResponseDialogue* apNPCDialogue, BGSScene* apParentScene)
+	{
+		DEBUG("GetCurrentTopicInfo_NPCAction_Hook called.");
+		std::uint32_t dialogueOption = Cascadia::GetPlayerCharacter()->playerDialogueInput.underlying();
+
+		// Use >5 for custom selections.
+		if (dialogueOption >= 5)
+		{
+			std::uint32_t selectedOption = dialogueOption - 5;
+
+			TESTopicInfo* info = GetNPCResponseInfo(apNPCDialogue, selectedOption);
+			return info;
+		}
+
+		DEBUG("GetCurrentTopicInfo_NPCAction_Hook - default function return.")
+		return apNPCDialogue->GetCurrentTopicInfo(apParentScene);
 	}
 }

@@ -130,7 +130,7 @@ namespace RE
 						auto setting = trim(a_params.args[0].GetString());
 
 						std::uint32_t value = 1;
-						if (setting == "fSubtitlesX:DialogueMenu" || setting == "bShowOptionNumbers:DialogueMenu")
+						if (setting == "fSubtitlesX:DialogueMenu" || setting == "bShowOptionNumbers:DialogueMenu" || setting == "bEnable:Debug")
 						{
 							value = 0;
 						}
@@ -240,13 +240,13 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("SelectDialogueOption called.");
+					DEBUG("SelectDialogueOption_GFx called.");
 					if (a_params.retVal)
 					{
 						if (a_params.argCount < 1) return;
-						if (!a_params.args[0].IsInt()) return;					
-
-						*a_params.retVal = SelectDialogueOption(a_params.args[0].GetInt());
+						if (!a_params.args[0].IsUInt()) return;				
+						
+						*a_params.retVal = SelectDialogueOption(a_params.args[0].GetUInt());
 					}
 				}
 			};

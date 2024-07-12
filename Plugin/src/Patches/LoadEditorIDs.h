@@ -198,7 +198,7 @@ namespace RE
 					InstallHook<TESShout>();
 					InstallHook<BGSEquipSlot>();
 					InstallHook<BGSRelationship>();
-					InstallHook<BGSScene>();
+					//InstallHook<BGSScene>();
 					InstallHook<BGSAssociationType>();
 					InstallHook<BGSOutfit>();
 					InstallHook<BGSArtObject>();

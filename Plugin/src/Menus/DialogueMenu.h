@@ -25,7 +25,7 @@ namespace RE
 					if (UI::GetSingleton()->GetMenuOpen(menuString))
 					{
 						Scaleform::Ptr<RE::DialogueMenu> dialogueMenu = UI::GetSingleton()->GetMenu<RE::DialogueMenu>();
-						auto menuInputLayer = dialogueMenu.get()->inputLayer;
+						BSTSmartPointer<BSInputEnableLayer> menuInputLayer = dialogueMenu.get()->inputLayer;
 
 						BSInputEnableManager::GetSingleton()->EnableUserEvent(menuInputLayer->layerID, UEFlag::kWheelZoom, enabled, UserEvents::SENDER_ID::kMenu);
 					}
@@ -47,32 +47,30 @@ namespace RE
 					if (UI::GetSingleton()->GetMenuOpen(menuString))
 					{
 						Scaleform::Ptr<RE::DialogueMenu> dialogueMenu = UI::GetSingleton()->GetMenu<RE::DialogueMenu>();
-						auto menuInputLayer = dialogueMenu.get()->inputLayer;
+						BSTSmartPointer<BSInputEnableLayer> menuInputLayer = dialogueMenu.get()->inputLayer;
 
 						BSInputEnableManager::GetSingleton()->EnableOtherEvent(menuInputLayer->layerID, OEFlag::kFavorites, enabled, UserEvents::SENDER_ID::kMenu);
 					}
 				}
 			};
 
-			class SetPlayerControls : public Scaleform::GFx::FunctionHandler
+			class SetMovementEnabled : public Scaleform::GFx::FunctionHandler
 			{
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("SetPlayerControls called.");
-					if (a_params.argCount < 3) return;
-					if (!a_params.args[0].IsInt()) return;
-					if (!a_params.args[1].IsInt()) return;
-					if (!a_params.args[2].IsBoolean()) return;
+					DEBUG("SetMovementEnabled called.");
+					if (a_params.argCount < 1) return;
+					if (!a_params.args[0].IsBoolean()) return;
 
-					std::uint32_t type = a_params.args[0].GetInt();
-					std::uint32_t flags = a_params.args[1].GetInt();
-					boolean enabled = a_params.args[2].GetBoolean();
-
+					bool enabled = a_params.args[0].GetBoolean();
 					BSFixedString menuString("DialogueMenu");
 					if (UI::GetSingleton()->GetMenuOpen(menuString))
 					{
-						// TODO
+						Scaleform::Ptr<RE::DialogueMenu> dialogueMenu = UI::GetSingleton()->GetMenu<RE::DialogueMenu>();
+						BSTSmartPointer<BSInputEnableLayer> menuInputLayer = dialogueMenu.get()->inputLayer;
+
+						BSInputEnableManager::GetSingleton()->EnableUserEvent(menuInputLayer->layerID, UEFlag::kMovement, enabled, UserEvents::SENDER_ID::kMenu);
 					}
 				}
 			};
@@ -420,10 +418,11 @@ namespace RE
 					{
 						Scaleform::GFx::Value bgsCodeObj;
 						a_view->asMovieRoot->GetVariable(&bgsCodeObj, "root.Menu_mc.BGSCodeObj");
-						RegisterFunction<SetPlayerControls>(&bgsCodeObj, a_view->asMovieRoot, "SetPlayerControls");
 
 						RegisterFunction<GetINISetting>(&bgsCodeObj, a_view->asMovieRoot, "GetINISetting");
 						RegisterFunction<GetModSetting>(&bgsCodeObj, a_view->asMovieRoot, "GetModSetting");
+
+						RegisterFunction<SetMovementEnabled>(&bgsCodeObj, a_view->asMovieRoot, "SetMovementEnabled");
 
 						RegisterFunction<GetSubtitlePosition_GFx>(&bgsCodeObj, a_view->asMovieRoot, "GetSubtitlePosition");
 						RegisterFunction<SetSubtitlePosition_GFx>(&bgsCodeObj, a_view->asMovieRoot, "SetSubtitlePosition");

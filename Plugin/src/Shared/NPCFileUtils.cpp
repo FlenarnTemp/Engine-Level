@@ -416,7 +416,6 @@ namespace RE
 				result << "   \"FacialBoneMorphIntensity\" : ";
 				result << std::setprecision(17) << (morphIntensity);
 				result << "," << std::endl;
-				;
 
 				return result.str();
 			}
@@ -424,7 +423,6 @@ namespace RE
 			std::string GenerateFacialBoneRegions(NPCFile npcFile)
 			{
 				std::vector<FacialBoneRegion> regions = npcFile.facialBoneRegionsA;
-
 				std::stringstream result;
 
 				if (regions.size() == 0)

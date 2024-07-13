@@ -602,11 +602,9 @@ namespace RE
 			REL::Relocation<std::uintptr_t> startPlayerDialogue{ REL::ID(2196817), 0x652 };
 			REL::safe_write<uint8_t>(startPlayerDialogue.address(), std::span{ bytes });
 
-
 			// SwitchToPlayerCC - 2214898 ID + AD5 offset.
 			REL::Relocation<std::uintptr_t> switchToPlayerCC{ REL::ID(2214898), 0xAD5 };
 			REL::safe_write<uint8_t>(switchToPlayerCC.address() + 7, 0x1);
-			
 		}
 		else
 		{
@@ -620,7 +618,6 @@ namespace RE
 			// SwitchToPlayerCC - 2214898 ID + AD5 offset.
 			REL::Relocation<std::uintptr_t> switchToPlayerCC{ REL::ID(2214898), 0xAD5 };
 			REL::safe_write<uint8_t>(switchToPlayerCC.address() + 7, 0x2);
-
 		}
 	}
 

@@ -374,7 +374,7 @@ namespace RE
 			scene->parentQuest->GetAliasedRef(&targetHandle, a_action->actorID);
 		}
 
-		auto REFRptr = targetHandle.get();
+		NiPointer<TESObjectREFR> REFRptr = targetHandle.get();
 
 		if (targetHandle)
 		{
@@ -430,9 +430,6 @@ namespace RE
 					continue;
 				}
 
-				// Question, Positive, Negative, Neutral
-				std::uint32_t vanillaDialogueOrder[] = { 3, 0, 1, 2 };
-
 				// Get prompt
 				BGSLocalizedString prompt;
 
@@ -455,6 +452,56 @@ namespace RE
 						BGSQuestInstanceText::ParseString(&response, info->parentTopic->ownerQuest, info->parentTopic->ownerQuest->currentInstanceID);
 					}
 					responseText = response.c_str();
+
+					TESCondition conditions = info->objConditions;
+					if (conditions)
+					{
+						TESConditionItem* conditionItem = conditions.head;
+
+						while (conditionItem != nullptr)
+						{
+							int conditionFunction = conditionItem->data.functionData.function.underlying() + 0x1000;
+
+							if (conditionFunction == static_cast<std::underlying_type_t<SCRIPT_OUTPUT>>(SCRIPT_OUTPUT::FUNCTION_DIALOGUE_GETAV))
+							{
+								if (conditionItem->data.condition == ENUM_COMPARISON_CONDITION::kLessThan)
+								{
+									DEBUG("LessThan AV check.");
+									ActorValueInfo* actorValue = static_cast<ActorValueInfo*>(conditionItem->data.functionData.param[0]);
+									if (actorValue)
+									{
+										prompt = R"({"BorderColor":16724787, "IconColor" : 16724787, "TextColor" : 16724787})";
+										std::string skillCheck = "[" + std::string(actorValue->GetFullName()) + " " + std::to_string(static_cast<int>(Cascadia::GetPlayerCharacter()->GetActorValue(*actorValue))) + "/" + std::to_string(static_cast<int>(conditionItem->data.value)) + "] ";
+										responseText.insert(0, skillCheck);
+									}
+								}
+								else if (conditionItem->data.condition == ENUM_COMPARISON_CONDITION::kGreaterThanEqual)
+								{
+									DEBUG("GreaterThanEqual AV check.");
+									ActorValueInfo* actorValue = static_cast<ActorValueInfo*>(conditionItem->data.functionData.param[0]);
+									if (actorValue)
+									{
+										std::string skillCheck = "[" + std::string(actorValue->GetFullName()) + " " + std::to_string(static_cast<int>(conditionItem->data.value)) + "] ";
+										responseText.insert(0, skillCheck);
+									}
+								}
+							}
+							else if (conditionFunction == static_cast<std::underlying_type_t<SCRIPT_OUTPUT>>(SCRIPT_OUTPUT::FUNCTION_HAS_PERK) || conditionFunction == static_cast<std::underlying_type_t<SCRIPT_OUTPUT>>(SCRIPT_OUTPUT::FUNCTION_DIALOGUE_HASPERK))
+							{
+								if (conditionItem->data.condition == ENUM_COMPARISON_CONDITION::kEqual)
+								{
+									DEBUG("Equal Perk check.");
+									BGSPerk* perk = static_cast<BGSPerk*>(conditionItem->data.functionData.param[0]);
+									if (perk)
+									{
+										std::string perkCheck = "[" + std::string(perk->GetFullName()) + "] ";
+										responseText.insert(0, perkCheck);
+									}
+								}
+							}
+							conditionItem = conditionItem->next;
+						}
+					}
 				}
 
 				// Get NPC response TopicInfo for dialogue cues.

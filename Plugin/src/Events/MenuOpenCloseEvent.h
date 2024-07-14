@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Menus/ExamineMenu.h"
 #include "Menus/DialogueMenu.h"
 
 namespace RE
@@ -16,10 +17,12 @@ namespace RE
 				{
 					if (a_event.opening)
 					{
+						DEBUG("Opening DialogueMenu");
 						DialogueMenu::savedSubtitlePosition = DialogueMenu::GetSubtitlePosition();
 					}
 					else
 					{
+						DEBUG("Closing DialogueMenu.");
 						DialogueMenu::SetSubtitlePosition(DialogueMenu::savedSubtitlePosition.first, DialogueMenu::savedSubtitlePosition.second);
 					}
 				}

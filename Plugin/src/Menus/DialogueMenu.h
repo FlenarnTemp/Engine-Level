@@ -64,6 +64,7 @@ namespace RE
 					if (!a_params.args[0].IsBoolean()) return;
 
 					bool enabled = a_params.args[0].GetBoolean();
+
 					BSFixedString menuString("DialogueMenu");
 					if (UI::GetSingleton()->GetMenuOpen(menuString))
 					{
@@ -395,17 +396,6 @@ namespace RE
 			}
 
 			// =================
-
-			template <typename T>
-			void RegisterFunction(Scaleform::GFx::Value* dest, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot, const char* func_name)
-			{
-				Scaleform::GFx::Value fnValue;
-				Scaleform::GFx::FunctionHandler* func = nullptr;
-				func = new T;
-
-				movieRoot->CreateFunction(&fnValue, func);
-				dest->SetMember(func_name, fnValue);
-			}
 
 			bool RegisterScaleform(Scaleform::GFx::Movie* a_view, Scaleform::GFx::Value* a_value)
 			{

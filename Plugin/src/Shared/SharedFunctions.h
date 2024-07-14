@@ -46,5 +46,16 @@ namespace RE
 		float ConvertPercentageToFloat(std::uint8_t percentage);
 
 		std::string trim(const std::string& str);
+
+		template <typename T>
+		void RegisterFunction(Scaleform::GFx::Value* dest, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot, const char* func_name)
+		{
+			Scaleform::GFx::Value fnValue;
+			Scaleform::GFx::FunctionHandler* func = nullptr;
+			func = new T;
+
+			movieRoot->CreateFunction(&fnValue, func);
+			dest->SetMember(func_name, fnValue);
+		}
 	}
 }

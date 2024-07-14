@@ -25,7 +25,7 @@ namespace
 			}
 			else
 			{
-				WARN("Failed to define skills.");
+				FATAL("Failed to define skills.");
 			}
 
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
@@ -103,10 +103,24 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	}
 
 	const auto scaleform = F4SE::GetScaleformInterface();
-	if (!scaleform || !scaleform->Register("Cascadia", RE::Cascadia::DialogueMenu::RegisterScaleform))
+	if (!scaleform)
 	{
-		FATAL("Failed to register scaleform callback, marking as incompatible."sv);
+		FATAL("Failed to register Scaleform callback, marking as incompatible."sv);
 		return false;
+	}
+	else
+	{
+		if (!scaleform->Register("Cascadia-DialogueMenu", RE::Cascadia::DialogueMenu::RegisterScaleform))
+		{
+			FATAL("Failed to register Dialogue menu, marking as incompatible.");
+			return false;
+		}
+
+		/*if (!scaleform->Register("Cascadia-ExamineMenu", RE::Cascadia::ExamineMenu::RegisterScaleform))
+		{
+			FATAL("Failed to register Examine menu, marking as incompatible.");
+			return false;
+		}*/
 	}
 
 	RE::Cascadia::RegisterMenuOpenCloseEventSink();

@@ -17,9 +17,6 @@ namespace RE
 
 		std::string FloatToPreciseString(float value, std::uint32_t precision);
 
-		std::uint32_t RNG(std::uint32_t min, std::uint32_t max);
-		float RNG(float min, float max);
-
 		bool WeaponHasKeyword(TESObjectWEAP* weapon, BGSKeyword* keyword);
 		bool ArmorHasKeyword(TESObjectARMO* armor, BGSKeyword* keyword);
 		bool ReferenceHasKeyword(TESObjectREFR* ref, BGSKeyword* keyword);
@@ -30,10 +27,6 @@ namespace RE
 		std::uint32_t PositionInFormList(TESForm* form, BGSListForm* list);
 		std::uint32_t GetNextAvailableFormInInventoryFromList(std::uint32_t startingIndex, BGSListForm* list);
 		bool IsFormInList(TESForm* form, BGSListForm* list);
-
-		void SetWheelZoomEnabled(bool enbled);
-		void SetFavoritesEnabled(bool enabled);
-		void SetMovementEnabled(bool enabled);
 
 		bool HasVMScript(TESForm* form, const char* scriptName);
 
@@ -56,6 +49,22 @@ namespace RE
 
 			movieRoot->CreateFunction(&fnValue, func);
 			dest->SetMember(func_name, fnValue);
+		}
+
+		template<class Ty>
+		Ty SafeWrite64Function(uintptr_t addr, Ty data) {
+			DWORD oldProtect;
+			void* _d[2];
+			memcpy(_d, &data, sizeof(data));
+			size_t len = sizeof(_d[0]);
+	
+			VirtualProtect((void*)addr, len, PAGE_EXECUTE_READWRITE, &oldProtect);
+			Ty olddata;
+			memset(&olddata, 0, sizeof(Ty));
+			memcpy(&olddata, (void*)addr, len);
+			memcpy((void*)addr, &_d[0], len);
+			VirtualProtect((void*)addr, len, oldProtect, &oldProtect);
+			return olddata;
 		}
 	}
 }

@@ -12,7 +12,6 @@ namespace RE
 		{
 			virtual BSEventNotifyControl ProcessEvent(const MenuOpenCloseEvent& a_event, BSTEventSource<MenuOpenCloseEvent>*) override
 			{
-				// Dialogue Menu - XDI.
 				if (a_event.menuName == BSFixedString("DialogueMenu"))
 				{
 					if (a_event.opening)
@@ -33,7 +32,7 @@ namespace RE
 		void RegisterMenuOpenCloseEventSink()
 		{
 			MenuOpenCloseEventWatcher* menuOpenCloseEvent = new MenuOpenCloseEventWatcher();
-			RE::UI::GetSingleton()->GetEventSource<RE::MenuOpenCloseEvent>()->RegisterSink(menuOpenCloseEvent);
+			UI::GetSingleton()->GetEventSource<MenuOpenCloseEvent>()->RegisterSink(menuOpenCloseEvent);
 		}
 	}
 }

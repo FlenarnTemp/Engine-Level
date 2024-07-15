@@ -1,5 +1,6 @@
-#include "Events/TESInitScriptEvent.h"
+#include "Events/InputEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
+#include "Events/TESInitScriptEvent.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
 #include "Shared/Hooks.h"
@@ -29,9 +30,8 @@ namespace
 			}
 
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
-
+			RE::Cascadia::InputEventReceiverOverride::Install();
 			RE::Cascadia::RegisterTESInitScriptEventSink();
-
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:
@@ -116,15 +116,15 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 			return false;
 		}
 
-		/*if (!scaleform->Register("Cascadia-ExamineMenu", RE::Cascadia::ExamineMenu::RegisterScaleform))
+		if (!scaleform->Register("Cascadia-ExamineMenu", RE::Cascadia::ExamineMenu::RegisterScaleform))
 		{
 			FATAL("Failed to register Examine menu, marking as incompatible.");
 			return false;
-		}*/
+		}
 	}
 
 	RE::Cascadia::RegisterMenuOpenCloseEventSink();
-
+	RE::Cascadia::ExamineMenu::hkOnButtonEvent::InstallHook();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

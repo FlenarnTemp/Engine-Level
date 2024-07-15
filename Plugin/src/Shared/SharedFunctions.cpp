@@ -90,24 +90,6 @@ namespace RE
 			return stream.str();
 		}
 
-		std::uint32_t RNG(std::uint32_t min, std::uint32_t max)
-		{
-			std::random_device dev;
-			std::mt19937 rng(dev());
-			std::uniform_int_distribution<std::mt19937::result_type> dist(min, max);
-
-			return dist(rng);
-		}
-
-		float RNG(float min, float max)
-		{
-			std::random_device dev;
-			std::mt19937 rng(dev());
-			std::uniform_real_distribution<float> dist(min, max);
-
-			return dist(rng);
-		}
-
 		bool WeaponHasKeyword(TESObjectWEAP* weapon, BGSKeyword* keyword)
 		{
 			if (weapon)

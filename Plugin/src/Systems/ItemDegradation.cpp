@@ -190,8 +190,7 @@ namespace RE
 				// GetHealthPerc returns -1.0 if it can't find the kHealth type.
 				if (weaponREFR->extraList->GetHealthPerc() < 0)
 				{
-					float value = RNG(0.55f, 0.85f);
-					weaponREFR->extraList->SetHealthPerc(value);
+					weaponREFR->extraList->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
 					INFO(("InitializeWeaponCondition: Data initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
 					return;
 				}
@@ -222,10 +221,8 @@ namespace RE
 				// GetHealthPerc returns -1.0 if it can't find the kHealth type.
 				if (armorREFR->extraList->GetHealthPerc() < 0)
 				{
-					float value = RNG(0.55f, 0.85f);
-
-					armorREFR->extraList->SetHealthPerc(value);
-					INFO(("IntializeArmorCondition: Data initialized: {:s}"), std::to_string(value));
+					armorREFR->extraList->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
+					INFO(("IntializeArmorCondition: Data initialized: {:s}"), std::to_string(armorREFR->extraList->GetHealthPerc()));
 					return;
 				}
 				else

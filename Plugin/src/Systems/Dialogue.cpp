@@ -102,6 +102,56 @@ namespace RE
 		}
 	}
 
+	TESTopicInfo* PrependNPCSkillCheckText(TESTopicInfo* a_info)
+	{
+		if (TESCondition conditions = a_info->objConditions)
+		{
+			TESConditionItem* conditionItem = conditions.head;
+			while (conditionItem != nullptr)
+			{
+				int conditionFunction = conditionItem->data.functionData.function.underlying() + 0x1000;
+				if (conditionFunction == static_cast<std::underlying_type_t<SCRIPT_OUTPUT>>(SCRIPT_OUTPUT::FUNCTION_DIALOGUE_GETAV))
+				{
+					const char* rawResponseText = a_info->responses.head->GetResponseText();
+					if (!rawResponseText) continue;
+
+	                std::string responseText(rawResponseText);
+		            if (a_info->parentTopic && a_info->parentTopic->ownerQuest)
+			        {
+				        BSStringT<char> response;
+					    response.Set(rawResponseText, 500);
+						BGSQuestInstanceText::ParseString(&response, a_info->parentTopic->ownerQuest, a_info->parentTopic->ownerQuest->currentInstanceID);
+						responseText = response.c_str();
+					}
+
+					const std::string failedPrefix = "[FAILED] ";
+					const std::string succeededPrefix = "[SUCCEEDED] ";
+	                switch (conditionItem->data.condition)
+					{
+						case ENUM_COMPARISON_CONDITION::kLessThan:
+							if (responseText.find(failedPrefix) != 0)
+							{
+								responseText.insert(0, failedPrefix);
+							}
+							break;
+						case ENUM_COMPARISON_CONDITION::kGreaterThanEqual:
+							if (responseText.find(succeededPrefix) != 0)
+							{
+								responseText.insert(0, succeededPrefix);
+							}
+						break;
+						default:
+						break;
+	                }
+
+				    a_info->responses.head->responseText = responseText;
+			    }
+			    conditionItem = conditionItem->next;
+		    }
+		}
+		return a_info;
+	}
+
 	// Returns the first NPC response info that passes its condition check.
 	TESTopicInfo* GetNPCInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID)
 	{
@@ -129,31 +179,31 @@ namespace RE
 
 				if (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kRandomEnd && randomOptions.size() > 0)
 				{
-					return randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())];
+					return PrependNPCSkillCheckText(randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())]);
 				}
 				continue;
 			}
 
 			if (randomOptions.size() > 0)
 			{
-				return randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())];
+				return PrependNPCSkillCheckText(randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())]);
 			}
 
 			if (EvaluateInfoConditions(info, playerDialogue, true))
 			{
-				return info;
+				return PrependNPCSkillCheckText(info);
 			}
 		}
 
 		// Do a random roll if the last info topic is 'random' flagged, but not 'randomEnd'.
 		if (randomOptions.size() != 0)
 		{
-			// Shortcut, skip rand() if only one option available.
+			// Shortcut, skip BSRandom::UnsignedInt if only one option available.
 			if (randomOptions.size() == 1)
-			{
-				return randomOptions[0];
+			{					
+				return PrependNPCSkillCheckText(randomOptions[0]);
 			}
-			return randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())];
+			return PrependNPCSkillCheckText(randomOptions[BSRandom::UnsignedInt(0, randomOptions.size())]);
 		}
 
 		// All infos failed their condition checks.

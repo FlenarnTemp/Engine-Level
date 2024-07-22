@@ -526,20 +526,25 @@ namespace RE
 				{
 				case BGSHeadPart::HeadPartType::kEyebrows:
 					partName = "HeadPartEyebrows";
+					break;
 				case BGSHeadPart::HeadPartType::kEyes:
 					partName = "HeadPartEyes";
+					break;
 				case BGSHeadPart::HeadPartType::kFace:
 					partName = "HeadPartFace";
+					break;
 				case BGSHeadPart::HeadPartType::kFacialHair:
 					partName = "HeadPartFacial_Hair";
+					break;
 				case BGSHeadPart::HeadPartType::kHair:
 					partName = "HeadPartHair";
+					break;
 				case BGSHeadPart::HeadPartType::kHeadRear:
 					partName = "HeadPartHead_Rear";
+					break;
 				case BGSHeadPart::HeadPartType::kTeeth:
 					partName = "HeadPartTeeth";
-				default:
-					partName = "";
+					break;
 				}
 
 				std::stringstream result;

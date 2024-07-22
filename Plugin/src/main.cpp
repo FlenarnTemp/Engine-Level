@@ -93,7 +93,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	auto& trampoline = F4SE::GetTrampoline();
 	trampoline.create(1024 * 64);
 
-	Cascadia::Hooks::Install(trampoline);
+	RE::Cascadia::Hooks::Install(trampoline);
 
 	const auto messaging = F4SE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(MessageHandler))
@@ -125,6 +125,8 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 
 	RE::Cascadia::RegisterMenuOpenCloseEventSink();
 	RE::Cascadia::ExamineMenu::hkOnButtonEvent::InstallHook();
+	RE::Cascadia::Hooks::RegisterAddItemHook();
+	RE::Cascadia::Hooks::RegisterSetHealthPercHook();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

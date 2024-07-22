@@ -34,8 +34,6 @@ namespace RE
 		//bool IsMeleeWeapon(WeaponConditionData myConditionData);
 		//float CalculateSkillBonusFromActor(WeaponConditionData myConditionData);
 
-		Setting* GetGMST(const char* a_name);
-
 		float ConvertPercentageToFloat(std::uint8_t percentage);
 
 		std::string trim(const std::string& str);

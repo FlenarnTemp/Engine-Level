@@ -17,7 +17,7 @@ namespace RE
 					_OnButtonEvent = vtbl.write_vfunc(0x8, reinterpret_cast<std::uintptr_t>(OnButtonEvent));
 				}
 			private:
-				static void OnButtonEvent(RE::BSInputEventUser* a_this, const ButtonEvent* a_event)
+				static void OnButtonEvent(BSInputEventUser* a_this, const ButtonEvent* a_event)
 				{
 					if (a_event->QJustPressed() && (a_event->GetBSButtonCode() == BS_BUTTON_CODE::kK))
 					{
@@ -61,11 +61,11 @@ namespace RE
 
 							if (inventoryItem)
 							{
-								switch (inventoryItem->object->formType.underlying())
+								switch (inventoryItem->object->formType.get())
 								{
-									case static_cast<std::uint32_t>(ENUM_FORM_ID::kARMO):
-									case static_cast<std::uint32_t>(ENUM_FORM_ID::kWEAP):										
-										*a_params.retVal = inventoryItem->stackData.get()->extra->GetHealthPerc() != -1.0;
+									case ENUM_FORM_ID::kARMO:
+									case ENUM_FORM_ID::kWEAP:										
+										*a_params.retVal = inventoryItem->stackData.get()->extra->GetHealthPerc() != -1.0; // TODO - is this correct with new logic around Set/GetHealthPerc?
 										break;
 									default:
 										*a_params.retVal = false;
@@ -126,6 +126,23 @@ namespace RE
 			class RepairFunction : public Scaleform::GFx::FunctionHandler
 			{
 			public:
+				std::uint32_t GetStackID(const BGSInventoryItem* a_inventoryItem, BGSInventoryItem::Stack* a_stack)
+				{
+					std::uint32_t iter = 0;
+					BSTSmartPointer<BGSInventoryItem::Stack> pointer = a_inventoryItem->stackData;
+
+					while (true)
+					{
+						if (pointer.get() == a_stack)
+						{
+							return iter;
+						}
+						pointer = pointer->nextStack;
+						iter++;
+					}
+					return 0;
+				}
+
 				virtual void Call(const Params& a_params)
 				{
 					if (a_params.retVal)
@@ -138,26 +155,37 @@ namespace RE
 						{
 							InventoryUserUIInterfaceEntry* inventoryUUIEntry= (examineMenu->invInterface.stackedEntries.data() + selectedIndex);
 							const BGSInventoryItem* inventoryItem = BGSInventoryInterface::GetSingleton()->RequestInventoryItem(inventoryUUIEntry->invHandle.id);
+							BGSInventoryItem::Stack* stack = inventoryItem->stackData.get();
+
 							if (inventoryItem)
 							{
-								TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");	
-								TESObjectREFR::RemoveItemData removeItemData{ repairKit, 1 };
-								Cascadia::GetPlayerCharacter()->RemoveItem(removeItemData);
-
-								switch (inventoryItem->object->formType.underlying())
+								if (!Cascadia::GetPlayerCharacter()->IsGodMode())
 								{
-									case static_cast<std::uint32_t>(ENUM_FORM_ID::kARMO):
-									case static_cast<std::uint32_t>(ENUM_FORM_ID::kWEAP):
-										if (inventoryItem->stackData.get()->extra->GetHealthPerc() + 0.5f >= 1.0f)
+									TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");	
+									TESObjectREFR::RemoveItemData removeItemData{ repairKit, 1 };
+									Cascadia::GetPlayerCharacter()->RemoveItem(removeItemData);
+								}
+
+								switch (inventoryItem->object->formType.get())
+								{
+									case ENUM_FORM_ID::kARMO:
+									case ENUM_FORM_ID::kWEAP:
+										DEBUG("RepairFunction: Old health: {}", stack->extra->GetHealthPerc());
+										if (stack->extra->GetHealthPerc() + 0.5f > 1.0f)
 										{
-											inventoryItem->stackData.get()->extra->SetHealthPerc(0.999f);
+											stack->extra->SetHealthPerc(1.0f);
 										}
 										else
 										{
-											inventoryItem->stackData.get()->extra->SetHealthPerc(inventoryItem->stackData.get()->extra->GetHealthPerc() + 0.5f);
+											stack->extra->SetHealthPerc(stack->extra->GetHealthPerc() + 0.5f);
 										}
-										break;
-									default:
+										DEBUG("RepairFunction: New health: {}", stack->extra->GetHealthPerc());
+
+										BGSInventoryItem::CheckStackIDFunctor compareFunction(GetStackID(inventoryItem, stack));
+										BGSInventoryItem::SetHealthFunctor writeFunction(stack->extra->GetHealthPerc());
+										writeFunction.shouldSplitStacks = true;
+
+										Cascadia::GetPlayerCharacter()->FindAndWriteStackDataForInventoryItem(examineMenu->GetCurrentObj(), compareFunction, writeFunction);
 										break;
 								}
 							}
@@ -185,10 +213,10 @@ namespace RE
 						{
 							float tempCurrentPerc;
 
-							switch (inventoryItem->object->formType.underlying())
+							switch (inventoryItem->object->formType.get())
 							{
-								case static_cast<std::uint32_t>(ENUM_FORM_ID::kARMO):
-								case static_cast<std::uint32_t>(ENUM_FORM_ID::kWEAP):
+								case ENUM_FORM_ID::kARMO:
+								case ENUM_FORM_ID::kWEAP:
 									tempCurrentPerc = inventoryItem->stackData.get()->extra->GetHealthPerc();
 
 									// Temporarily bump condition by 0.001 to avoid wasting a repair kit on effectively non-existant damage.

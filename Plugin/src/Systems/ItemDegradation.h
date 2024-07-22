@@ -8,8 +8,7 @@ namespace RE
 	{
 		void DefineItemDegradationFormsFromGame();
 		void InitializeContainerCondition(TESObjectREFR* containerREFR);
-		void InitializeWeaponCondition(TESObjectREFR* weaponREFR);
-		void InitializeArmorCondition(TESObjectREFR* armorREFR);
+		void InitializeREFRCondition(TESObjectREFR* a_objectREFR);
 	}
 }
 

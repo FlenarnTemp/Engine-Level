@@ -126,7 +126,7 @@ namespace RE
 						}
 
 						// Here we "cheat" once again, who needs configurable settings anyhow.
-						auto setting = trim(a_params.args[0].GetString());
+						std::string setting = trim(a_params.args[0].GetString());
 
 						std::uint32_t value = 1;
 						if (setting == "fSubtitlesX:DialogueMenu" || setting == "bShowOptionNumbers:DialogueMenu" || setting == "bEnable:Debug")

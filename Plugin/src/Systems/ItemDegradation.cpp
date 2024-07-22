@@ -43,198 +43,65 @@ namespace RE
 			fAVDMeleeDamageStrengthMult = 0.5f;
 			fAVDMeleeDamageStrengthOffset = 0.0f;
 
-			fWeaponConditionRateOfFire1 = GetGMST("fWeaponConditionRateOfFire1");
-			fWeaponConditionRateOfFire2 = GetGMST("fWeaponConditionRateOfFire2");
-			fWeaponConditionRateOfFire3 = GetGMST("fWeaponConditionRateOfFire3");
-			fWeaponConditionRateOfFire4 = GetGMST("fWeaponConditionRateOfFire4");
-			fWeaponConditionRateOfFire5 = GetGMST("fWeaponConditionRateOfFire5");
-			fWeaponConditionRateOfFire6 = GetGMST("fWeaponConditionRateOfFire6");
-			fWeaponConditionRateOfFire7 = GetGMST("fWeaponConditionRateOfFire7");
-			fWeaponConditionRateOfFire8 = GetGMST("fWeaponConditionRateOfFire8");
-			fWeaponConditionRateOfFire9 = GetGMST("fWeaponConditionRateOfFire9");
-			fWeaponConditionRateOfFire10 = GetGMST("fWeaponConditionRateOfFire10");
+			GameSettingCollection* gameSettings = GameSettingCollection::GetSingleton();
+
+			fWeaponConditionRateOfFire1 = gameSettings->GetSetting("fWeaponConditionRateOfFire1");
+			fWeaponConditionRateOfFire2 = gameSettings->GetSetting("fWeaponConditionRateOfFire2");
+			fWeaponConditionRateOfFire3 = gameSettings->GetSetting("fWeaponConditionRateOfFire3");
+			fWeaponConditionRateOfFire4 = gameSettings->GetSetting("fWeaponConditionRateOfFire4");
+			fWeaponConditionRateOfFire5 = gameSettings->GetSetting("fWeaponConditionRateOfFire5");
+			fWeaponConditionRateOfFire6 = gameSettings->GetSetting("fWeaponConditionRateOfFire6");
+			fWeaponConditionRateOfFire7 = gameSettings->GetSetting("fWeaponConditionRateOfFire7");
+			fWeaponConditionRateOfFire8 = gameSettings->GetSetting("fWeaponConditionRateOfFire8");
+			fWeaponConditionRateOfFire9 = gameSettings->GetSetting("fWeaponConditionRateOfFire9");
+			fWeaponConditionRateOfFire10 = gameSettings->GetSetting("fWeaponConditionRateOfFire10");
+
+			TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
 
 			// Armor Type Keywords
-			armorTypePowerArmor = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x04D8A1, "Fallout4.esm");
-			armorBodyPartChest = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x06C0EC, "Fallout4.esm");
-			armorBodyPartHead = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x10C418, "Fallout4.esm");
-			armorBodyPartLeftArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x211D06, "FalloutCascadia.esm");
-			armorBodyPartRightArm = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x211D08, "FalloutCascadia.esm");
-			armorBodyPartLeftLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x211D07, "FalloutCascadia.esm");
-			armorBodyPartRightLeg = TESDataHandler::GetSingleton()->LookupForm<BGSKeyword>(0x211D09, "FalloutCascadia.esm");
+			armorTypePowerArmor = dataHandler->LookupForm<BGSKeyword>(0x04D8A1, "Fallout4.esm");
+			armorBodyPartChest = dataHandler->LookupForm<BGSKeyword>(0x06C0EC, "Fallout4.esm");
+			armorBodyPartHead = dataHandler->LookupForm<BGSKeyword>(0x10C418, "Fallout4.esm");
+			armorBodyPartLeftArm = dataHandler->LookupForm<BGSKeyword>(0x211D06, "FalloutCascadia.esm");
+			armorBodyPartRightArm = dataHandler->LookupForm<BGSKeyword>(0x211D08, "FalloutCascadia.esm");
+			armorBodyPartLeftLeg = dataHandler->LookupForm<BGSKeyword>(0x211D07, "FalloutCascadia.esm");
+			armorBodyPartRightLeg = dataHandler->LookupForm<BGSKeyword>(0x211D09, "FalloutCascadia.esm");
 
 			INFO("Item Degradation: Finished linking degradation forms.");
 		}
 
-		// Container Condition
-		void InitializeContainerCondition(TESObjectREFR* containerREFR)
+		void InitializeREFRCondition(TESObjectREFR* a_objectREFR)
 		{
-			if (!containerREFR)
+			if (!a_objectREFR)
 			{
-				INFO("InitializeContainerCondition: Invalid REFR pointer.");
+				DEBUG("InitializeREFRCondition: Invalid TESObjectREFR pointer.");
 				return;
 			}
 
-			if (BGSInventoryList* inventory = containerREFR->inventoryList)
+			if (a_objectREFR->GetFormType() == ENUM_FORM_ID::kWEAP)
 			{
-				inventory->rwLock.lock_read();
-				inventory->rwLock.lock_write();
-
-				for (std::uint32_t i = 0; i < inventory->data.size(); i++)
+				TESObjectWEAP* tempREFR = (TESObjectWEAP*)a_objectREFR;
+				if (tempREFR->weaponData.type == WEAPON_TYPE::kGrenade || tempREFR->weaponData.type == WEAPON_TYPE::kMine)
 				{
-					BGSInventoryItem iterator;
-					iterator = inventory->data[i];
-
-					switch (iterator.object->formType.underlying())
-					{
-					case static_cast<std::uint32_t>(ENUM_FORM_ID::kARMO):
-					{
-						if (iterator.stackData)
-						{
-							std::uint32_t iterationCount = 0;
-							for (BGSInventoryItem::Stack* traverse = iterator.stackData.get(); traverse; traverse->nextStack)
-							{
-								if (!traverse || !traverse->extra)
-								{
-									break;
-								}
-
-								if (!traverse->extra.get()->HasType(kHealth))
-								{
-									//InitializeArmorCondition(iterator.object.); TODO - It's all sorts of angry.
-								}
-								else
-								{
-									// TODO - UpdateArmorStats
-								}
-
-								iterationCount++;
-
-								if (iterationCount > traverse->count)
-								{
-									break;
-								}
-							}
-						}
-						break;
-					}
-					case static_cast<std::uint32_t>(ENUM_FORM_ID::kWEAP):
-					{
-						if (iterator.stackData)
-						{
-							std::uint32_t iterationCount = 0;
-
-							for (BGSInventoryItem::Stack* traverse = iterator.stackData.get(); traverse; traverse->nextStack)
-							{
-								if (!traverse || !traverse->extra)
-								{
-									break;
-								}
-
-								if (!traverse->extra.get()->HasType(kHealth))
-								{
-									//InitializeWeaponCondition(iterator.object.); TODO - It's all sorts of angry.
-								}
-								else
-								{
-									// TODO - UpdateWEaponStats
-								}
-
-								iterationCount++;
-
-								if (iterationCount > traverse->count)
-								{
-									break;
-								}
-							}
-						}
-
-						break;
-					}
-
-					default:
-						break;
-					}
+					DEBUG("InitializeREFRCondition: REFR grenade/mine weapon type.");
+					return;
 				}
-
-				inventory->rwLock.unlock_read();
-				inventory->rwLock.unlock_write();
-			}
-			else
-			{
-				INFO("InitializeContainerCondition: No inventory available");
-				return;
-			}
-		}
-
-		// Weapon Condition
-		void InitializeWeaponCondition(TESObjectREFR* weaponREFR)
-		{
-			if (!weaponREFR)
-			{
-				DEBUG("InitializeWeaponCondition: Invalid REFR pointer.");
-				return;
 			}
 
-			// No grenades or mines should have this data.
-			TESObjectWEAP* tempWeaponREFR = (TESObjectWEAP*)weaponREFR;
-			if (tempWeaponREFR->weaponData.type == WEAPON_TYPE::kGrenade || tempWeaponREFR->weaponData.type == WEAPON_TYPE::kMine)
+			if (a_objectREFR->extraList.get())
 			{
-				DEBUG("InitializeWeaponCondition: REFR grenade/mine weapon type.");
-				return;
-			}
-
-			// Check for ExtraData.
-			if (weaponREFR->extraList.get())
-			{
-				// GetHealthPerc returns -1.0 if it can't find the kHealth type.
-				if (weaponREFR->extraList->GetHealthPerc() < 0)
+				// GetHealthPerc return -1.0 if it can't find the kHealth type.
+				if (a_objectREFR->extraList->GetHealthPerc() < 0)
 				{
-					weaponREFR->extraList->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
-					INFO(("InitializeWeaponCondition: Data initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
+					a_objectREFR->extraList->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
+					INFO("InitializeREFRCondition: Health initialized: {:s}", std::to_string(a_objectREFR->extraList->GetHealthPerc()));
 					return;
 				}
 				else
 				{
-					INFO(("InitializeWeaponCondition: Data already initialized: {:s}"), std::to_string(weaponREFR->extraList->GetHealthPerc()));
+					INFO("InitializeREFRCondition: Health already initialized: {:s}", std::to_string(a_objectREFR->extraList->GetHealthPerc()));
 					return;
 				}
-			}
-			else
-			{
-				DEBUG("InitializeWeaponCondition: No ExtraData.");
-				return;
-			}
-		}
-
-		// Armor Degradation
-		void InitializeArmorCondition(TESObjectREFR* armorREFR)
-		{
-			if (!armorREFR)
-			{
-				DEBUG("IntializeArmorCondition: Invalid REFR pointer.");
-				return;
-			}
-
-			if (armorREFR->extraList.get())
-			{
-				// GetHealthPerc returns -1.0 if it can't find the kHealth type.
-				if (armorREFR->extraList->GetHealthPerc() < 0)
-				{
-					armorREFR->extraList->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
-					INFO(("IntializeArmorCondition: Data initialized: {:s}"), std::to_string(armorREFR->extraList->GetHealthPerc()));
-					return;
-				}
-				else
-				{
-					INFO(("IntializeArmorCondition: Data already initialized: {:s}"), std::to_string(armorREFR->extraList->GetHealthPerc()));
-					return;
-				}
-			}
-			else
-			{
-				DEBUG("InitializeArmorCondition: No ExtraData.");
-				return;
 			}
 		}
 
@@ -244,7 +111,7 @@ namespace RE
 
 			if (myWeapon->weaponData.skill != nullptr)
 			{
-				actorSkillValue = (RE::Cascadia::GetPlayerCharacter()->GetActorValue(*myWeapon->weaponData.skill) / 100);
+				actorSkillValue = (Cascadia::GetPlayerCharacter()->GetActorValue(*myWeapon->weaponData.skill) / 100);
 			}
 
 			float result = (fDamageSkillBase + fDamageSkillMult * actorSkillValue);
@@ -254,7 +121,7 @@ namespace RE
 
 		void ModWeaponCondition(TESObjectREFR* myWeapon, float a_value)
 		{
-			if (RE::Cascadia::GetPlayerCharacter()->IsGodMode())
+			if (Cascadia::GetPlayerCharacter()->IsGodMode())
 			{
 				DEBUG("God Mode enabled, ignoring weapon degradation.");
 				return;
@@ -357,12 +224,12 @@ namespace RE
 	   {
 		   for (uint32_t i = 0; i < baseWEAPForm->weaponData.damageTypes->size(); i++)
 		   {
-			   /**if (baseWEAPForm->weaponData.damageTypes[i][0].first != ItemDegradationForms.weaponConditionHealthMaxDMGT && baseWEAPForm->weaponData.damageTypes[i][0].first != ItemDegradationForms.weaponConditionHealthStartingDMGT)
+			   if (baseWEAPForm->weaponData.damageTypes[i][0].first != ItemDegradationForms.weaponConditionHealthMaxDMGT && baseWEAPForm->weaponData.damageTypes[i][0].first != ItemDegradationForms.weaponConditionHealthStartingDMGT)
 			   {
 				   baseValue = baseWEAPForm->weaponData.damageTypes[i][i].second.f;
 				   newValue = CalculateUpdatedDamageValue(baseValue, minimum, currentCondition, CalculateSkillBonusFromActor(myConditionData));
 				   return newValue;
-			   }*
+			   }
 		   }
 	   }
 

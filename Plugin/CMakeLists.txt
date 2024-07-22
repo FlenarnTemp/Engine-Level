@@ -51,7 +51,7 @@ add_library(
 		${CMAKE_CURRENT_BINARY_DIR}/version.rc
 		.clang-format
 		vcpkg.json
- "src/Menus/ExamineMenu.h" "src/Events/InputEvent.h")
+)
 
 # include dir
 target_include_directories(

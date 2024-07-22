@@ -16,26 +16,12 @@ namespace RE
 			{
 				if (a_event.hObjectInitialized)
 				{
-					switch (a_event.hObjectInitialized->data.objectReference->formType.underlying())
+					switch (a_event.hObjectInitialized->data.objectReference->GetFormType())
 					{
-					case static_cast<std::uint32_t>(ENUM_FORM_ID::kCONT):
-						//InitializeContainerCondition(event.hObjectInitialized);
-						//INFO("InitializeInventoryCondition");
-						break;
-
-					case static_cast<std::uint32_t>(ENUM_FORM_ID::kARMO):
-						InitializeArmorCondition(a_event.hObjectInitialized);
-						//DEBUG("InitializeArmorCondition");
-						break;
-
-					case static_cast<std::uint32_t>(ENUM_FORM_ID::kWEAP):
-						InitializeWeaponCondition(a_event.hObjectInitialized);
-						//DEBUG("InitializeWeaponCondition");
-						break;
-
-					default:
-						//DEBUG("Form type: {:s}", std::to_string(a_event.hObjectInitialized->data.objectReference->formType.underlying()));
-						break;
+						case ENUM_FORM_ID::kARMO:
+						case ENUM_FORM_ID::kWEAP:
+							InitializeREFRCondition(a_event.hObjectInitialized);
+							break;
 					}
 				}
 				return BSEventNotifyControl::kContinue;

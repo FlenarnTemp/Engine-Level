@@ -1,11 +1,16 @@
 #pragma once
 
 #include "Systems/Dialogue.h"
-
-namespace Cascadia
+#include "detourXS/detourxs.h"
+namespace RE
 {
-	namespace Hooks
+	namespace Cascadia
 	{
-		void Install(F4SE::Trampoline& trampoline);
+		namespace Hooks
+		{
+			void Install(F4SE::Trampoline& trampoline);
+			void RegisterAddItemHook();
+			void RegisterSetHealthPercHook();
+		}
 	}
 }

@@ -305,11 +305,6 @@ namespace RE
 			return result;
 		}*/
 
-		Setting* GetGMST(const char* a_name)
-		{
-			return GameSettingCollection::GetSingleton()->GetSetting(a_name);
-		}
-
 		//	Converts a UInt8 percentage to float (eg. 38% becomes 0.38)
 		float ConvertPercentageToFloat(std::uint8_t percentage)
 		{
@@ -319,21 +314,12 @@ namespace RE
 		bool HasVMScript(TESForm* form, const char* scriptName)
 		{
 			BSTSmartPointer<BSScript::IVirtualMachine> vm = GameVM::GetSingleton()->GetVM();
-
-			// BSScript::IObjectHandlePolicy
-			const auto& handlePolicy = vm->GetObjectHandlePolicy();
+			const BSScript::IObjectHandlePolicy& handlePolicy = vm->GetObjectHandlePolicy();
 			std::size_t handle = handlePolicy.GetHandleForObject(form->formType.underlying(), form);
 
 			BSTSmartPointer<Object> identifier;
 
-			if (vm->FindBoundObject(handle, scriptName, 1, identifier, 0))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return vm->FindBoundObject(handle, scriptName, 1, identifier, 0);
 		}
 
 		std::string trim(const std::string& str) {

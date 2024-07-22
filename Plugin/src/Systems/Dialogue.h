@@ -30,14 +30,6 @@ namespace RE
 		std::vector<std::pair<TESTopicInfo*, std::vector<TESTopicInfo*>>> dialogueMap;
 	};
 
-	struct TOPIC_INFO_SCENEDATA
-	{
-		BGSScene* pScene;
-		std::uint32_t uiPhase;
-	};
-
-	static_assert(sizeof(TOPIC_INFO_SCENEDATA) == 0x10);
-
 	[[nodiscard]] inline BSTHashMap<const TESTopicInfo*, BGSLocalizedString>& GetAllPromptMap()
 	{
 		REL::Relocation<BSTHashMap<const TESTopicInfo*, BGSLocalizedString>*> AllPromptMap{ REL::ID(2662553), -0x28 };
@@ -62,7 +54,7 @@ namespace RE
 
 	std::vector<DialogueOption> GetDialogueOptions();
 	void BuildDialogueMap(bool force = false);
-	std::vector<TESTopicInfo*> GetPlayerInfos();
+	BSTArray<TESTopicInfo*> GetPlayerInfos();
 	TESTopicInfo* GetPlayerInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID);
 	TESTopicInfo* GetNPCInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID);
 

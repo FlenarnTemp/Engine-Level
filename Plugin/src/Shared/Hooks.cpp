@@ -27,14 +27,29 @@ namespace RE
 			typedef void(SetHealthPercSig)(ExtraDataList*, float);
 			REL::Relocation<SetHealthPercSig> SetHealthPercOriginal;
 
-			void HookSetHealthPerc(ExtraDataList* a_this, float a_health)
+			void HookExtraDataListSetHealthPerc(ExtraDataList* a_this, float a_health)
 			{
 				SetHealthPercOriginal(a_this, a_health);
 				if (a_health == 1.0f && a_this->GetHealthPerc() != 1.0f)
 				{
-					DEBUG("SetHealthPerc: New health set to 1.0f, old health: {}.", a_this->GetHealthPerc());
 					a_this->AddExtra(new ExtraHealth(1.0f));
 				}
+			}
+
+			DetourXS hook_GetInventoryValue;
+			typedef std::int64_t(GetInventoryValueSig)(TESBoundObject*, const ExtraDataList*);
+			REL::Relocation<GetInventoryValueSig> GetInventoryValueOriginal;
+
+			int64_t HookGetInventoryValue(TESBoundObject* a_baseObj, const ExtraDataList* a_extra)
+			{
+				if (!a_extra->HasType(EXTRA_DATA_TYPE::kHealth))
+				{
+					return GetInventoryValueOriginal(a_baseObj, a_extra);
+				}
+
+				ExtraDataList* non_const_a_extra = const_cast<ExtraDataList*>(a_extra);
+				int64_t newValue = int64_t(GetInventoryValueOriginal(a_baseObj, a_extra) * non_const_a_extra->GetHealthPerc() * std::sqrt(non_const_a_extra->GetHealthPerc()));
+				return newValue;
 			}
 
 			DetourXS hook_AddItem;
@@ -114,7 +129,7 @@ namespace RE
 			void RegisterSetHealthPercHook()
 			{
 				REL::Relocation<SetHealthPercSig> functionLocation{ REL::ID(2190124) };
-				if (hook_SetHealthPerc.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookSetHealthPerc))
+				if (hook_SetHealthPerc.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExtraDataListSetHealthPerc))
 				{
 					DEBUG("Installed ExtraDataList::SetHealthPerc hook.");
 					SetHealthPercOriginal = reinterpret_cast<uintptr_t>(hook_SetHealthPerc.GetTrampoline());
@@ -122,6 +137,20 @@ namespace RE
 				else
 				{
 					FATAL("Failed to hook ExtraDataList::SetHealthPerc, exiting.");
+				}
+			}
+
+			void RegisterGetInventoryValueHook()
+			{
+				REL::Relocation<GetInventoryValueSig> functionLocation{ REL::ID(2194127) };
+				if (hook_GetInventoryValue.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookGetInventoryValue))
+				{
+					DEBUG("Installed BGSInventoryItemUtils::GetInventoryValue hook.");
+					GetInventoryValueOriginal = reinterpret_cast<uintptr_t>(hook_GetInventoryValue.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook BGSInventoryItemUtils::GetInventoryValue, exiting.");
 				}
 			}
 		}

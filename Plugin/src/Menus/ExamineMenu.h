@@ -25,7 +25,7 @@ namespace RE
 						IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
 						Scaleform::GFx::Value a_params[4];
 
-						a_params[0] = "test";
+						a_params[0] = "";
 						a_params[1] = true;
 						a_params[2] = a_event->device.underlying();
 						a_params[3] = a_event->idCode;
@@ -41,7 +41,7 @@ namespace RE
 
 				inline static REL::Relocation<decltype(&OnButtonEvent)> _OnButtonEvent;
 			};
-			
+
 			class EligableRepair : public Scaleform::GFx::FunctionHandler
 			{
 			public:
@@ -52,27 +52,32 @@ namespace RE
 						*a_params.retVal = nullptr;
 						DEBUG("EligableRepair called.");
 						Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
-
 						std::uint32_t selectedIndex = examineMenu->GetSelectedIndex();
-						if (!examineMenu->invInterface.entriesInvalid || (selectedIndex & 0x80000000) == 0 || selectedIndex < examineMenu->invInterface.stackedEntries.size())
+						if (!examineMenu->invInterface.entriesInvalid && (selectedIndex & 0x80000000) == 0 && selectedIndex < examineMenu->invInterface.stackedEntries.size())
 						{
 							InventoryUserUIInterfaceEntry* inventoryUUIEntry = (examineMenu->invInterface.stackedEntries.data() + selectedIndex);
+
 							const BGSInventoryItem* inventoryItem = BGSInventoryInterface::GetSingleton()->RequestInventoryItem(inventoryUUIEntry->invHandle.id);
+							*a_params.retVal = false;
 
 							if (inventoryItem)
 							{
-								switch (inventoryItem->object->formType.get())
+								BGSInventoryItem::Stack* stack = inventoryItem->GetStackByID(inventoryUUIEntry->stackIndex.at(0));
+								if (stack)
 								{
+									switch (examineMenu->GetCurrentObj()->formType.get())
+									{
 									case ENUM_FORM_ID::kARMO:
-									case ENUM_FORM_ID::kWEAP:										
-										*a_params.retVal = inventoryItem->stackData.get()->extra->GetHealthPerc() != -1.0; // TODO - is this correct with new logic around Set/GetHealthPerc?
+									case ENUM_FORM_ID::kWEAP:
+										if (stack->extra->GetHealthPerc() != -1.0f && stack->extra->GetHealthPerc() != 1.0f)
+										{
+											*a_params.retVal = true;
+										}
 										break;
-									default:
-										*a_params.retVal = false;
-										break;
+									}
 								}
 							}
-						}				
+						}
 					}
 				}
 			};
@@ -126,23 +131,6 @@ namespace RE
 			class RepairFunction : public Scaleform::GFx::FunctionHandler
 			{
 			public:
-				std::uint32_t GetStackID(const BGSInventoryItem* a_inventoryItem, BGSInventoryItem::Stack* a_stack)
-				{
-					std::uint32_t iter = 0;
-					BSTSmartPointer<BGSInventoryItem::Stack> pointer = a_inventoryItem->stackData;
-
-					while (true)
-					{
-						if (pointer.get() == a_stack)
-						{
-							return iter;
-						}
-						pointer = pointer->nextStack;
-						iter++;
-					}
-					return 0;
-				}
-
 				virtual void Call(const Params& a_params)
 				{
 					if (a_params.retVal)
@@ -151,26 +139,27 @@ namespace RE
 						Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 
 						std::uint32_t selectedIndex = examineMenu->GetSelectedIndex();
-						if (!examineMenu->invInterface.entriesInvalid || (selectedIndex & 0x80000000) == 0 || selectedIndex < examineMenu->invInterface.stackedEntries.size())
+						if (!examineMenu->invInterface.entriesInvalid && (selectedIndex & 0x80000000) == 0 && selectedIndex < examineMenu->invInterface.stackedEntries.size())
 						{
-							InventoryUserUIInterfaceEntry* inventoryUUIEntry= (examineMenu->invInterface.stackedEntries.data() + selectedIndex);
+							InventoryUserUIInterfaceEntry* inventoryUUIEntry = (examineMenu->invInterface.stackedEntries.data() + selectedIndex);
 							const BGSInventoryItem* inventoryItem = BGSInventoryInterface::GetSingleton()->RequestInventoryItem(inventoryUUIEntry->invHandle.id);
-							BGSInventoryItem::Stack* stack = inventoryItem->stackData.get();
 
 							if (inventoryItem)
 							{
 								if (!Cascadia::GetPlayerCharacter()->IsGodMode())
 								{
-									TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");	
+									TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");
 									TESObjectREFR::RemoveItemData removeItemData{ repairKit, 1 };
 									Cascadia::GetPlayerCharacter()->RemoveItem(removeItemData);
 								}
 
-								switch (inventoryItem->object->formType.get())
+								switch (examineMenu->GetCurrentObj()->formType.get())
 								{
-									case ENUM_FORM_ID::kARMO:
-									case ENUM_FORM_ID::kWEAP:
-										DEBUG("RepairFunction: Old health: {}", stack->extra->GetHealthPerc());
+								case ENUM_FORM_ID::kARMO:
+								case ENUM_FORM_ID::kWEAP:
+									BGSInventoryItem::Stack* stack = inventoryItem->GetStackByID(inventoryUUIEntry->stackIndex.at(0));
+									if (stack)
+									{
 										if (stack->extra->GetHealthPerc() + 0.5f > 1.0f)
 										{
 											stack->extra->SetHealthPerc(1.0f);
@@ -179,17 +168,25 @@ namespace RE
 										{
 											stack->extra->SetHealthPerc(stack->extra->GetHealthPerc() + 0.5f);
 										}
-										DEBUG("RepairFunction: New health: {}", stack->extra->GetHealthPerc());
 
-										BGSInventoryItem::CheckStackIDFunctor compareFunction(GetStackID(inventoryItem, stack));
+										BGSInventoryItem::CheckStackIDFunctor compareFunction(inventoryUUIEntry->stackIndex.at(0));
 										BGSInventoryItem::SetHealthFunctor writeFunction(stack->extra->GetHealthPerc());
-										writeFunction.shouldSplitStacks = true;
+										writeFunction.shouldSplitStacks = 0x101;
 
 										Cascadia::GetPlayerCharacter()->FindAndWriteStackDataForInventoryItem(examineMenu->GetCurrentObj(), compareFunction, writeFunction);
-										break;
+
+										examineMenu->UpdateOptimizedAutoBuildInv();
+										selectedIndex = examineMenu->GetSelectedIndex();
+										examineMenu->UpdateItemList(selectedIndex);
+										examineMenu->uiMovie->Invoke("RefreshList", nullptr, nullptr, 0);
+
+										PipboyDataManager* pipboyDataManager = PipboyDataManager::GetSingleton();
+										pipboyDataManager->inventoryData.RepopulateItemCardsOnSection(examineMenu->GetCurrentObj()->formType.get());
+									}
+									break;
 								}
 							}
-						}				
+						}
 					}
 				}
 			};
@@ -197,40 +194,46 @@ namespace RE
 			class NeedsRepair : public Scaleform::GFx::FunctionHandler
 			{
 			public:
-				virtual void Call(const Params& a_params)	
+				virtual void Call(const Params& a_params)
 				{
 					DEBUG("NeedsRepair called.");
 					*a_params.retVal = nullptr;
 					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 
 					std::uint32_t selectedIndex = examineMenu->GetSelectedIndex();
-					if (!examineMenu->invInterface.entriesInvalid || (selectedIndex & 0x80000000) == 0 || selectedIndex < examineMenu->invInterface.stackedEntries.size())
+					if (!examineMenu->invInterface.entriesInvalid && (selectedIndex & 0x80000000) == 0 && selectedIndex < examineMenu->invInterface.stackedEntries.size())
 					{
-						InventoryUserUIInterfaceEntry* inventoryUUIEntry= (examineMenu->invInterface.stackedEntries.data() + selectedIndex);
+						InventoryUserUIInterfaceEntry* inventoryUUIEntry = (examineMenu->invInterface.stackedEntries.data() + selectedIndex);
 						const BGSInventoryItem* inventoryItem = BGSInventoryInterface::GetSingleton()->RequestInventoryItem(inventoryUUIEntry->invHandle.id);
 
 						if (inventoryItem)
 						{
 							float tempCurrentPerc;
+							*a_params.retVal = false;
 
-							switch (inventoryItem->object->formType.get())
+							switch (examineMenu->GetCurrentObj()->formType.get())
 							{
-								case ENUM_FORM_ID::kARMO:
-								case ENUM_FORM_ID::kWEAP:
-									tempCurrentPerc = inventoryItem->stackData.get()->extra->GetHealthPerc();
+							case ENUM_FORM_ID::kARMO:
+							case ENUM_FORM_ID::kWEAP:
+								BGSInventoryItem::Stack* stack = inventoryItem->GetStackByID(inventoryUUIEntry->stackIndex.at(0));
+								if (stack)
+								{
+									tempCurrentPerc = stack->extra->GetHealthPerc();
 
 									// Temporarily bump condition by 0.001 to avoid wasting a repair kit on effectively non-existant damage.
-									inventoryItem->stackData.get()->extra->SetHealthPerc(tempCurrentPerc + 0.001);
-									*a_params.retVal = inventoryItem->stackData.get()->extra->IsDamaged();
+									stack->extra->SetHealthPerc(tempCurrentPerc + 0.001);
+									*a_params.retVal = stack->extra->IsDamaged();
 									// Restore condition back to original.
-									inventoryItem->stackData.get()->extra->SetHealthPerc(tempCurrentPerc);
-									break;
-								default:										
-									*a_params.retVal = false;
-									break;
+									stack->extra->SetHealthPerc(tempCurrentPerc);
 								}
+								break;
 							}
 						}
+					}
+					else
+					{
+						DEBUG("Invalid.");
+					}
 				}
 			};
 

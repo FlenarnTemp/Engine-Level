@@ -1,6 +1,7 @@
 #include "Events/InputEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESInitScriptEvent.h"
+#include "Events/TESHarvestEvent.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
 #include "Shared/Hooks.h"
@@ -32,6 +33,7 @@ namespace
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
 			RE::Cascadia::InputEventReceiverOverride::Install();
 			RE::Cascadia::RegisterTESInitScriptEventSink();
+			//RE::Cascadia::RegisterTESHarvestEventEventSink();
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:
@@ -91,7 +93,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	INFO("{} v{} loaded."sv, Plugin::NAME, Plugin::Version);
 
 	auto& trampoline = F4SE::GetTrampoline();
-	trampoline.create(1024 * 64);
+	trampoline.create(1024 * 32);
 
 	RE::Cascadia::Hooks::Install(trampoline);
 
@@ -127,6 +129,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	RE::Cascadia::ExamineMenu::hkOnButtonEvent::InstallHook();
 	RE::Cascadia::Hooks::RegisterAddItemHook();
 	RE::Cascadia::Hooks::RegisterSetHealthPercHook();
+	RE::Cascadia::Hooks::RegisterGetInventoryValueHook();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

@@ -11,6 +11,7 @@ namespace RE
 			void Install(F4SE::Trampoline& trampoline);
 			void RegisterAddItemHook();
 			void RegisterSetHealthPercHook();
+			void RegisterGetInventoryValueHook();
 		}
 	}
 }

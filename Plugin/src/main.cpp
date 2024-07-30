@@ -132,6 +132,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	RE::Cascadia::Hooks::RegisterGetInventoryValueHook();
 	RE::Cascadia::Hooks::RegisterShowBuildFailureMessage();
 	RE::Cascadia::Hooks::RegisterGetBuildConfirmQuestion();
+	RE::Cascadia::Hooks::RegisterQCurrentModChoiceData();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

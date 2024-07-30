@@ -14,6 +14,7 @@ namespace RE
 			void RegisterGetInventoryValueHook();
 			void RegisterShowBuildFailureMessage();
 			void RegisterGetBuildConfirmQuestion();
+			void RegisterQCurrentModChoiceData();
 		}
 	}
 }

@@ -25,17 +25,12 @@ namespace RE
 
 			DetourXS hook_ShowBuildFailureMessage;
 			typedef void(ShowBuildFailureMessageSig)(WorkbenchMenuBase*);
-			REL::Relocation<ShowBuildFailureMessageSig> ShowBuildFailureMessageOriginal;
 
 			void HookWorkbenchMenuBaseShowBuildFailureMessage(WorkbenchMenuBase* a_this)
 			{
 				GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
 				if (a_this->repairing)
 				{
-
-					DEBUG("WorkbenchMenuBase::ShowBuildFailureMessage - repairing.");
-
-
 					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 
 					std::uint32_t selectedIndex = examineMenu->GetSelectedIndex();
@@ -46,12 +41,19 @@ namespace RE
 
 						if (inventoryItem)
 						{
+							for (const auto& tuple : *a_this->QCurrentModChoiceData()->requiredItems) {
+								TESForm* form = tuple.first;
+								BGSTypedFormValuePair::SharedVal value = tuple.second;
+
+
+								DEBUG("Form: {}, value: {}", form->formID, value.i);
+							}
+
 							//examineMenu->ShowConfirmMenu()
 							SendHUDMessage::ShowHUDMessage("You lack the requirements to repair this object.", nullptr, true, true);
 							a_this->repairing = false;
 						}
 					}
-
 				}
 				else
 				{
@@ -95,11 +97,51 @@ namespace RE
 				}
 			}
 
+			DetourXS hook_QCurrentModChoiceData;
+			typedef const WorkbenchMenuBase::ModChoiceData* (QCurrentModChoiceDataSig)(WorkbenchMenuBase*);
+
+			const WorkbenchMenuBase::ModChoiceData* HookWorkbenchMenuBaseQCurrentModChoiceData(WorkbenchMenuBase* a_this)
+			{
+				if (a_this->repairing)
+				{
+					if (typeid(*a_this) == typeid(PowerArmorModMenu))
+					{
+						PowerArmorModMenu* powerArmorModMenu = dynamic_cast<PowerArmorModMenu*>(a_this);
+						return &powerArmorModMenu->repairData;
+					}
+					else
+					{
+						std::uint32_t modChoiceIndex = a_this->modChoiceIndex;
+						if (modChoiceIndex >= a_this->modChoiceArray.size())
+						{
+							return 0;
+						}
+						else
+						{
+							return (a_this->modChoiceArray.data() + modChoiceIndex);
+						}
+					}
+				}
+				else
+				{
+					std::uint32_t modChoiceIndex = a_this->modChoiceIndex;
+
+					if (modChoiceIndex >= a_this->modChoiceArray.size())
+					{
+						return 0;
+					}
+					else
+					{
+						return (a_this->modChoiceArray.data() + modChoiceIndex);
+					}
+				}
+			}
+
 			DetourXS hook_GetInventoryValue;
 			typedef std::int64_t(GetInventoryValueSig)(TESBoundObject*, const ExtraDataList*);
 			REL::Relocation<GetInventoryValueSig> GetInventoryValueOriginal;
 
-			int64_t HookGetInventoryValue(TESBoundObject* a_baseObj, const ExtraDataList* a_extra)
+			int64_t HookBGSInventoryItemUtilsGetInventoryValue(TESBoundObject* a_baseObj, const ExtraDataList* a_extra)
 			{
 				if (!a_extra->HasType(EXTRA_DATA_TYPE::kHealth))
 				{
@@ -171,6 +213,8 @@ namespace RE
 				AddItemOriginal(a_this, a_boundObject, a_stack, a_oldCount, a_newCount);
 			}
 
+			// ========== REGISTERS ==========
+
 			void RegisterGetBuildConfirmQuestion()
 			{
 				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };
@@ -190,7 +234,6 @@ namespace RE
 				if (hook_ShowBuildFailureMessage.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookWorkbenchMenuBaseShowBuildFailureMessage))
 				{
 					DEBUG("Installed WorkbenchMenuBase::ShowBuildFailureMessage hook.");
-					ShowBuildFailureMessageOriginal = reinterpret_cast<uintptr_t>(hook_ShowBuildFailureMessage.GetTrampoline());
 				}
 				else
 				{
@@ -229,10 +272,23 @@ namespace RE
 			void RegisterGetInventoryValueHook()
 			{
 				REL::Relocation<GetInventoryValueSig> functionLocation{ REL::ID(2194127) };
-				if (hook_GetInventoryValue.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookGetInventoryValue))
+				if (hook_GetInventoryValue.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookBGSInventoryItemUtilsGetInventoryValue))
 				{
 					DEBUG("Installed BGSInventoryItemUtils::GetInventoryValue hook.");
 					GetInventoryValueOriginal = reinterpret_cast<uintptr_t>(hook_GetInventoryValue.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook BGSInventoryItemUtils::GetInventoryValue, exiting.");
+				}
+			}
+
+			void RegisterQCurrentModChoiceData()
+			{
+				REL::Relocation<QCurrentModChoiceDataSig> functionLocation{ REL::ID(2224958) };
+				if (hook_QCurrentModChoiceData.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookWorkbenchMenuBaseQCurrentModChoiceData))
+				{
+					DEBUG("Installed WorkbenchMenuBase::QCurrentModChoiceData hook.");
 				}
 				else
 				{

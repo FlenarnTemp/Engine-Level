@@ -19,7 +19,7 @@ namespace RE
 			private:
 				static void OnButtonEvent(BSInputEventUser* a_this, const ButtonEvent* a_event)
 				{
-					if (a_event->QJustPressed() && (a_event->GetBSButtonCode() == BS_BUTTON_CODE::kK))
+					if (a_event->QJustPressed() && (a_event->GetBSButtonCode() == BS_BUTTON_CODE::kK || a_event->GetBSButtonCode() == BS_BUTTON_CODE::kV))
 					{
 						BSFixedString menuString("ExamineMenu");
 						IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
@@ -191,6 +191,19 @@ namespace RE
 				}
 			};
 
+			class RepairWorkbench : public Scaleform::GFx::FunctionHandler
+			{
+			public:
+				virtual void Call(const Params& a_params)
+				{
+					DEBUG("RepairWorkbench called.");
+					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
+
+					examineMenu->repairing = true;
+					examineMenu->TryCreate();
+				}
+			};
+
 			class NeedsRepair : public Scaleform::GFx::FunctionHandler
 			{
 			public:
@@ -230,10 +243,6 @@ namespace RE
 							}
 						}
 					}
-					else
-					{
-						DEBUG("Invalid.");
-					}
 				}
 			};
 
@@ -255,6 +264,7 @@ namespace RE
 						RegisterFunction<HasRepairKits>(&bgsCodeObj, a_view->asMovieRoot, "hasRepairKits");
 						RegisterFunction<NeedsRepair>(&bgsCodeObj, a_view->asMovieRoot, "needsRepair");
 						RegisterFunction<RepairFunction>(&bgsCodeObj, a_view->asMovieRoot, "CASRepairItem");
+						RegisterFunction<RepairWorkbench>(&bgsCodeObj, a_view->asMovieRoot, "RepairWorkbench");
 					}
 					return true;
 				}

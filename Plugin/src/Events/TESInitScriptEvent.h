@@ -20,7 +20,7 @@ namespace RE
 					{
 						case ENUM_FORM_ID::kARMO:
 						case ENUM_FORM_ID::kWEAP:
-							InitializeREFRCondition(a_event.hObjectInitialized);
+							//InitializeREFRCondition(a_event.hObjectInitialized); TODO - Remove entire logic circuit, mimic Fallout 76 initialization.
 							break;
 					}
 				}

@@ -23,6 +23,65 @@ namespace RE
 				trampoline.write_call<5>(GetCurrentTopicInfo_NPCAction_Location.address(), &RE::GetCurrentTopicInfo_NPCAction_Hook);
 			}
 
+			DetourXS hook_ShowBuildFailureMessage;
+			typedef void(ShowBuildFailureMessageSig)(WorkbenchMenuBase*);
+			REL::Relocation<ShowBuildFailureMessageSig> ShowBuildFailureMessageOriginal;
+
+			void HookWorkbenchMenuBaseShowBuildFailureMessage(WorkbenchMenuBase* a_this)
+			{
+				GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
+				if (a_this->repairing)
+				{
+
+					DEBUG("WorkbenchMenuBase::ShowBuildFailureMessage - repairing.");
+
+
+					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
+
+					std::uint32_t selectedIndex = examineMenu->GetSelectedIndex();
+					if (!examineMenu->invInterface.entriesInvalid && (selectedIndex & 0x80000000) == 0 && selectedIndex < examineMenu->invInterface.stackedEntries.size())
+					{
+						InventoryUserUIInterfaceEntry* inventoryUUIEntry = (examineMenu->invInterface.stackedEntries.data() + selectedIndex);
+						const BGSInventoryItem* inventoryItem = BGSInventoryInterface::GetSingleton()->RequestInventoryItem(inventoryUUIEntry->invHandle.id);
+
+						if (inventoryItem)
+						{
+							//examineMenu->ShowConfirmMenu()
+							SendHUDMessage::ShowHUDMessage("You lack the requirements to repair this object.", nullptr, true, true);
+							a_this->repairing = false;
+						}
+					}
+
+				}
+				else
+				{
+					SendHUDMessage::ShowHUDMessage(gameSettingCollection->GetSetting("sCannotBuildMessage")->GetString().data(), nullptr, true, true);
+				}
+			}
+
+			DetourXS hook_GetBuildConfirmQuestion;
+			typedef void(GetBuildConfirmQuestionSig)(RE::ExamineMenu*, char*, std::uint32_t);
+
+			void HookExamineMenuGetBuildConfirmQuestion(RE::ExamineMenu* a_this, char* a_buffer, std::uint32_t a_bufferLength)
+			{
+				const WorkbenchMenuBase::ModChoiceData* modChoiceData;
+				const char* fullName;
+				const char* type;
+
+				if (a_this->QCurrentModChoiceData()->recipe)
+				{
+					modChoiceData = a_this->QCurrentModChoiceData();
+					fullName = TESFullName::GetFullName(*modChoiceData->recipe->createdItem).data();
+
+					type = "$$Make";
+					if (a_this->repairing)
+					{
+						type = "$$Repair";
+					}
+					snprintf(a_buffer, a_bufferLength, "%s %s?", type, fullName);
+				}
+			}
+
 			DetourXS hook_SetHealthPerc;
 			typedef void(SetHealthPercSig)(ExtraDataList*, float);
 			REL::Relocation<SetHealthPercSig> SetHealthPercOriginal;
@@ -112,17 +171,30 @@ namespace RE
 				AddItemOriginal(a_this, a_boundObject, a_stack, a_oldCount, a_newCount);
 			}
 
-			void RegisterAddItemHook()
+			void RegisterGetBuildConfirmQuestion()
 			{
-				REL::Relocation<AddItemSig> functionLocation{ REL::ID(2194159) };
-				if (hook_AddItem.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookBGSInventoryListAddItem))
+				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };
+				if (hook_GetBuildConfirmQuestion.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExamineMenuGetBuildConfirmQuestion))
 				{
-					DEBUG("Installed BGSInventoryList::AddItem hook.");
-					AddItemOriginal = reinterpret_cast<uintptr_t>(hook_AddItem.GetTrampoline());
+					DEBUG("Installed ExamineMenu::GetBuildConfirmQuestion hook.");
 				}
 				else
 				{
-					FATAL("Failed to hook BGSInventoryList::AddItem, exiting.");
+					FATAL("Failed to hook ExamineMenu::GetBuildConfirmQuestion, exiting.");
+				}
+			}
+
+			void RegisterShowBuildFailureMessage()
+			{
+				REL::Relocation<ShowBuildFailureMessageSig> functionLocation{ REL::ID(2224959) };
+				if (hook_ShowBuildFailureMessage.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookWorkbenchMenuBaseShowBuildFailureMessage))
+				{
+					DEBUG("Installed WorkbenchMenuBase::ShowBuildFailureMessage hook.");
+					ShowBuildFailureMessageOriginal = reinterpret_cast<uintptr_t>(hook_ShowBuildFailureMessage.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook WorkbenchMenuBase::ShowBuildFailureMessage, exiting.");
 				}
 			}
 
@@ -137,6 +209,20 @@ namespace RE
 				else
 				{
 					FATAL("Failed to hook ExtraDataList::SetHealthPerc, exiting.");
+				}
+			}
+
+			void RegisterAddItemHook()
+			{
+				REL::Relocation<AddItemSig> functionLocation{ REL::ID(2194159) };
+				if (hook_AddItem.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookBGSInventoryListAddItem))
+				{
+					DEBUG("Installed BGSInventoryList::AddItem hook.");
+					AddItemOriginal = reinterpret_cast<uintptr_t>(hook_AddItem.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook BGSInventoryList::AddItem, exiting.");
 				}
 			}
 

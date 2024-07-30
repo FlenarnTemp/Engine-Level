@@ -12,6 +12,8 @@ namespace RE
 			void RegisterAddItemHook();
 			void RegisterSetHealthPercHook();
 			void RegisterGetInventoryValueHook();
+			void RegisterShowBuildFailureMessage();
+			void RegisterGetBuildConfirmQuestion();
 		}
 	}
 }

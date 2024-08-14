@@ -651,9 +651,19 @@ namespace RE
 					}
 				}
 
+				// Expanded logic for 'Enabled' value, needs to take inot account possible values from both Shared and 'local' info.
+				bool enabled = false;
 				if (dataInfo)
 				{
+					if (EvaluateInfoConditions(info, playerDialogue) && EvaluateInfoConditions(originalInfo, playerDialogue))
+					{
+						enabled = true;
+					}
 					info = originalInfo;
+				}
+				else
+				{
+					enabled = EvaluateInfoConditions(info, playerDialogue);
 				}
 
 
@@ -693,7 +703,7 @@ namespace RE
 				option.info = info;
 				option.prompText = prompt.data();
 				option.responseText = responseText;
-				option.enabled = EvaluateInfoConditions(info, playerDialogue);
+				option.enabled = enabled;
 				option.said = info->data.flags.all(TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid);
 				option.challengeLevel = info->GetChallengeLevel();
 				option.challengeResult = info->GetSuccessLevel();

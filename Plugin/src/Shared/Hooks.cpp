@@ -41,12 +41,22 @@ namespace RE
 
 						if (inventoryItem)
 						{
+							BSTArray<BSTTuple<TESForm*, BGSTypedFormValuePair::SharedVal>>* requiredItems = a_this->QCurrentModChoiceData()->recipe->requiredItems;
+							if (requiredItems)
+							{
+								RE::ExamineConfirmMenu::ICallback* iCallback = new RE::ExamineConfirmMenu::ICallback(examineMenu.get());
+
+								RE::ExamineConfirmMenu::InitDataRepairFailure* initDataRepair = new RE::ExamineConfirmMenu::InitDataRepairFailure(requiredItems);
+
+								examineMenu->ShowConfirmMenu(initDataRepair, iCallback);
+							}
+
 							for (const auto& tuple : *a_this->QCurrentModChoiceData()->requiredItems) {
 								TESForm* form = tuple.first;
 								BGSTypedFormValuePair::SharedVal value = tuple.second;
 
-
-								DEBUG("Form: {}, value: {}", form->formID, value.i);
+								const char* fullName = TESFullName::GetFullName(*form).data();
+								DEBUG("Component: {}, amount: {}", fullName, value.i);
 							}
 
 							//examineMenu->ShowConfirmMenu()
@@ -104,6 +114,7 @@ namespace RE
 			{
 				if (a_this->repairing)
 				{
+					// TODO: Merge this into singular function returning dynamic repair cost.
 					if (typeid(*a_this) == typeid(PowerArmorModMenu))
 					{
 						PowerArmorModMenu* powerArmorModMenu = dynamic_cast<PowerArmorModMenu*>(a_this);
@@ -118,14 +129,21 @@ namespace RE
 						}
 						else
 						{
-							return (a_this->modChoiceArray.data() + modChoiceIndex);
+							auto modChoicedata = (a_this->modChoiceArray.data() + modChoiceIndex);
+
+							if (modChoicedata->requiredPerks.size() > 0)
+							{
+								DEBUG("Required perks found, removing them.");
+								modChoicedata->requiredPerks.clear();
+							}
+
+							return (modChoicedata);
 						}
 					}
 				}
 				else
 				{
 					std::uint32_t modChoiceIndex = a_this->modChoiceIndex;
-
 					if (modChoiceIndex >= a_this->modChoiceArray.size())
 					{
 						return 0;

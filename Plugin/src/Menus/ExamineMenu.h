@@ -50,7 +50,6 @@ namespace RE
 					if (a_params.retVal)
 					{
 						*a_params.retVal = nullptr;
-						DEBUG("EligableRepair called.");
 						Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 						std::uint32_t selectedIndex = examineMenu->GetSelectedIndex();
 						if (!examineMenu->invInterface.entriesInvalid && (selectedIndex & 0x80000000) == 0 && selectedIndex < examineMenu->invInterface.stackedEntries.size())
@@ -87,7 +86,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("RepairKitCount called.");
 					TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");
 					std::uint32_t itemCount;
 					Cascadia::GetPlayerCharacter()->GetItemCount(itemCount, repairKit, 0);
@@ -100,7 +98,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("HasRepairKits called.");
 					TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");
 					std::uint32_t itemCount;
 					Cascadia::GetPlayerCharacter()->GetItemCount(itemCount, repairKit, 0);
@@ -113,8 +110,8 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("RepairNotNeeded called.");
-					SendHUDMessage::ShowHUDMessage("$CAS_NoNeedToRepair", 0, true, true);
+					GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
+					SendHUDMessage::ShowHUDMessage(gameSettingCollection->GetSetting("sNoNeedToRepairMessage")->GetString().data(), nullptr, true, true);
 				}
 			};
 
@@ -123,8 +120,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("NoRepairKits called.");
-					SendHUDMessage::ShowHUDMessage("$CAS_NoRepairKits", 0, true, true);
+					SendHUDMessage::ShowHUDMessage("$CAS_NoRepairKits", nullptr, true, true);
 				}
 			};
 
@@ -135,7 +131,6 @@ namespace RE
 				{
 					if (a_params.retVal)
 					{
-						DEBUG("RepairFunction called.");
 						Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 
 						std::uint32_t selectedIndex = examineMenu->GetSelectedIndex();
@@ -196,7 +191,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("RepairWorkbench called.");
 					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 
 					examineMenu->repairing = true;
@@ -209,7 +203,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("NeedsRepair called.");
 					*a_params.retVal = nullptr;
 					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 

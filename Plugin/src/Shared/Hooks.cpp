@@ -44,11 +44,10 @@ namespace RE
 							BSTArray<BSTTuple<TESForm*, BGSTypedFormValuePair::SharedVal>>* requiredItems = a_this->QCurrentModChoiceData()->recipe->requiredItems;
 							if (requiredItems)
 							{
-								RE::ExamineConfirmMenu::ICallback* iCallback = new RE::ExamineConfirmMenu::ICallback(examineMenu.get());
-
+								RE::RepairFailureCallback* repairFailureCallback = new RE::RepairFailureCallback(examineMenu.get());
 								RE::ExamineConfirmMenu::InitDataRepairFailure* initDataRepair = new RE::ExamineConfirmMenu::InitDataRepairFailure(requiredItems);
 
-								examineMenu->ShowConfirmMenu(initDataRepair, iCallback);
+								examineMenu->ShowConfirmMenu(initDataRepair, repairFailureCallback);
 							}
 
 							for (const auto& tuple : *a_this->QCurrentModChoiceData()->requiredItems) {
@@ -59,7 +58,6 @@ namespace RE
 								DEBUG("Component: {}, amount: {}", fullName, value.i);
 							}
 
-							//examineMenu->ShowConfirmMenu()
 							SendHUDMessage::ShowHUDMessage("You lack the requirements to repair this object.", nullptr, true, true);
 							a_this->repairing = false;
 						}
@@ -83,12 +81,34 @@ namespace RE
 				if (a_this->QCurrentModChoiceData()->recipe)
 				{
 					modChoiceData = a_this->QCurrentModChoiceData();
-					fullName = TESFullName::GetFullName(*modChoiceData->recipe->createdItem).data();
 
-					type = "$$Make";
+					
 					if (a_this->repairing)
 					{
 						type = "$$Repair";
+
+						std::uint32_t selectedIndex = a_this->GetSelectedIndex();
+						if (!a_this->invInterface.entriesInvalid && (selectedIndex & 0x80000000) == 0 && selectedIndex < a_this->invInterface.stackedEntries.size())
+						{
+							InventoryUserUIInterfaceEntry* inventoryUUIEntry = (a_this->invInterface.stackedEntries.data() + selectedIndex);
+							const BGSInventoryItem* inventoryItem = BGSInventoryInterface::GetSingleton()->RequestInventoryItem(inventoryUUIEntry->invHandle.id);
+
+							fullName = inventoryItem->GetDisplayFullName(inventoryUUIEntry->stackIndex.at(0));
+
+							/*if (inventoryItem->stackData.get()->extra->HasType(EXTRA_DATA_TYPE::kTextDisplayData))
+							{
+								BSExtraData* test = inventoryItem->stackData.get()->extra->GetByType(EXTRA_DATA_TYPE::kTextDisplayData);
+								ExtraTextDisplayData* displayText = (ExtraTextDisplayData*)test;
+
+								fullName = displayText->displayName.c_str();
+							}*/
+						}
+					}
+					else
+					{
+						type = "$$Make";
+
+						fullName = TESFullName::GetFullName(*modChoiceData->recipe->createdItem).data();
 					}
 					snprintf(a_buffer, a_bufferLength, "%s %s?", type, fullName);
 				}
@@ -130,6 +150,18 @@ namespace RE
 						else
 						{
 							auto modChoicedata = (a_this->modChoiceArray.data() + modChoiceIndex);
+
+							if (!modChoicedata->recipe)
+							{
+								FATAL("No recipe found.");
+							}
+
+							auto recipeConditions = modChoicedata->recipe->conditions;
+
+							if (!recipeConditions.IsTrue(Cascadia::GetPlayerCharacter(), Cascadia::GetPlayerCharacter()))
+							{
+								DEBUG("Recipe conditions failed.")
+							}
 
 							if (modChoicedata->requiredPerks.size() > 0)
 							{
@@ -231,6 +263,21 @@ namespace RE
 				AddItemOriginal(a_this, a_boundObject, a_stack, a_oldCount, a_newCount);
 			}
 
+			
+			DetourXS hook_ExamineMenuBuildConfirmed;
+			typedef void(ExamineMenuBuildConfirmedSig)(ExamineMenu*, bool);
+			REL::Relocation<ExamineMenuBuildConfirmedSig> ExamineMenuBuildConfirmedOriginal;
+
+			void HookExamineMenuBuildConfirmed(ExamineMenu* a_this, bool a_ownerIsWorkbench)
+			{
+				if (a_this->repairing)
+				{
+					DEBUG("Repairing!");
+				}
+
+				ExamineMenuBuildConfirmedOriginal(a_this, a_ownerIsWorkbench);
+			}
+
 			// ========== REGISTERS ==========
 
 			void RegisterGetBuildConfirmQuestion()
@@ -311,6 +358,20 @@ namespace RE
 				else
 				{
 					FATAL("Failed to hook BGSInventoryItemUtils::GetInventoryValue, exiting.");
+				}
+			}
+
+			void RegisterExamineMenuBuildConfirmed()
+			{
+				REL::Relocation<ExamineMenuBuildConfirmedSig> functionLocation{ REL::ID(2223013) };
+				if (hook_ExamineMenuBuildConfirmed.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExamineMenuBuildConfirmed))
+				{
+					DEBUG("Installed ExamineMenu::BuildConfirmed hook.");
+					ExamineMenuBuildConfirmedOriginal = reinterpret_cast<uintptr_t>(hook_ExamineMenuBuildConfirmed.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook ExamineMenu::BuildConfirmed, exiting.");
 				}
 			}
 		}

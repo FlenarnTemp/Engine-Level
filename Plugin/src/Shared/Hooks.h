@@ -15,6 +15,7 @@ namespace RE
 			void RegisterShowBuildFailureMessage();
 			void RegisterGetBuildConfirmQuestion();
 			void RegisterQCurrentModChoiceData();
+			void RegisterExamineMenuBuildConfirmed();
 		}
 	}
 }

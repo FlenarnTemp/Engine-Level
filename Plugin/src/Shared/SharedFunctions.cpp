@@ -199,21 +199,6 @@ namespace RE
 			return false;
 		}
 
-		const char* GetItemDisplayName(ExtraDataList myExtraData, TESForm baseForm)
-		{
-			BSExtraData* extraData = myExtraData.GetByType(EXTRA_DATA_TYPE::kTextDisplayData);
-			ExtraTextDisplayData* displayText = (ExtraTextDisplayData*)extraData;
-
-			if (displayText)
-			{
-				return "";
-			}
-			else
-			{
-				return "";
-			}
-		}
-
 		bool IsInMenuMode()
 		{
 			UI* g_ui = UI::GetSingleton();

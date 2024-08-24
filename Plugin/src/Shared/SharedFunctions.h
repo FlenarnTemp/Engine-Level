@@ -30,9 +30,7 @@ namespace RE
 
 		bool HasVMScript(TESForm* form, const char* scriptName);
 
-
 		//bool IsMeleeWeapon(WeaponConditionData myConditionData);
-		//float CalculateSkillBonusFromActor(WeaponConditionData myConditionData);
 
 		float ConvertPercentageToFloat(std::uint8_t percentage);
 

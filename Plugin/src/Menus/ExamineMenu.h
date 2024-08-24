@@ -226,8 +226,8 @@ namespace RE
 								{
 									tempCurrentPerc = stack->extra->GetHealthPerc();
 
-									// Temporarily bump condition by 0.001 to avoid wasting a repair kit on effectively non-existant damage.
-									stack->extra->SetHealthPerc(tempCurrentPerc + 0.001);
+									// Temporarily bump condition by 0.01 to avoid wasting a repair kit on effectively non-existant damage.
+									stack->extra->SetHealthPerc(tempCurrentPerc + 0.01);
 									*a_params.retVal = stack->extra->IsDamaged();
 									// Restore condition back to original.
 									stack->extra->SetHealthPerc(tempCurrentPerc);

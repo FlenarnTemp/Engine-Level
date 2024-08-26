@@ -34,6 +34,9 @@ namespace RE
 		BGSKeyword* armorBodyPartLeftLeg;
 		BGSKeyword* armorBodyPartRightLeg;
 
+		// No Degradation Keyword
+		BGSKeyword* noDegradation;
+
 		void DefineItemDegradationFormsFromGame()
 		{
 			INFO("Item Degradation: Linking degradation forms.");
@@ -66,6 +69,9 @@ namespace RE
 			armorBodyPartRightArm = dataHandler->LookupForm<BGSKeyword>(0x211D08, "FalloutCascadia.esm");
 			armorBodyPartLeftLeg = dataHandler->LookupForm<BGSKeyword>(0x211D07, "FalloutCascadia.esm");
 			armorBodyPartRightLeg = dataHandler->LookupForm<BGSKeyword>(0x211D09, "FalloutCascadia.esm");
+
+			// No Degradation Keyword
+			noDegradation = dataHandler->LookupForm<BGSKeyword>(0x2BD72E, "FalloutCascadia.esm");
 
 			INFO("Item Degradation: Finished linking degradation forms.");
 		}

@@ -94,20 +94,11 @@ namespace RE
 							const BGSInventoryItem* inventoryItem = BGSInventoryInterface::GetSingleton()->RequestInventoryItem(inventoryUUIEntry->invHandle.id);
 
 							fullName = inventoryItem->GetDisplayFullName(inventoryUUIEntry->stackIndex.at(0));
-
-							/*if (inventoryItem->stackData.get()->extra->HasType(EXTRA_DATA_TYPE::kTextDisplayData))
-							{
-								BSExtraData* test = inventoryItem->stackData.get()->extra->GetByType(EXTRA_DATA_TYPE::kTextDisplayData);
-								ExtraTextDisplayData* displayText = (ExtraTextDisplayData*)test;
-
-								fullName = displayText->displayName.c_str();
-							}*/
 						}
 					}
 					else
 					{
 						type = "$$Make";
-
 						fullName = TESFullName::GetFullName(*modChoiceData->recipe->createdItem).data();
 					}
 					snprintf(a_buffer, a_bufferLength, "%s %s?", type, fullName);
@@ -149,27 +140,22 @@ namespace RE
 						}
 						else
 						{
-							auto modChoicedata = (a_this->modChoiceArray.data() + modChoiceIndex);
+							WorkbenchMenuBase::ModChoiceData* currentModChoiceData = (a_this->modChoiceArray.data() + modChoiceIndex);
 
-							if (!modChoicedata->recipe)
+							if (!currentModChoiceData->recipe)
 							{
 								FATAL("No recipe found.");
 							}
 
-							auto recipeConditions = modChoicedata->recipe->conditions;
-
-							if (!recipeConditions.IsTrue(Cascadia::GetPlayerCharacter(), Cascadia::GetPlayerCharacter()))
-							{
-								DEBUG("Recipe conditions failed.")
-							}
-
-							if (modChoicedata->requiredPerks.size() > 0)
+							if (currentModChoiceData->requiredPerks.size() > 0)
 							{
 								DEBUG("Required perks found, removing them.");
-								modChoicedata->requiredPerks.clear();
+								currentModChoiceData->requiredPerks.clear();
 							}
 
-							return (modChoicedata);
+							currentModChoiceData->recipe->conditions.ClearAllConditionItems();
+
+							return (currentModChoiceData);
 						}
 					}
 				}
@@ -262,7 +248,6 @@ namespace RE
 				}
 				AddItemOriginal(a_this, a_boundObject, a_stack, a_oldCount, a_newCount);
 			}
-
 			
 			DetourXS hook_ExamineMenuBuildConfirmed;
 			typedef void(ExamineMenuBuildConfirmedSig)(ExamineMenu*, bool);
@@ -272,14 +257,53 @@ namespace RE
 			{
 				if (a_this->repairing)
 				{
-					DEBUG("Repairing!");
-				}
+					std::uint32_t selectedIndex = a_this->GetSelectedIndex();
+					if (!a_this->invInterface.entriesInvalid && (selectedIndex & 0x80000000) == 0 && selectedIndex < a_this->invInterface.stackedEntries.size())
+					{
+						InventoryUserUIInterfaceEntry* inventoryUUIEntry = (a_this->invInterface.stackedEntries.data() + selectedIndex);
+						const BGSInventoryItem* inventoryItem = BGSInventoryInterface::GetSingleton()->RequestInventoryItem(inventoryUUIEntry->invHandle.id);
 
-				ExamineMenuBuildConfirmedOriginal(a_this, a_ownerIsWorkbench);
+						if (inventoryItem)
+						{
+							switch (a_this->GetCurrentObj()->formType.get())
+							{
+							case ENUM_FORM_ID::kARMO:
+							case ENUM_FORM_ID::kWEAP:
+								BGSInventoryItem::Stack* stack = inventoryItem->GetStackByID(inventoryUUIEntry->stackIndex.at(0));
+								if (stack)
+								{
+									stack->extra->SetHealthPerc(1.0f);
+								}
+
+								BGSInventoryItem::CheckStackIDFunctor compareFunction(inventoryUUIEntry->stackIndex.at(0));
+								BGSInventoryItem::SetHealthFunctor writeFunction(stack->extra->GetHealthPerc());
+								writeFunction.shouldSplitStacks = 0x101;
+
+								Cascadia::GetPlayerCharacter()->FindAndWriteStackDataForInventoryItem(a_this->GetCurrentObj(), compareFunction, writeFunction);
+
+								BGSDefaultObject* craftingSound = TESDataHandler::GetSingleton()->LookupForm<BGSDefaultObject>(0x112622, "Fallout4.esm");
+								BGSSoundDescriptorForm* soundDescriptorForm = dynamic_cast<BGSSoundDescriptorForm*>(craftingSound->form);
+
+								a_this->ConsumeSelectedItems(true, soundDescriptorForm);
+								a_this->UpdateOptimizedAutoBuildInv();
+								selectedIndex = a_this->GetSelectedIndex();
+								a_this->UpdateItemList(selectedIndex);
+								a_this->uiMovie->Invoke("RefreshList", nullptr, nullptr, 0);
+								a_this->CreateModdedInventoryItem();
+								a_this->UpdateItemCard(false);
+								a_this->repairing = false;
+								a_this->uiMovie->Invoke("UpdateButtons", nullptr, nullptr, 0);
+							}
+						}
+					}
+				}
+				else
+				{
+					ExamineMenuBuildConfirmedOriginal(a_this, a_ownerIsWorkbench);
+				}
 			}
 
 			// ========== REGISTERS ==========
-
 			void RegisterGetBuildConfirmQuestion()
 			{
 				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };

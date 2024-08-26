@@ -2,10 +2,10 @@
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESInitScriptEvent.h"
 #include "Events/TESHarvestEvent.h"
+#include "Menus/ExamineConfirmMenu.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
 #include "Shared/Hooks.h"
-
 #include "Systems/Skills.h"
 
 namespace
@@ -97,14 +97,14 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 
 	RE::Cascadia::Hooks::Install(trampoline);
 
-	const auto messaging = F4SE::GetMessagingInterface();
+	const F4SE::MessagingInterface* messaging = F4SE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(MessageHandler))
 	{
 		FATAL("Failed to register messaging handler, marking as incompatible."sv);
 		return false;
 	}
 
-	const auto scaleform = F4SE::GetScaleformInterface();
+	const F4SE::ScaleformInterface* scaleform = F4SE::GetScaleformInterface();
 	if (!scaleform)
 	{
 		FATAL("Failed to register Scaleform callback, marking as incompatible."sv);
@@ -114,15 +114,32 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	{
 		if (!scaleform->Register("Cascadia-DialogueMenu", RE::Cascadia::DialogueMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register Dialogue menu, marking as incompatible.");
+			FATAL("Failed to register 'DialogueMenu', marking as incompatible.");
 			return false;
 		}
 
 		if (!scaleform->Register("Cascadia-ExamineMenu", RE::Cascadia::ExamineMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register Examine menu, marking as incompatible.");
+			FATAL("Failed to register 'ExamineMenu', marking as incompatible.");
 			return false;
 		}
+
+		/*if (!scaleform->Register("Cascadia-ExamineConfirmMenu", RE::Cascadia::ExamineConfirmMenu::RegisterScaleform))
+		{
+			FATAL("Failed to register 'ExamineConfirmMenu', marking as incompatible.");
+			return false;
+		}*/
+	}
+
+	const F4SE::PapyrusInterface* papyrus = F4SE::GetPapyrusInterface();
+	if (!papyrus)
+	{
+		FATAL("Failed to register Papyrus handler, marking as incompatible.");
+		return false;
+	}
+	else
+	{
+
 	}
 
 	RE::Cascadia::RegisterMenuOpenCloseEventSink();
@@ -133,6 +150,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	RE::Cascadia::Hooks::RegisterShowBuildFailureMessage();
 	RE::Cascadia::Hooks::RegisterGetBuildConfirmQuestion();
 	RE::Cascadia::Hooks::RegisterQCurrentModChoiceData();
+	RE::Cascadia::Hooks::RegisterExamineMenuBuildConfirmed();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

@@ -6,6 +6,36 @@ namespace RE
 {
 	namespace Cascadia
 	{
+		namespace GFxUtilities
+		{
+			void RegisterArray(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, const char* name, Scaleform::GFx::Value* array)
+			{
+				asMovieRoot->CreateArray(array);
+				destination->SetMember(name, array);
+			}
+
+			void RegisterString(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, const char* name, const char* string)
+			{
+				Scaleform::GFx::Value fxValue;
+				asMovieRoot->CreateString(&fxValue, string);
+				destination->SetMember(name, &fxValue);
+			}
+
+			void RegisterNumber(Scaleform::GFx::Value* destination, const char* name, double value)
+			{
+				Scaleform::GFx::Value fxValue;
+				fxValue = value;
+				destination->SetMember(name, &fxValue);
+			}
+
+			void RegisterInt(Scaleform::GFx::Value* destination, const char* name, std::uint32_t value)
+			{
+				Scaleform::GFx::Value fxValue;
+				fxValue = value;
+				destination->SetMember(name, &fxValue);
+			}
+		}
+
 		// Returns true is FormID is base game OR dynamically placed ("FF" index)
 		// Assumes all DLC is installed (Excluding DLCUltraHighResolution.esm as it is empty and "safe" to ignore).
 		// TODO - Better handling for the "FF" index, list span of "official" .esl's?

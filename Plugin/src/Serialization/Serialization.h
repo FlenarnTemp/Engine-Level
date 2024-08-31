@@ -1,15 +1,31 @@
 #pragma once
 
-namespace Serialization
+#include "F4SE/Interfaces.h"
+#include "Json.h"
+#include "Shared/SharedFunctions.h"
+
+namespace Cascadia
 {
-	// Skill Point Functions
-	std::int32_t GetSkillPoints();
+	namespace Serialization
+	{
+		constexpr std::int32_t ID = 'CAS';
 
-	// Tag Skill Functions
+		class CASSerialization
+		{
+		public:
+			~CASSerialization() = default;
 
-	// Level Up Functions
-	bool IsReadyToLevelUp();
-	bool SetReadyToLevelUp(bool bReady);
+			static auto GetSingleton() -> CASSerialization*;
 
-	// Serialization functions
+			void Serialize(F4SE::SerializationInterface* a_f4se);
+
+			void Deserialize(F4SE::SerializationInterface* a_f4se);
+
+			void Revert();
+		
+		private:
+			static constexpr std::uint32_t SerializationVersion = 1;
+			static constexpr std::uint32_t SerializationType = 'CAS';
+		};
+	}
 }

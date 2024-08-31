@@ -6,6 +6,14 @@ namespace RE
 {
 	namespace Cascadia
 	{
+		namespace GFxUtilities
+		{
+			void RegisterArray(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, const char* name, Scaleform::GFx::Value* array);
+			void RegisterString(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, const char* name, const char* string);
+			void RegisterNumber(Scaleform::GFx::Value* destination, const char* name, double value);
+			void RegisterInt(Scaleform::GFx::Value* destination, const char* name, std::uint32_t value);
+		}
+
 		bool IsFormIDStringBaseGame(std::string formIDString);
 		std::string GetFormIDAsString(std::uint32_t formID);
 

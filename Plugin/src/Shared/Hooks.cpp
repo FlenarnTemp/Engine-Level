@@ -47,18 +47,18 @@ namespace RE
 								RE::RepairFailureCallback* repairFailureCallback = new RE::RepairFailureCallback(examineMenu.get());
 								RE::ExamineConfirmMenu::InitDataRepairFailure* initDataRepair = new RE::ExamineConfirmMenu::InitDataRepairFailure(requiredItems);
 
+								// TODO  - list available components.
+
 								examineMenu->ShowConfirmMenu(initDataRepair, repairFailureCallback);
 							}
 
-							for (const auto& tuple : *a_this->QCurrentModChoiceData()->requiredItems) {
+							for (const auto& tuple : *requiredItems) {
 								TESForm* form = tuple.first;
 								BGSTypedFormValuePair::SharedVal value = tuple.second;
 
 								const char* fullName = TESFullName::GetFullName(*form).data();
 								DEBUG("Component: {}, amount: {}", fullName, value.i);
 							}
-
-							SendHUDMessage::ShowHUDMessage("You lack the requirements to repair this object.", nullptr, true, true);
 							a_this->repairing = false;
 						}
 					}
@@ -81,12 +81,9 @@ namespace RE
 				if (a_this->QCurrentModChoiceData()->recipe)
 				{
 					modChoiceData = a_this->QCurrentModChoiceData();
-
-					
 					if (a_this->repairing)
 					{
 						type = "$$Repair";
-
 						std::uint32_t selectedIndex = a_this->GetSelectedIndex();
 						if (!a_this->invInterface.entriesInvalid && (selectedIndex & 0x80000000) == 0 && selectedIndex < a_this->invInterface.stackedEntries.size())
 						{
@@ -109,6 +106,10 @@ namespace RE
 			typedef void(SetHealthPercSig)(ExtraDataList*, float);
 			REL::Relocation<SetHealthPercSig> SetHealthPercOriginal;
 
+			// Required to allow the game to store a value of 1.0, by default it would set it to '-1.0'
+			// This causes issues in the way we handle initialization of the health data.
+			// Here we simply, run the original function, then if the 'a_health' was '1.0', we manually set it 
+			// again to '1.0', reverting the original functions result of '-1.0'.
 			void HookExtraDataListSetHealthPerc(ExtraDataList* a_this, float a_health)
 			{
 				SetHealthPercOriginal(a_this, a_health);
@@ -123,6 +124,7 @@ namespace RE
 
 			const WorkbenchMenuBase::ModChoiceData* HookWorkbenchMenuBaseQCurrentModChoiceData(WorkbenchMenuBase* a_this)
 			{
+				DEBUG("WorkbenchMenuBase::QCurrentModChoiceData ran!");
 				if (a_this->repairing)
 				{
 					// TODO: Merge this into singular function returning dynamic repair cost.
@@ -142,24 +144,20 @@ namespace RE
 						{
 							WorkbenchMenuBase::ModChoiceData* currentModChoiceData = (a_this->modChoiceArray.data() + modChoiceIndex);
 
-							if (!currentModChoiceData->recipe)
-							{
-								FATAL("No recipe found.");
-							}
-
+							// Remove any possible required perks, as we don't take that into account when repairing.
 							if (currentModChoiceData->requiredPerks.size() > 0)
 							{
-								DEBUG("Required perks found, removing them.");
 								currentModChoiceData->requiredPerks.clear();
 							}
 
+							// Remove any possible conditions on the recipe, as we don't take that into account when repairing.
 							currentModChoiceData->recipe->conditions.ClearAllConditionItems();
 
 							return (currentModChoiceData);
 						}
 					}
 				}
-				else
+				else // Original logic come into play here.
 				{
 					std::uint32_t modChoiceIndex = a_this->modChoiceIndex;
 					if (modChoiceIndex >= a_this->modChoiceArray.size())
@@ -193,6 +191,9 @@ namespace RE
 			typedef void(AddItemSig)(BGSInventoryList*, TESBoundObject*, const BGSInventoryItem::Stack*, std::uint32_t*, std::uint32_t*);
 			REL::Relocation<AddItemSig> AddItemOriginal;
 
+			// All health initialization occurs here, this triggers both when a NPC is spawned with objects, added to inventories through
+			// a command or any other way, items also stay uninitialized until then picked up saving a 'float' per object from player saves until
+			// they're picked up and modified further.
 			void HookBGSInventoryListAddItem(BGSInventoryList* a_this, TESBoundObject* a_boundObject, const BGSInventoryItem::Stack* a_stack, std::uint32_t* a_oldCount, std::uint32_t* a_newCount)
 			{
 				ENUM_FORM_ID formType = a_boundObject->GetFormType();
@@ -220,14 +221,14 @@ namespace RE
 								}
 							}
 
-							// 'break' here works, as when native function gets called for weapons/armor stack only contains one object.
+							// The 'break' here works, as when the native function gets called for weapons/armor, stack only contains one object.
 							if (traverse->extra.get())
 							{
 								// GetHealthPerc return -1.0 if it can't find the kHealth type.
 								if (traverse->extra->GetHealthPerc() < 0)
 								{
 									traverse->extra->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
-									INFO("BGSInventoryList::AddItem: Health initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
+									//INFO("BGSInventoryList::AddItem: Health initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
 									break;
 								}
 								else
@@ -270,29 +271,30 @@ namespace RE
 							case ENUM_FORM_ID::kARMO:
 							case ENUM_FORM_ID::kWEAP:
 								BGSInventoryItem::Stack* stack = inventoryItem->GetStackByID(inventoryUUIEntry->stackIndex.at(0));
+								
 								if (stack)
 								{
 									stack->extra->SetHealthPerc(1.0f);
+
+									BGSInventoryItem::CheckStackIDFunctor compareFunction(inventoryUUIEntry->stackIndex.at(0));
+									BGSInventoryItem::SetHealthFunctor writeFunction(stack->extra->GetHealthPerc());
+									writeFunction.shouldSplitStacks = 0x101;
+
+									Cascadia::GetPlayerCharacter()->FindAndWriteStackDataForInventoryItem(a_this->GetCurrentObj(), compareFunction, writeFunction);
+
+									BGSDefaultObject* craftingSound = TESDataHandler::GetSingleton()->LookupForm<BGSDefaultObject>(0x112622, "Fallout4.esm");
+									BGSSoundDescriptorForm* soundDescriptorForm = dynamic_cast<BGSSoundDescriptorForm*>(craftingSound->form);
+
+									a_this->ConsumeSelectedItems(true, soundDescriptorForm);
+									a_this->UpdateOptimizedAutoBuildInv();
+									selectedIndex = a_this->GetSelectedIndex();
+									a_this->UpdateItemList(selectedIndex);
+									a_this->uiMovie->Invoke("RefreshList", nullptr, nullptr, 0);
+									a_this->CreateModdedInventoryItem();
+									a_this->UpdateItemCard(false);
+									a_this->repairing = false;
+									a_this->uiMovie->Invoke("UpdateButtons", nullptr, nullptr, 0);
 								}
-
-								BGSInventoryItem::CheckStackIDFunctor compareFunction(inventoryUUIEntry->stackIndex.at(0));
-								BGSInventoryItem::SetHealthFunctor writeFunction(stack->extra->GetHealthPerc());
-								writeFunction.shouldSplitStacks = 0x101;
-
-								Cascadia::GetPlayerCharacter()->FindAndWriteStackDataForInventoryItem(a_this->GetCurrentObj(), compareFunction, writeFunction);
-
-								BGSDefaultObject* craftingSound = TESDataHandler::GetSingleton()->LookupForm<BGSDefaultObject>(0x112622, "Fallout4.esm");
-								BGSSoundDescriptorForm* soundDescriptorForm = dynamic_cast<BGSSoundDescriptorForm*>(craftingSound->form);
-
-								a_this->ConsumeSelectedItems(true, soundDescriptorForm);
-								a_this->UpdateOptimizedAutoBuildInv();
-								selectedIndex = a_this->GetSelectedIndex();
-								a_this->UpdateItemList(selectedIndex);
-								a_this->uiMovie->Invoke("RefreshList", nullptr, nullptr, 0);
-								a_this->CreateModdedInventoryItem();
-								a_this->UpdateItemCard(false);
-								a_this->repairing = false;
-								a_this->uiMovie->Invoke("UpdateButtons", nullptr, nullptr, 0);
 							}
 						}
 					}

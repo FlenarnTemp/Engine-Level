@@ -1,11 +1,11 @@
 #pragma once
 
-#include "GameForms.h"
-
 namespace RE
 {
 	namespace Cascadia
 	{
+		
+
 		namespace Skills
 		{
 			typedef std::vector<ActorValueInfo*> AVVector;
@@ -21,6 +21,9 @@ namespace RE
 				LuckID,
 				ExperienceID
 			};
+
+			void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue);
+			void PopulateSkillEntries(Scaleform::GFx::ASMovieRootBase* asMovieRoot);
 
 			ActorValueInfo* GetSkillByName(std::string mySkill);
 			float GetSkillByValueName(Actor* myActor, std::string mySkill);

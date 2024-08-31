@@ -1,5 +1,5 @@
-#include "Systems/Skills.h"
 #include "Shared/SharedFunctions.h"
+#include "Systems/Skills.h"
 
 namespace RE
 {
@@ -7,9 +7,58 @@ namespace RE
 	{
 		namespace Skills
 		{
-			VanillaAV_Struct VanillaActorValues;
+			struct CascadiaAV_Struct
+			{
+				// Skill Values
+				ActorValueInfo* Barter;
+				ActorValueInfo* EnergyWeapons;
+				ActorValueInfo* Explosives;
+				ActorValueInfo* Lockpick;
+				ActorValueInfo* Medicine;
+				ActorValueInfo* MeleeWeapons;
+				ActorValueInfo* Repair;
+				ActorValueInfo* Science;
+				ActorValueInfo* Guns;
+				ActorValueInfo* Sneak;
+				ActorValueInfo* Speech;
+				ActorValueInfo* Unarmed;
+				ActorValueInfo* Survival;
+				ActorValueInfo* WeaponCNDResist;
+			};
 			CascadiaAV_Struct CascadiaActorValues;
+
+			struct VanillaAV_Struct
+			{
+				// Vanilla SPECIAL Values
+				ActorValueInfo* Strength;
+				ActorValueInfo* Perception;
+				ActorValueInfo* Endurance;
+				ActorValueInfo* Charisma;
+				ActorValueInfo* Intelligence;
+				ActorValueInfo* Agility;
+				ActorValueInfo* Luck;
+			};
+			VanillaAV_Struct VanillaActorValues;
+
+			struct CascadiaPerks_Struct
+			{
+				// Weapon Type Perks
+				BGSPerk* WeaponTypeEnergyWeaponsPerk;
+				BGSPerk* WeaponTypeExplosivesPerk;
+				BGSPerk* WeaponTypeMeleeWeaponsPerk;
+				BGSPerk* WeaponTypeGunsPerk;
+				BGSPerk* WeaponTypeUnarmedPerk;
+
+				// Handler Perks
+				BGSPerk* WeaponConditionHandlerPerk;
+			};
 			CascadiaPerks_Struct CascadiaPerks;
+			
+			struct CascadiaGlobals_Struct
+			{
+				// Globals
+				TESGlobal* TutorialWPNCND;
+			};
 			CascadiaGlobals_Struct CascadiaGlobals;
 
 			/*
@@ -50,6 +99,71 @@ namespace RE
 			std::unordered_multimap<std::string, ActorValueInfo*> strSkillMap;
 
 			AVVector CascadiaSkillsList;
+
+			void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue)
+			{
+				Scaleform::GFx::Value arrayArguments;
+				asMovieRoot->CreateObject(&arrayArguments);
+				float value = Cascadia::GetPlayerCharacter()->GetPermanentActorValue(*skill);
+				float buffedValue = Cascadia::GetPlayerCharacter()->GetActorValue(*skill);
+				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "text", skill->fullName.c_str());
+				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "editorid", skill->GetFormEditorID());
+				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "description", "TEST");
+				if (stringValue.size() > (int)value)
+				{
+					GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "stringValue", stringValue[(int)value].c_str());
+				}
+				else
+				{
+					GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "stringValue", "");
+				}
+
+				GFxUtilities::RegisterInt(&arrayArguments, "formid", skill->formID);
+				GFxUtilities::RegisterNumber(&arrayArguments, "value", buffedValue);
+				GFxUtilities::RegisterNumber(&arrayArguments, "maxVal", 0.0);
+				GFxUtilities::RegisterNumber(&arrayArguments, "baseValue", value);
+				GFxUtilities::RegisterNumber(&arrayArguments, "modified", buffedValue - value);
+				GFxUtilities::RegisterNumber(&arrayArguments, "buffedValue", buffedValue);
+				GFxUtilities::RegisterInt(&arrayArguments, "filterFlag", filter);
+
+				destination->PushBack(&arrayArguments);
+			}
+
+			void PopulateSkillEntries(Scaleform::GFx::ASMovieRootBase* asMovieRoot)
+			{
+				Scaleform::GFx::Value arraySkills[7];
+					asMovieRoot->CreateString(&arraySkills[0], "skills");
+					asMovieRoot->CreateString(&arraySkills[1], "$F4CW_SKILLS");
+
+					arraySkills[2] = 0;
+					arraySkills[3] = 0; // Pipboy Page - Skills
+
+					asMovieRoot->CreateObject(&arraySkills[4]);
+					Scaleform::GFx::Value skillsArray;
+					asMovieRoot->CreateArray(&skillsArray);
+					std::vector<std::string> stringArray;
+
+					// All skills injected here.
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Barter, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.EnergyWeapons, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Explosives, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Guns, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Lockpick, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Medicine, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.MeleeWeapons, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Repair, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Science, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Sneak, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Speech, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Survival, 1, stringArray);
+					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Unarmed, 1, stringArray);
+
+					arraySkills[4].SetMember("arrayList", &skillsArray);
+					arraySkills[5] = 0;
+					arraySkills[6] = 0;
+
+					asMovieRoot->Invoke("root.casPipboy_loader.content.registerTab", nullptr, arraySkills, 7);
+			}
 
 			// Returns ActorValueInfo based on Skill Name.
 			ActorValueInfo* GetSkillByName(std::string mySkill)

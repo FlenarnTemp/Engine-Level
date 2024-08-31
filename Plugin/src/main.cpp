@@ -3,6 +3,7 @@
 #include "Events/TESInitScriptEvent.h"
 #include "Events/TESHarvestEvent.h"
 #include "Menus/ExamineConfirmMenu.h"
+#include "Menus/PipboyMenu.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
 #include "Shared/Hooks.h"
@@ -97,6 +98,18 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 
 	RE::Cascadia::Hooks::Install(trampoline);
 
+	const F4SE::SerializationInterface* serialization = F4SE::GetSerializationInterface();
+	if (!serialization)
+	{
+		FATAL("Failed to register serialization interface, marking as incompatible."sv);
+		return false;
+	}
+	else
+	{
+		serialization->SetUniqueID('CAS');
+		//serialization->SetRevertCallback(Cascadia::Serialization::RevertCallback());
+	}
+
 	const F4SE::MessagingInterface* messaging = F4SE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(MessageHandler))
 	{
@@ -121,6 +134,12 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 		if (!scaleform->Register("Cascadia-ExamineMenu", RE::Cascadia::ExamineMenu::RegisterScaleform))
 		{
 			FATAL("Failed to register 'ExamineMenu', marking as incompatible.");
+			return false;
+		}
+
+		if (!scaleform->Register("Cascadia-PipboyMenu", RE::Cascadia::PipboyMenu::RegisterScaleform))
+		{
+			FATAL("Failed to register 'PipboyMenu', marking as incompatible.");
 			return false;
 		}
 

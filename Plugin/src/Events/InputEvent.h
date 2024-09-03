@@ -2,6 +2,8 @@
 
 #include "Shared/SharedFunctions.h"
 
+// Thanks to 'Jajari' and 'Pinedog' for assistance with this code.
+
 namespace RE
 {
 	namespace Cascadia
@@ -16,7 +18,7 @@ namespace RE
 				//DEBUG("BUTTON!");
 			}
 
-			void HookedPerformInputProcessing(InputEvent* a_queueHead)
+			void ProcessEvent(InputEvent* a_queueHead)
 			{
 				InputEvent* event = a_queueHead;
 				while (event)
@@ -34,31 +36,19 @@ namespace RE
 				}
 			}
 
-			void HookSink()
+			void RegisterInputEventReceiverOverride()
 			{
 				uint64_t vtable = *(uint64_t*)this;
 				auto it = fnHash.find(vtable);
 				if (it == fnHash.end()) {
-					FnPerformInputProcessing fn = SafeWrite64Function(vtable, &InputEventReceiverOverride::HookedPerformInputProcessing);
+					FnPerformInputProcessing fn = SafeWrite64Function(vtable, &InputEventReceiverOverride::ProcessEvent);
 					fnHash.insert(std::pair<uint64_t, FnPerformInputProcessing>(vtable, fn));
 				}
 			}
 
-			void UnhookSink()
-			{
-				uint64_t vtable = *(uint64_t*)this;
-				auto it = fnHash.find(vtable);
-				if (it == fnHash.end())
-				{
-					return;
-				}
-				SafeWrite64Function(vtable, it->second);
-				fnHash.erase(it);
-			}
-
 			static void Install()
 			{
-				((InputEventReceiverOverride*)((uint64_t)PlayerCamera::GetSingleton() + 0x38))->HookSink();
+				((InputEventReceiverOverride*)((uint64_t)PlayerCamera::GetSingleton() + 0x38))->RegisterInputEventReceiverOverride();
 			}
 
 		protected:

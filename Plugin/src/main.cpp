@@ -1,3 +1,4 @@
+#include "Events/BSAnimationGraphEvent.h"
 #include "Events/InputEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESInitScriptEvent.h"
@@ -33,6 +34,7 @@ namespace
 
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
 			RE::Cascadia::InputEventReceiverOverride::Install();
+			RE::Cascadia::BSAnimationGraphEventWatcher::Install();
 			RE::Cascadia::RegisterTESInitScriptEventSink();
 			//RE::Cascadia::RegisterTESHarvestEventEventSink();
 			break;

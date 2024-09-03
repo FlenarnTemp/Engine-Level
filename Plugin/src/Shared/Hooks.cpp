@@ -301,7 +301,7 @@ namespace RE
 									BGSInventoryItem::SetHealthFunctor writeFunction(stack->extra->GetHealthPerc());
 									writeFunction.shouldSplitStacks = 0x101;
 
-									Cascadia::GetPlayerCharacter()->FindAndWriteStackDataForInventoryItem(a_this->GetCurrentObj(), compareFunction, writeFunction);
+									PlayerCharacter::GetSingleton()->FindAndWriteStackDataForInventoryItem(a_this->GetCurrentObj(), compareFunction, writeFunction);
 
 									BGSDefaultObject* craftingSound = TESDataHandler::GetSingleton()->LookupForm<BGSDefaultObject>(0x112622, "Fallout4.esm");
 

@@ -6,9 +6,8 @@ namespace RE
 {
 	namespace Cascadia
 	{
+		void ModWeaponCondition();
 		void DefineItemDegradationFormsFromGame();
-		void InitializeContainerCondition(TESObjectREFR* containerREFR);
-		void InitializeREFRCondition(TESObjectREFR* a_objectREFR);
 	}
 }
 

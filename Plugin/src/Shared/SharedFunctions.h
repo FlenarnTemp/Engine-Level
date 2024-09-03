@@ -18,10 +18,6 @@ namespace RE
 		std::string GetFormIDAsString(std::uint32_t formID);
 
 		std::uint32_t GetActorSex(Actor* a_actor);
-		PlayerCharacter* GetPlayerCharacter();
-		bool IsPlayerGodMode();
-		std::int16_t GetPlayerLevel();
-		std::uint32_t GetPlayerSex();
 
 		std::string FloatToPreciseString(float value, std::uint32_t precision);
 

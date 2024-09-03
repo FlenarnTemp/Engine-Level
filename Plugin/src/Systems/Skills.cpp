@@ -102,10 +102,12 @@ namespace RE
 
 			void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue)
 			{
+				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+
 				Scaleform::GFx::Value arrayArguments;
 				asMovieRoot->CreateObject(&arrayArguments);
-				float value = Cascadia::GetPlayerCharacter()->GetPermanentActorValue(*skill);
-				float buffedValue = Cascadia::GetPlayerCharacter()->GetActorValue(*skill);
+				float value = playerCharacter->GetPermanentActorValue(*skill);
+				float buffedValue = playerCharacter->GetActorValue(*skill);
 				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "text", skill->fullName.c_str());
 				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "editorid", skill->GetFormEditorID());
 				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "description", "TEST");
@@ -321,22 +323,22 @@ namespace RE
 
 			float GetPlayerAVValue(ActorValueInfo* myAV)
 			{
-				return GetAVValue(GetPlayerCharacter(), myAV);
+				return GetAVValue(PlayerCharacter::GetSingleton(), myAV);
 			}
 
 			float GetPlayerBaseAVValue(ActorValueInfo* myAV)
 			{
-				return GetBaseAVValue(GetPlayerCharacter(), myAV);
+				return GetBaseAVValue(PlayerCharacter::GetSingleton(), myAV);
 			}
 
 			void ModPlayerBaseAVValue(ActorValueInfo* myAV, float fModAmount)
 			{
-				ModBaseAVValue(GetPlayerCharacter(), myAV, fModAmount);
+				ModBaseAVValue(PlayerCharacter::GetSingleton(), myAV, fModAmount);
 			}
 
 			void SetPlayerBaseAVValue(ActorValueInfo* myAV, float fSetAmount)
 			{
-				SetBaseAVValue(GetPlayerCharacter(), myAV, fSetAmount);
+				SetBaseAVValue(PlayerCharacter::GetSingleton(), myAV, fSetAmount);
 			}
 
 			bool DefineSkillsFormsFromGame()

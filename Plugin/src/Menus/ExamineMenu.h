@@ -88,7 +88,7 @@ namespace RE
 				{
 					TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");
 					std::uint32_t itemCount;
-					Cascadia::GetPlayerCharacter()->GetItemCount(itemCount, repairKit, 0);
+					PlayerCharacter::GetSingleton()->GetItemCount(itemCount, repairKit, 0);
 					*a_params.retVal = itemCount;
 				}
 			};
@@ -100,7 +100,7 @@ namespace RE
 				{
 					TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");
 					std::uint32_t itemCount;
-					Cascadia::GetPlayerCharacter()->GetItemCount(itemCount, repairKit, 0);
+					PlayerCharacter::GetSingleton()->GetItemCount(itemCount, repairKit, 0);
 					*a_params.retVal = (itemCount > 0);
 				}
 			};
@@ -141,11 +141,13 @@ namespace RE
 
 							if (inventoryItem)
 							{
-								if (!Cascadia::GetPlayerCharacter()->IsGodMode())
+								PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+
+								if (!playerCharacter->IsGodMode())
 								{
 									TESObjectMISC* repairKit = TESDataHandler::GetSingleton()->LookupForm<TESObjectMISC>(0x1D59F7, "FalloutCascadia.esm");
 									TESObjectREFR::RemoveItemData removeItemData{ repairKit, 1 };
-									Cascadia::GetPlayerCharacter()->RemoveItem(removeItemData);
+									playerCharacter->RemoveItem(removeItemData);
 								}
 
 								switch (examineMenu->GetCurrentObj()->formType.get())
@@ -168,7 +170,7 @@ namespace RE
 										BGSInventoryItem::SetHealthFunctor writeFunction(stack->extra->GetHealthPerc());
 										writeFunction.shouldSplitStacks = 0x101;
 
-										Cascadia::GetPlayerCharacter()->FindAndWriteStackDataForInventoryItem(examineMenu->GetCurrentObj(), compareFunction, writeFunction);
+										playerCharacter->FindAndWriteStackDataForInventoryItem(examineMenu->GetCurrentObj(), compareFunction, writeFunction);
 
 										examineMenu->UpdateOptimizedAutoBuildInv();
 										selectedIndex = examineMenu->GetSelectedIndex();

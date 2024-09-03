@@ -59,11 +59,11 @@ namespace RE
 		}
 
 		// Returns FormID as hex string
-		std::string GetFormIDAsString(std::uint32_t formID)
+		std::string GetFormIDAsString(std::uint32_t a_formID)
 		{
 			std::string result{};
 			std::stringstream formIDStream;
-			formIDStream << std::hex << formID;
+			formIDStream << std::hex << a_formID;
 			result = formIDStream.str();
 			if (result.length() < 8)
 			{
@@ -90,43 +90,22 @@ namespace RE
 			return gender;
 		}
 
-		PlayerCharacter* GetPlayerCharacter()
-		{
-			PlayerCharacter* PlayerCharacter = PlayerCharacter::GetSingleton();
-			return PlayerCharacter;
-		}
-
-		bool IsPlayerGodMode()
-		{
-			return GetPlayerCharacter()->IsGodMode();
-		}
-
-		std::int16_t GetPlayerLevel()
-		{
-			return GetPlayerCharacter()->GetLevel();
-		}
-
-		std::uint32_t GetPlayerSex()
-		{
-			return GetActorSex(GetPlayerCharacter());
-		}
-
 		// Takes a Float and converts it to a Precise String.
 		// eg. FloatToPreciseString(3.141592, 2) would return "3.14"
-		std::string FloatToPreciseString(float value, std::uint32_t precision)
+		std::string FloatToPreciseString(float a_value, std::uint32_t a_precision)
 		{
 			std::stringstream stream;
-			stream << std::fixed << std::setprecision(precision) << value;
+			stream << std::fixed << std::setprecision(a_precision) << a_value;
 			return stream.str();
 		}
 
-		bool WeaponHasKeyword(TESObjectWEAP* weapon, BGSKeyword* keyword)
+		bool WeaponHasKeyword(TESObjectWEAP* a_weapon, BGSKeyword* a_keyword)
 		{
-			if (weapon)
+			if (a_weapon)
 			{
-				for (std::uint32_t i = 0; i < weapon->numKeywords; i++)
+				for (std::uint32_t i = 0; i < a_weapon->numKeywords; i++)
 				{
-					if (weapon->keywords[i] == keyword)
+					if (a_weapon->keywords[i] == a_keyword)
 					{
 						return true;
 					}
@@ -255,7 +234,7 @@ namespace RE
 		// Gets and return next form player has a count higher than 0 of in list, from current index to start of array
 		std::uint32_t GetNextAvailableFormInInventoryFromList(std::uint32_t startingIndex, BGSListForm* list)
 		{
-			PlayerCharacter* playerCharacter = GetPlayerCharacter();
+			PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
 			if (list->arrayOfForms.size() != 0)
 			{
 				for (std::uint32_t a = startingIndex + 1; a <= list->arrayOfForms.size() - 1; a++)

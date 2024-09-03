@@ -14,17 +14,17 @@ namespace RE
 		};
 	}
 
-	void BuildDialogueMap(bool force)
+	void BuildDialogueMap(bool a_force)
 	{
 		BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction();
 		if (!playerDialogue)
 		{
 			return;
 		}
-		BGSScene* currentScene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
+		BGSScene* currentScene = PlayerCharacter::GetSingleton()->GetCurrentScene();
 
 		// If we already have a map for this scene + scene action then return.
-		if (!force && g_dialogueHolder.scene == currentScene && g_dialogueHolder.playerDialogue == playerDialogue)
+		if (!a_force && g_dialogueHolder.scene == currentScene && g_dialogueHolder.playerDialogue == playerDialogue)
 		{
 			return;
 		}
@@ -330,7 +330,7 @@ namespace RE
 	// Returns the currently executing player dialogue action, or NULL if no player dialogue action is currenctly active.
 	BGSSceneActionPlayerDialogue* GetCurrentPlayerDialogueAction()
 	{
-		BGSScene* scene = Cascadia::GetPlayerCharacter()->GetCurrentScene();
+		BGSScene* scene = PlayerCharacter::GetSingleton()->GetCurrentScene();
 		if (scene)
 		{
 			for (std::uint32_t i = 0; i < scene->actions.size(); i++)
@@ -360,7 +360,7 @@ namespace RE
 		if (BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction())
 		{
 			// We're using option 5 and up for additional options. (Options 5 = Option 0).
-			Cascadia::GetPlayerCharacter()->SetLastDialogueInput(option + 5);
+			PlayerCharacter::GetSingleton()->SetLastDialogueInput(option + 5);
 			return true;
 		}
 		else
@@ -373,7 +373,7 @@ namespace RE
 	{
 		if (BGSSceneActionPlayerDialogue* playerDialogue = GetCurrentPlayerDialogueAction())
 		{
-			BGSScene* scene = Cascadia::GetPlayerCharacter()->GetCurrentScene();
+			BGSScene* scene = PlayerCharacter::GetSingleton()->GetCurrentScene();
 
 			BSPointerHandle<TESObjectREFR> targetHandle;
 			TESObjectREFR* targetREFR = nullptr;
@@ -425,8 +425,9 @@ namespace RE
 	}
 
 	// Topic Infos
-	bool EvaluateInfoConditions(TESTopicInfo* a_info, BGSSceneAction* a_action, bool swap)
+	bool EvaluateInfoConditions(TESTopicInfo* a_info, BGSSceneAction* a_action, bool a_swap)
 	{
+		PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
 		TESCondition conditions = a_info->objConditions;
 		if (!conditions)
 		{
@@ -435,7 +436,7 @@ namespace RE
 
 		BSPointerHandle<TESObjectREFR> targetHandle;
 		TESObjectREFR* targetREFR = nullptr;
-		BGSScene* scene = RE::Cascadia::GetPlayerCharacter()->GetCurrentScene();
+		BGSScene* scene = playerCharacter->GetCurrentScene();
 
 		if (scene)
 		{
@@ -450,20 +451,20 @@ namespace RE
 		}
 		else
 		{
-			targetREFR = RE::Cascadia::GetPlayerCharacter();
+			targetREFR = playerCharacter;
 		}
 
 		// Test against conditions
 		TESObjectREFR* refA, * refB;
-		if (!swap)
+		if (!a_swap)
 		{
-			refA = RE::Cascadia::GetPlayerCharacter();
+			refA = playerCharacter;
 			refB = targetREFR;
 		}
 		else
 		{
 			refA = targetREFR;
-			refB = RE::Cascadia::GetPlayerCharacter();
+			refB = playerCharacter;
 		}
 
 		return conditions.IsTrue(refA, refB);
@@ -479,7 +480,7 @@ namespace RE
 			BSTArray<DialogueEntry> viableInfos;
 			BSTArray<DialogueEntry> randomOptions;
 
-			BGSScene* currentScene = Cascadia::GetPlayerCharacter()->GetCurrentScene();
+			BGSScene* currentScene = PlayerCharacter::GetSingleton()->GetCurrentScene();
 
 			DEBUG("Amount of possible player infos: {}", infos.size());
 
@@ -620,7 +621,7 @@ namespace RE
 									if (actorValue)
 									{
 										prompt = R"({"BorderColor":16724787, "IconColor" : 16724787, "TextColor" : 16724787})";
-										std::string skillCheck = "[" + std::string(actorValue->GetFullName()) + " " + std::to_string(static_cast<int>(Cascadia::GetPlayerCharacter()->GetActorValue(*actorValue))) + "/" + std::to_string(static_cast<int>(conditionItem->data.value)) + "] ";
+										std::string skillCheck = "[" + std::string(actorValue->GetFullName()) + " " + std::to_string(static_cast<int>(PlayerCharacter::GetSingleton()->GetActorValue(*actorValue))) + "/" + std::to_string(static_cast<int>(conditionItem->data.value)) + "] ";
 										responseText.insert(0, skillCheck);
 									}
 								}
@@ -715,7 +716,7 @@ namespace RE
 			}
 		}
 
-		DEBUG("GetDialogueOptions: Got {:s} options when checking scene {:s}.", std::to_string(options.size()), RE::Cascadia::GetPlayerCharacter()->GetCurrentScene()->GetFormEditorID());
+		DEBUG("GetDialogueOptions: Got {:s} options when checking scene {:s}.", std::to_string(options.size()), PlayerCharacter::GetSingleton()->GetCurrentScene()->GetFormEditorID());
 		return options;
 	}
 
@@ -759,7 +760,7 @@ namespace RE
 	void StartScene(BGSScene* apScene, std::uint32_t apPhase)
 	{
 		if (!apScene) return;
-		BGSScene* currentScene = Cascadia::GetPlayerCharacter()->GetCurrentScene();
+		BGSScene* currentScene = PlayerCharacter::GetSingleton()->GetCurrentScene();
 
 		if (currentScene && currentScene != apScene)
 		{
@@ -862,7 +863,7 @@ namespace RE
 				{
 					if (playerInfo->GetChallengeLevel() > TESTopicInfo::CC_CHALLENGE_NONE)
 					{
-						Cascadia::GetPlayerCharacter()->UpdateVoiceTimer(true);
+						PlayerCharacter::GetSingleton()->UpdateVoiceTimer(true);
 					}
 				}
 			}
@@ -877,7 +878,7 @@ namespace RE
 	TESTopicInfo* GetCurrentTopicInfo_NPCAction_Hook(BGSSceneActionNPCResponseDialogue* apNPCDialogue, BGSScene* apParentScene)
 	{
 		DEBUG("GetCurrentTopicInfo_NPCAction_Hook called.");
-		std::uint32_t dialogueOption = Cascadia::GetPlayerCharacter()->playerDialogueInput.underlying();
+		std::uint32_t dialogueOption = PlayerCharacter::GetSingleton()->playerDialogueInput.underlying();
 
 		// Use >5 for custom selections.
 		if (dialogueOption >= 5)
@@ -888,7 +889,7 @@ namespace RE
 			return info;
 		}
 
-		DEBUG("GetCurrentTopicInfo_NPCAction_Hook - default function return.")
-			return apNPCDialogue->GetCurrentTopicInfo(apParentScene);
+		DEBUG("GetCurrentTopicInfo_NPCAction_Hook - default function return.");
+		return apNPCDialogue->GetCurrentTopicInfo(apParentScene);
 	}
 }

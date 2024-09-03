@@ -18,10 +18,19 @@ namespace RE
 			{
 				if (a_event.tag == "weaponFire" || a_event.tag == "WeaponFire")
 				{
+					DEBUG("weaponFire/WeaponFire event.");
+					if (a_event.payload == "")
+					{
+						
+					}
+					else
+					{
+						DEBUG("Player used grenade/mine.");
+					}
 				}
-				else
+				else if (a_event.tag == "HitFrame")
 				{
-					DEBUG("Event tag: {:s}", a_event.tag);
+					DEBUG("Player used Melee/Unarmed weapon");
 				}
 
 				FnProcessEvent fn = fnHash.at(*(uint64_t*)this);
@@ -50,5 +59,4 @@ namespace RE
 		};
 		std::unordered_map<std::uint64_t, BSAnimationGraphEventWatcher::FnProcessEvent> BSAnimationGraphEventWatcher::fnHash;
 	}
-		
 }

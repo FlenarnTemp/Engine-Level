@@ -202,12 +202,17 @@ namespace RE
 					if (formType == ENUM_FORM_ID::kWEAP || formType == ENUM_FORM_ID::kARMO)
 					{
 						std::uint32_t iterCount = 0;
+
+						TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
+						BGSKeyword* noDegradation = dataHandler->LookupForm<BGSKeyword>(0x2BD72E, "FalloutCascadia.esm");
+
 						for (const BGSInventoryItem::Stack* traverse = a_stack; traverse; traverse->nextStack)
 						{
 							if (!traverse || !traverse->extra)
 							{
 								break;
 							}
+							
 
 							// TODO - keyword check for no-degradation.
 
@@ -217,6 +222,26 @@ namespace RE
 								if (tempREFR->weaponData.type == WEAPON_TYPE::kGrenade || tempREFR->weaponData.type == WEAPON_TYPE::kMine)
 								{
 									DEBUG("BGSInventoryList::AddItem: REFR grenade/mine weapon type.");
+									break;
+								}
+
+								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
+								if (tempREFR->HasKeyword(noDegradation))
+								{
+									DEBUG("'noDegradation' keyword found on weapon.");
+									traverse->extra->SetHealthPerc(1.0);
+									break;
+								}
+							}
+
+							if (formType == ENUM_FORM_ID::kARMO)
+							{
+								TESObjectARMO* tempREFR = static_cast<TESObjectARMO*>(a_boundObject);
+								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
+								if (tempREFR->HasKeyword(noDegradation))
+								{
+									DEBUG("'noDegradation' keyword found on armor.");
+									traverse->extra->SetHealthPerc(1.0);
 									break;
 								}
 							}

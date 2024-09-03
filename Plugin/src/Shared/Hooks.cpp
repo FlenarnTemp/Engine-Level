@@ -1,4 +1,5 @@
 #include "Shared/Hooks.h"
+
 namespace RE
 {
 	namespace Cascadia
@@ -213,9 +214,6 @@ namespace RE
 								break;
 							}
 							
-
-							// TODO - keyword check for no-degradation.
-
 							if (formType == ENUM_FORM_ID::kWEAP)
 							{
 								TESObjectWEAP* tempREFR = static_cast<TESObjectWEAP*>(a_boundObject);
@@ -247,20 +245,18 @@ namespace RE
 							}
 
 							// The 'break' here works, as when the native function gets called for weapons/armor, stack only contains one object.
-							if (traverse->extra.get())
+							
+							// GetHealthPerc return -1.0 if it can't find the kHealth type.
+							if (traverse->extra->GetHealthPerc() < 0)
 							{
-								// GetHealthPerc return -1.0 if it can't find the kHealth type.
-								if (traverse->extra->GetHealthPerc() < 0)
-								{
-									traverse->extra->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
-									//INFO("BGSInventoryList::AddItem: Health initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
-									break;
-								}
-								else
-								{
-									INFO("BGSInventoryList::AddItem: Health already initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
-									break;
-								}
+								traverse->extra->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
+								//INFO("BGSInventoryList::AddItem: Health initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
+								break;
+							}
+							else
+							{
+								INFO("BGSInventoryList::AddItem: Health already initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
+								break;
 							}
 
 							iterCount++;
@@ -308,9 +304,8 @@ namespace RE
 									Cascadia::GetPlayerCharacter()->FindAndWriteStackDataForInventoryItem(a_this->GetCurrentObj(), compareFunction, writeFunction);
 
 									BGSDefaultObject* craftingSound = TESDataHandler::GetSingleton()->LookupForm<BGSDefaultObject>(0x112622, "Fallout4.esm");
-									BGSSoundDescriptorForm* soundDescriptorForm = dynamic_cast<BGSSoundDescriptorForm*>(craftingSound->form);
 
-									a_this->ConsumeSelectedItems(true, soundDescriptorForm);
+									a_this->ConsumeSelectedItems(true, craftingSound->GetForm<BGSSoundDescriptorForm>());
 									a_this->UpdateOptimizedAutoBuildInv();
 									selectedIndex = a_this->GetSelectedIndex();
 									a_this->UpdateItemList(selectedIndex);
@@ -318,7 +313,7 @@ namespace RE
 									a_this->CreateModdedInventoryItem();
 									a_this->UpdateItemCard(false);
 									a_this->repairing = false;
-									a_this->uiMovie->Invoke("UpdateButtons", nullptr, nullptr, 0);
+									a_this->uiMovie->Invoke("UpdateButtons", nullptr, nullptr, 0); // TODO - update custom buttons for this functionality.
 								}
 							}
 						}

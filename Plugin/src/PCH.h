@@ -107,6 +107,9 @@
 #undef min
 #undef max
 
+// Causes issues with the BGSDefaultObject->GetForm<T>() function.
+#undef GetForm
+
 using namespace std::literals;
 
 #define DLLEXPORT extern "C" [[maybe_unused]] __declspec(dllexport)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shared/SharedFunctions.h"
+#include "Systems/ItemDegradation.h"
 
 // Thanks to 'Jajari' and 'Pinedog' for assistance with this code.
 
@@ -16,23 +17,6 @@ namespace RE
 
 			BSEventNotifyControl ProcessEvent(BSAnimationGraphEvent& a_event, BSTEventSource<BSAnimationGraphEvent>* a_source)
 			{
-				if (a_event.tag == "weaponFire" || a_event.tag == "WeaponFire")
-				{
-					DEBUG("weaponFire/WeaponFire event.");
-					if (a_event.payload == "")
-					{
-						
-					}
-					else
-					{
-						DEBUG("Player used grenade/mine.");
-					}
-				}
-				else if (a_event.tag == "HitFrame")
-				{
-					DEBUG("Player used Melee/Unarmed weapon");
-				}
-
 				FnProcessEvent fn = fnHash.at(*(uint64_t*)this);
 				return fn ? (this->*fn)(a_event, a_source) : BSEventNotifyControl::kContinue;
 			}

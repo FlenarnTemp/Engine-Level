@@ -176,7 +176,7 @@ namespace RE
 			typedef std::int64_t(GetInventoryValueSig)(TESBoundObject*, const ExtraDataList*);
 			REL::Relocation<GetInventoryValueSig> GetInventoryValueOriginal;
 
-			int64_t HookBGSInventoryItemUtilsGetInventoryValue(TESBoundObject* a_baseObj, const ExtraDataList* a_extra)
+			std::int64_t HookBGSInventoryItemUtilsGetInventoryValue(TESBoundObject* a_baseObj, const ExtraDataList* a_extra)
 			{
 				if (!a_extra->HasType(EXTRA_DATA_TYPE::kHealth))
 				{
@@ -184,7 +184,18 @@ namespace RE
 				}
 
 				ExtraDataList* non_const_a_extra = const_cast<ExtraDataList*>(a_extra);
-				int64_t newValue = int64_t(GetInventoryValueOriginal(a_baseObj, a_extra) * non_const_a_extra->GetHealthPerc() * std::sqrt(non_const_a_extra->GetHealthPerc()));
+
+				std::int64_t newValue;
+
+				// Clamp to 10% value at minimum.
+				if (non_const_a_extra->GetHealthPerc() < 0.05f)
+				{
+					newValue = std::int64_t(GetInventoryValueOriginal(a_baseObj, a_extra) * 0.05f * std::sqrt(0.05f));
+				}
+				else
+				{
+					newValue = std::int64_t(GetInventoryValueOriginal(a_baseObj, a_extra) * non_const_a_extra->GetHealthPerc() * std::sqrt(non_const_a_extra->GetHealthPerc()));
+				}
 				return newValue;
 			}
 
@@ -325,6 +336,78 @@ namespace RE
 				}
 			}
 
+			DetourXS hook_TESObjectWEAPFire;
+			typedef void(TESObjectWEAPFireSig)(const BGSObjectInstanceT<TESObjectWEAP>*, TESObjectREFR*, BGSEquipIndex, TESAmmo*, AlchemyItem*);
+			REL::Relocation<TESObjectWEAPFireSig> TESObjectWEAPFireOriginal;
+
+			void HookTESObjectWEAPFire(const BGSObjectInstanceT<TESObjectWEAP>* a_weapon, TESObjectREFR* a_source, BGSEquipIndex a_equipIndex, TESAmmo* a_ammo, AlchemyItem* a_poison)
+			{
+				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+
+				// Only extend logic if the source is the player.
+				if (a_source != playerCharacter)
+				{
+					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
+				}
+
+				// God Mod - no degradation.
+				if (playerCharacter->IsGodMode())
+				{
+					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
+				}
+
+				TESObjectWEAP* weapon = (TESObjectWEAP*)a_weapon->object;
+				
+				// No degradation to mines/grenades.
+				if (weapon->weaponData.type == WEAPON_TYPE::kGrenade || weapon->weaponData.type == WEAPON_TYPE::kMine)
+				{
+					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
+				}
+
+				TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
+				BGSKeyword* noDegradation = dataHandler->LookupForm<BGSKeyword>(0x2BD72E, "FalloutCascadia.esm");
+
+				// No degradation on objects with 'noDegradation' keyword.
+				if (weapon->HasKeyword(noDegradation))
+				{
+					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
+				}
+
+				EquippedItem& equippedWeapon = playerCharacter->currentProcess->middleHigh->equippedItems[0];
+				BGSInventoryItem* inventoryItem;
+
+				for (const BGSInventoryItem& item : playerCharacter->inventoryList->data)
+				{
+					if (item.object->GetFormID() == a_weapon->object->GetFormID())
+					{
+						inventoryItem = new BGSInventoryItem(item);
+						break;
+					}
+				}
+
+				if (inventoryItem != nullptr)
+				{
+					ExtraDataList* extraDatalist = inventoryItem->stackData->extra.get();
+				
+					float currentHealth = extraDatalist->GetHealthPerc();
+					
+					if (currentHealth - 0.25f < 0)
+					{
+						extraDatalist->SetHealthPerc(0.0f);
+					}
+					else
+					{
+						extraDatalist->SetHealthPerc(currentHealth - 0.25f);
+					}
+				}
+
+				PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
+
+
+				DEBUG("TESObjectWEAP::Fire event.");
+				return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
+			}
+
 			// ========== REGISTERS ==========
 			void RegisterGetBuildConfirmQuestion()
 			{
@@ -419,6 +502,21 @@ namespace RE
 				{
 					FATAL("Failed to hook ExamineMenu::BuildConfirmed, exiting.");
 				}
+			}
+
+			void RegisterTESObjectWEAPFire()
+			{
+				REL::Relocation<TESObjectWEAPFireSig> functionLocation{ REL::ID(2198960) };
+				if (hook_TESObjectWEAPFire.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookTESObjectWEAPFire))
+				{
+					DEBUG("Installed TESObjectWEAP::Fire hook.");
+					TESObjectWEAPFireOriginal = reinterpret_cast<uintptr_t>(hook_TESObjectWEAPFire.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook TESObjectWEAP::Fire, exiting.");
+				}
+				
 			}
 		}
 	}

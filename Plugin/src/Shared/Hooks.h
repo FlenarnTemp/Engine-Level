@@ -16,6 +16,7 @@ namespace RE
 			void RegisterGetBuildConfirmQuestion();
 			void RegisterQCurrentModChoiceData();
 			void RegisterExamineMenuBuildConfirmed();
+			void RegisterTESObjectWEAPFire();
 		}
 	}
 }

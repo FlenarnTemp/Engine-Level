@@ -145,11 +145,11 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 			return false;
 		}
 
-		/*if (!scaleform->Register("Cascadia-ExamineConfirmMenu", RE::Cascadia::ExamineConfirmMenu::RegisterScaleform))
+		if (!scaleform->Register("Cascadia-ExamineConfirmMenu", RE::Cascadia::ExamineConfirmMenu::RegisterScaleform))
 		{
 			FATAL("Failed to register 'ExamineConfirmMenu', marking as incompatible.");
 			return false;
-		}*/
+		}
 	}
 
 	const F4SE::PapyrusInterface* papyrus = F4SE::GetPapyrusInterface();
@@ -172,6 +172,8 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	RE::Cascadia::Hooks::RegisterGetBuildConfirmQuestion();
 	RE::Cascadia::Hooks::RegisterQCurrentModChoiceData();
 	RE::Cascadia::Hooks::RegisterExamineMenuBuildConfirmed();
+	RE::Cascadia::Hooks::RegisterTESObjectWEAPFire();
+	RE::Cascadia::Hooks::RegisterCombatFormulasCalcWeaponDamage();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

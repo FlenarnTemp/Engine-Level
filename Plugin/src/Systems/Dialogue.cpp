@@ -872,7 +872,7 @@ namespace RE
 		}
 
 		DEBUG("GetCurrentTopicInfo_NPC_Hook - default function return.")
-			return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
+		return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
 	}
 
 	TESTopicInfo* GetCurrentTopicInfo_NPCAction_Hook(BGSSceneActionNPCResponseDialogue* apNPCDialogue, BGSScene* apParentScene)

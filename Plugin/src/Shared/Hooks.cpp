@@ -187,7 +187,7 @@ namespace RE
 
 				std::int64_t newValue;
 
-				// Clamp to 10% value at minimum.
+				// Clamp to 5% value at minimum.
 				if (non_const_a_extra->GetHealthPerc() < 0.05f)
 				{
 					newValue = std::int64_t(GetInventoryValueOriginal(a_baseObj, a_extra) * 0.05f * std::sqrt(0.05f));
@@ -254,19 +254,12 @@ namespace RE
 									break;
 								}
 							}
-
-							// The 'break' here works, as when the native function gets called for weapons/armor, stack only contains one object.
 							
 							// GetHealthPerc return -1.0 if it can't find the kHealth type.
 							if (traverse->extra->GetHealthPerc() < 0)
 							{
 								traverse->extra->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
 								//INFO("BGSInventoryList::AddItem: Health initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
-								break;
-							}
-							else
-							{
-								INFO("BGSInventoryList::AddItem: Health already initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
 								break;
 							}
 
@@ -373,6 +366,8 @@ namespace RE
 					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
 				}
 
+				TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
+
 				EquippedItem& equippedWeapon = playerCharacter->currentProcess->middleHigh->equippedItems[0];
 				BGSInventoryItem* inventoryItem;
 
@@ -385,7 +380,7 @@ namespace RE
 					}
 				}
 
-				if (inventoryItem != nullptr)
+				if (inventoryItem)
 				{
 					ExtraDataList* extraDatalist = inventoryItem->stackData->extra.get();
 				
@@ -394,6 +389,8 @@ namespace RE
 					if (currentHealth - 0.25f < 0)
 					{
 						extraDatalist->SetHealthPerc(0.0f);
+						ActorEquipManager::GetSingleton()->UnequipItem(playerCharacter, &equippedWeapon, false);
+						SendHUDMessage::ShowHUDMessage("Your weapon has broken.", "UIWorkshopModeItemScrapGeneric", true, true);
 					}
 					else
 					{
@@ -402,10 +399,23 @@ namespace RE
 				}
 
 				PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
+				return;
+			}
 
-
-				DEBUG("TESObjectWEAP::Fire event.");
-				return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
+			DetourXS hook_CombatFormulasCalcWeaponDamage;
+			typedef float(CombatFormulasCalcWeaponDamageSig)(const TESForm*, const TESObjectWEAP::InstanceData*, const TESAmmo*, float, float);
+			REL::Relocation<CombatFormulasCalcWeaponDamageSig> CombatFormulasCalcWeaponDamageOriginal;
+			
+			float HookCombatFormulasCalcWeaponDamage(const TESForm* a_actorForm, const TESObjectWEAP::InstanceData* a_weapon, const TESAmmo* a_ammo, float a_condition, float a_damageMultiplier)
+			{
+				float retailDamage = CombatFormulasCalcWeaponDamageOriginal(a_actorForm, a_weapon, a_ammo, a_condition, a_damageMultiplier);
+				if (a_condition != -1.0f)
+				{
+					retailDamage = retailDamage * (0.5f + std::min((0.5f * a_condition) / 0.75, 0.5));
+				}
+				
+				DEBUG("CombatFormulas::CalcWeaponDamage - custom damage calculation(condition): {}", retailDamage);
+				return retailDamage;
 			}
 
 			// ========== REGISTERS ==========
@@ -516,7 +526,20 @@ namespace RE
 				{
 					FATAL("Failed to hook TESObjectWEAP::Fire, exiting.");
 				}
-				
+			}
+
+			void RegisterCombatFormulasCalcWeaponDamage()
+			{
+				REL::Relocation<CombatFormulasCalcWeaponDamageSig> functionLocation{ REL::ID(2209001) };
+				if (hook_CombatFormulasCalcWeaponDamage.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookCombatFormulasCalcWeaponDamage))
+				{
+					DEBUG("Installed CombatFormulas::CalcWeaponDamage hook.");
+					CombatFormulasCalcWeaponDamageOriginal = reinterpret_cast<uintptr_t>(hook_CombatFormulasCalcWeaponDamage.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook CombatFormulas::CalcWeaponDamage, exiting.");
+				}
 			}
 		}
 	}

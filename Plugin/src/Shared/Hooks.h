@@ -17,6 +17,7 @@ namespace RE
 			void RegisterQCurrentModChoiceData();
 			void RegisterExamineMenuBuildConfirmed();
 			void RegisterTESObjectWEAPFire();
+			void RegisterCombatFormulasCalcWeaponDamage();
 		}
 	}
 }

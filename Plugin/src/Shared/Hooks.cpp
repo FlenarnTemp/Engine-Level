@@ -4,6 +4,8 @@ namespace RE
 {
 	namespace Cascadia
 	{
+		extern std::map<TESAmmo*, float> ammoDegradationMap;
+
 		namespace Hooks
 		{
 			void Install(F4SE::Trampoline& trampoline)
@@ -125,7 +127,6 @@ namespace RE
 
 			const WorkbenchMenuBase::ModChoiceData* HookWorkbenchMenuBaseQCurrentModChoiceData(WorkbenchMenuBase* a_this)
 			{
-				DEBUG("WorkbenchMenuBase::QCurrentModChoiceData ran!");
 				if (a_this->repairing)
 				{
 					// TODO: Merge this into singular function returning dynamic repair cost.
@@ -369,24 +370,53 @@ namespace RE
 				TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
 
 				EquippedItem& equippedWeapon = playerCharacter->currentProcess->middleHigh->equippedItems[0];
-				BGSInventoryItem* inventoryItem;
+				BGSInventoryItem* inventoryItem = nullptr;
+				TESFormID weaponFormID = a_weapon->object->GetFormID();
 
-				for (const BGSInventoryItem& item : playerCharacter->inventoryList->data)
+				for (BGSInventoryItem& item : playerCharacter->inventoryList->data)
 				{
-					if (item.object->GetFormID() == a_weapon->object->GetFormID())
+					if (item.object->GetFormID() == weaponFormID)
 					{
-						inventoryItem = new BGSInventoryItem(item);
+						inventoryItem = &item;
 						break;
 					}
 				}
 
 				if (inventoryItem)
 				{
-					ExtraDataList* extraDatalist = inventoryItem->stackData->extra.get();
-				
-					float currentHealth = extraDatalist->GetHealthPerc();
+					// If ammo is mapped to a degradation value override default of 1%.
+					float conditionReduction = 0.01f;
+					TESObjectWEAP::InstanceData* data = (TESObjectWEAP::InstanceData*)(a_weapon->instanceData.get());
 					
-					if (currentHealth - 0.25f < 0)
+					TESAmmo* ammoInstance = data->ammo;
+
+					auto it = ammoDegradationMap.find(ammoInstance);
+					if (it != ammoDegradationMap.end())
+					{
+						conditionReduction = it->second;
+					}
+					else
+					{
+						DEBUG("TESObjectWEAP::Fire - Ammo type '{}' is not declared in 'ammoDegradationMap'.", ammoInstance->GetFormEditorID())
+					}
+
+					std::uint32_t flags = data->flags.underlying();
+					if (flags & std::uint32_t(WEAPON_FLAGS::kAutomatic))
+					{
+						conditionReduction *= 0.5f; 
+					}
+					else if (flags & std::uint32_t(WEAPON_FLAGS::kBoltAction))
+					{
+						conditionReduction *= 2.0f;
+					}
+
+					// TODO: Add in perk bonus for slower degradation.
+
+					ExtraDataList* extraDatalist = inventoryItem->stackData->extra.get();
+					float currentHealth = extraDatalist->GetHealthPerc();	
+					float newHealth = currentHealth - conditionReduction;
+					
+					if (newHealth < 0.0f)
 					{
 						extraDatalist->SetHealthPerc(0.0f);
 						ActorEquipManager::GetSingleton()->UnequipItem(playerCharacter, &equippedWeapon, false);
@@ -394,7 +424,7 @@ namespace RE
 					}
 					else
 					{
-						extraDatalist->SetHealthPerc(currentHealth - 0.25f);
+						extraDatalist->SetHealthPerc(newHealth);
 					}
 				}
 
@@ -416,6 +446,26 @@ namespace RE
 				
 				DEBUG("CombatFormulas::CalcWeaponDamage - custom damage calculation(condition): {}", retailDamage);
 				return retailDamage;
+			}
+
+			DetourXS hook_GetEquippedArmorDamageResistance;
+			typedef float(GetEquippedArmorDamageResistanceSig)(Actor*, const ActorValueInfo*);
+			REL::Relocation<GetEquippedArmorDamageResistanceSig> GetEquippedArmorDamageResistanceOriginal;
+
+			float HookGetEquippedDamageResistance(Actor* a_actor, const ActorValueInfo* a_info)
+			{
+				float retailDamageResistance = GetEquippedArmorDamageResistanceOriginal(a_actor, a_info);
+
+				if (a_actor != PlayerCharacter::GetSingleton())
+				{
+					return retailDamageResistance;
+				}
+				else
+				{
+					DEBUG("RETAIL DAMAGE: {}", retailDamageResistance);
+					DEBUG("AP INFO: {}", a_info->GetFormEditorID());
+					return retailDamageResistance;
+				}
 			}
 
 			// ========== REGISTERS ==========
@@ -539,6 +589,20 @@ namespace RE
 				else
 				{
 					FATAL("Failed to hook CombatFormulas::CalcWeaponDamage, exiting.");
+				}
+			}
+
+			void RegisterGetEquippedArmorDamageResistance()
+			{
+				REL::Relocation<GetEquippedArmorDamageResistanceSig> functionLocation{ REL::ID(2227189) };
+				if (hook_GetEquippedArmorDamageResistance.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookGetEquippedDamageResistance))
+				{
+					DEBUG("Installed ActorUtils::GetEquippedArmorDamageResistance hook.");
+					GetEquippedArmorDamageResistanceOriginal = reinterpret_cast<uintptr_t>(hook_GetEquippedArmorDamageResistance.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook ActorUtils::GetEquippedArmorDamageResistance, exiting.")
 				}
 			}
 		}

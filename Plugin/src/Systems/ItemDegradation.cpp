@@ -70,6 +70,12 @@ namespace RE
 			armorBodyPartLeftLeg = dataHandler->LookupForm<BGSKeyword>(0x211D07, "FalloutCascadia.esm");
 			armorBodyPartRightLeg = dataHandler->LookupForm<BGSKeyword>(0x211D09, "FalloutCascadia.esm");
 
+			TESAmmo* ammo45 = dataHandler->LookupForm<TESAmmo>(0x01F66A, "Fallout4.esm");
+			TESAmmo* ammo308 = dataHandler->LookupForm<TESAmmo>(0x01F66B, "Fallout4.esm");
+
+			ammoDegradationMap[ammo45] = 0.0035;
+			ammoDegradationMap[ammo308] = 0.0133f;
+
 			// No Degradation Keyword
 			noDegradation = dataHandler->LookupForm<BGSKeyword>(0x2BD72E, "FalloutCascadia.esm");
 
@@ -101,7 +107,10 @@ namespace RE
 				return;
 			}
 
-			auto currentWeapon = playerCharacter->GetCurrentWeapon();
+			EquippedItem& equippedWeapon = playerCharacter->currentProcess->middleHigh->equippedItems[0];
+			TESObjectWEAP* playerWeapon = (TESObjectWEAP*)equippedWeapon.item.object;
+			auto instanceData = equippedWeapon.item.instanceData.get();
+			DEBUG("Bound object: {}", playerWeapon->IsBoundObject());
 		}
 
 		void ModWeaponCondition(TESObjectREFR* myWeapon, float a_value)

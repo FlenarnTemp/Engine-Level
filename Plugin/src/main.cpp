@@ -10,6 +10,14 @@
 #include "Shared/Hooks.h"
 #include "Systems/Skills.h"
 
+namespace RE
+{
+	namespace Cascadia
+	{
+		extern void DefineItemDegradationFormsFromGame();
+	}
+}
+
 namespace
 {
 	void MessageHandler(F4SE::MessagingInterface::Message* a_msg)
@@ -174,6 +182,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	RE::Cascadia::Hooks::RegisterExamineMenuBuildConfirmed();
 	RE::Cascadia::Hooks::RegisterTESObjectWEAPFire();
 	RE::Cascadia::Hooks::RegisterCombatFormulasCalcWeaponDamage();
+	RE::Cascadia::Hooks::RegisterGetEquippedArmorDamageResistance();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Shared/SharedFunctions.h"
-#include "Systems/ItemDegradation.h"
 
 // Thanks to 'Jajari' and 'Pinedog' for assistance with this code.
 

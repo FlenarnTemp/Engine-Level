@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Shared/SharedFunctions.h"
 #include "Systems/Dialogue.h"
 #include "detourXS/detourxs.h"
+
 namespace RE
 {
 	namespace Cascadia
@@ -18,6 +20,7 @@ namespace RE
 			void RegisterExamineMenuBuildConfirmed();
 			void RegisterTESObjectWEAPFire();
 			void RegisterCombatFormulasCalcWeaponDamage();
+			void RegisterGetEquippedArmorDamageResistance();
 		}
 	}
 }

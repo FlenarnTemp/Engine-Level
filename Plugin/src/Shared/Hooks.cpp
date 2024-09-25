@@ -10,12 +10,12 @@ namespace RE
 		{
 			void Install(F4SE::Trampoline& trampoline)
 			{
-				// GetInfoForPlayerDialogueOptionHook - 2196817 ID + 0x40A offset
+				// GetInfoForPlayerDialogueOptionHook - { ID 2196817 + Offset-0x40A }
 				typedef TESTopicInfo(GetCurrentTopicInfo_Player_Sig)(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType);
 				REL::Relocation<GetCurrentTopicInfo_Player_Sig> GetCurrentTopicInfo_Player_Location{ REL::ID(2196817), 0x40A };
 				trampoline.write_call<5>(GetCurrentTopicInfo_Player_Location.address(), &RE::GetCurrentTopicInfo_Player_Hook);
 
-				// GetInfoForNPCResponseDialogOptionHook - 2196817 ID + 0x78E offset
+				// GetInfoForNPCResponseDialogOptionHook - { ID 2196817 + 0x78E-offset }
 				typedef TESTopicInfo(GetCurrentTopicInfo_NPC_Sig)(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType);
 				REL::Relocation<GetCurrentTopicInfo_NPC_Sig> GetCurrentTopicInfo_NPC_Location{ REL::ID(2196817), 0x7A1 };
 				trampoline.write_call<5>(GetCurrentTopicInfo_NPC_Location.address(), &RE::GetCurrentTopicInfo_NPC_Hook);
@@ -50,7 +50,22 @@ namespace RE
 								RE::RepairFailureCallback* repairFailureCallback = new RE::RepairFailureCallback(examineMenu.get());
 								RE::ExamineConfirmMenu::InitDataRepairFailure* initDataRepair = new RE::ExamineConfirmMenu::InitDataRepairFailure(requiredItems);
 
-								// TODO  - list available components.
+								BSTHashMap<TESBoundObject*, std::uint32_t> availableComponents;
+
+								std::uint32_t size = requiredItems->size();
+								if (size)
+								{
+									auto tester = examineMenu->sharedContainerRef.get();
+									if (tester)
+									{
+										
+									}
+									
+									initDataRepair->availableComponents = availableComponents;
+
+									// TODO  - list available components.
+								}
+								
 
 								examineMenu->ShowConfirmMenu(initDataRepair, repairFailureCallback);
 							}
@@ -395,11 +410,13 @@ namespace RE
 					{
 						conditionReduction = it->second;
 					}
-					else
+
+					if (conditionReduction == 0.01f)
 					{
-						DEBUG("TESObjectWEAP::Fire - Ammo type '{}' is not declared in 'ammoDegradationMap'.", ammoInstance->GetFormEditorID())
+						WARN("TESObjectWEAP::Fire - Ammo type '{}' is not declared in 'ammoDegradationMap'.", ammoInstance->GetFormEditorID())
 					}
 
+					// TODO: Rework these numbers after gameplay tests.
 					std::uint32_t flags = data->flags.underlying();
 					if (flags & std::uint32_t(WEAPON_FLAGS::kAutomatic))
 					{

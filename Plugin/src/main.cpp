@@ -3,6 +3,7 @@
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESInitScriptEvent.h"
 #include "Events/TESHarvestEvent.h"
+#include "Events/TESHitEvent.h"
 #include "Menus/ExamineConfirmMenu.h"
 #include "Menus/PipboyMenu.h"
 #include "Patches/Patches.h"
@@ -43,6 +44,7 @@ namespace
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
 			RE::Cascadia::InputEventReceiverOverride::Install();
 			RE::Cascadia::BSAnimationGraphEventWatcher::Install();
+			RE::Cascadia::RegisterTESHitEventSink();
 			RE::Cascadia::RegisterTESInitScriptEventSink();
 			//RE::Cascadia::RegisterTESHarvestEventEventSink();
 			break;
@@ -182,7 +184,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	RE::Cascadia::Hooks::RegisterExamineMenuBuildConfirmed();
 	RE::Cascadia::Hooks::RegisterTESObjectWEAPFire();
 	RE::Cascadia::Hooks::RegisterCombatFormulasCalcWeaponDamage();
-	RE::Cascadia::Hooks::RegisterGetEquippedArmorDamageResistance();
+	//RE::Cascadia::Hooks::RegisterGetEquippedArmorDamageResistance();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

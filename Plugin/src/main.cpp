@@ -2,19 +2,23 @@
 #include "Events/InputEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESInitScriptEvent.h"
-#include "Events/TESHarvestEvent.h"
 #include "Events/TESHitEvent.h"
 #include "Menus/ExamineConfirmMenu.h"
 #include "Menus/PipboyMenu.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
-#include "Shared/Hooks.h"
 #include "Systems/Skills.h"
 
 namespace RE
 {
 	namespace Cascadia
 	{
+		namespace Hooks
+		{
+			extern void Install(F4SE::Trampoline& trampoline);
+			extern void RegisterHooks();
+		}
+		
 		extern void DefineItemDegradationFormsFromGame();
 	}
 }
@@ -46,7 +50,6 @@ namespace
 			RE::Cascadia::BSAnimationGraphEventWatcher::Install();
 			RE::Cascadia::RegisterTESHitEventSink();
 			RE::Cascadia::RegisterTESInitScriptEventSink();
-			//RE::Cascadia::RegisterTESHarvestEventEventSink();
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:
@@ -175,16 +178,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 
 	RE::Cascadia::RegisterMenuOpenCloseEventSink();
 	RE::Cascadia::ExamineMenu::hkOnButtonEvent::InstallHook();
-	RE::Cascadia::Hooks::RegisterAddItemHook();
-	RE::Cascadia::Hooks::RegisterSetHealthPercHook();
-	RE::Cascadia::Hooks::RegisterGetInventoryValueHook();
-	RE::Cascadia::Hooks::RegisterShowBuildFailureMessage();
-	RE::Cascadia::Hooks::RegisterGetBuildConfirmQuestion();
-	RE::Cascadia::Hooks::RegisterQCurrentModChoiceData();
-	RE::Cascadia::Hooks::RegisterExamineMenuBuildConfirmed();
-	RE::Cascadia::Hooks::RegisterTESObjectWEAPFire();
-	RE::Cascadia::Hooks::RegisterCombatFormulasCalcWeaponDamage();
-	//RE::Cascadia::Hooks::RegisterGetEquippedArmorDamageResistance();
+	RE::Cascadia::Hooks::RegisterHooks();
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 

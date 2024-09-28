@@ -351,6 +351,12 @@ namespace RE
 
 			void HookTESObjectWEAPFire(const BGSObjectInstanceT<TESObjectWEAP>* a_weapon, TESObjectREFR* a_source, BGSEquipIndex a_equipIndex, TESAmmo* a_ammo, AlchemyItem* a_poison)
 			{
+				// Make sure 'a_source' is valid.
+				if (!a_source)
+				{
+					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
+				}
+
 				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
 
 				// Only extend logic if the source is the player.
@@ -384,10 +390,8 @@ namespace RE
 
 				TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
 
-				EquippedItem& equippedWeapon = playerCharacter->currentProcess->middleHigh->equippedItems[0];
 				BGSInventoryItem* inventoryItem = nullptr;
 				TESFormID weaponFormID = a_weapon->object->GetFormID();
-
 				for (BGSInventoryItem& item : playerCharacter->inventoryList->data)
 				{
 					if (item.object->GetFormID() == weaponFormID)
@@ -399,6 +403,7 @@ namespace RE
 
 				if (inventoryItem)
 				{
+					EquippedItem& equippedWeapon = playerCharacter->currentProcess->middleHigh->equippedItems[0];
 					// If ammo is mapped to a degradation value override default of 1%.
 					float conditionReduction = 0.01f;
 					TESObjectWEAP::InstanceData* data = (TESObjectWEAP::InstanceData*)(a_weapon->instanceData.get());
@@ -429,23 +434,19 @@ namespace RE
 
 					// TODO: Add in perk bonus for slower degradation.
 
-					ExtraDataList* extraDatalist = inventoryItem->stackData->extra.get();
-					float currentHealth = extraDatalist->GetHealthPerc();	
-					float newHealth = currentHealth - conditionReduction;
+					ExtraDataList* extraDataList = inventoryItem->stackData->extra.get();
+
+					float currentHealth = extraDataList->GetHealthPerc();	
+					float newHealth = std::max(currentHealth - conditionReduction, 0.0f);
 					
-					if (newHealth < 0.0f)
+					if (newHealth == 0.0f)
 					{
-						extraDatalist->SetHealthPerc(0.0f);
 						ActorEquipManager::GetSingleton()->UnequipItem(playerCharacter, &equippedWeapon, false);
 						SendHUDMessage::ShowHUDMessage("Your weapon has broken.", "UIWorkshopModeItemScrapGeneric", true, true);
 					}
-					else
-					{
-						extraDatalist->SetHealthPerc(newHealth);
-					}
+					extraDataList->SetHealthPerc(newHealth);
+					PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
 				}
-
-				PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
 				return;
 			}
 
@@ -461,7 +462,7 @@ namespace RE
 					retailDamage = retailDamage * (0.5f + std::min((0.5f * a_condition) / 0.75, 0.5));
 				}
 				
-				DEBUG("CombatFormulas::CalcWeaponDamage - custom damage calculation(condition): {}", retailDamage);
+				//DEBUG("CombatFormulas::CalcWeaponDamage - custom damage calculation(condition): {}", retailDamage);
 				return retailDamage;
 			}
 

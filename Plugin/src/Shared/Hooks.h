@@ -21,6 +21,20 @@ namespace RE
 			void RegisterTESObjectWEAPFire();
 			void RegisterCombatFormulasCalcWeaponDamage();
 			void RegisterGetEquippedArmorDamageResistance();
+
+			void RegisterHooks()
+			{
+				RegisterAddItemHook();
+				RegisterSetHealthPercHook();
+				RegisterGetInventoryValueHook();
+				RegisterShowBuildFailureMessage();
+				RegisterGetBuildConfirmQuestion();
+				RegisterQCurrentModChoiceData();
+				RegisterExamineMenuBuildConfirmed();
+				RegisterTESObjectWEAPFire();
+				RegisterCombatFormulasCalcWeaponDamage();
+				RegisterGetEquippedArmorDamageResistance();
+			}
 		}
 	}
 }

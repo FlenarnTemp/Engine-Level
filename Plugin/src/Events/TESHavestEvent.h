@@ -10,19 +10,31 @@ namespace RE
 			virtual BSEventNotifyControl ProcessEvent(const TESHarvestEvent::ItemHarvested& a_event, BSTEventSource<TESHarvestEvent::ItemHarvested>*) override
 			{
 				if (a_event.harvestedBy == PlayerCharacter::GetSingleton())
-				{ 
-					DEBUG("Harvest event sent by player, harvested REFR: {}, harvest object: {}", a_event.referenceHarvested->GetFormEditorID(), a_event.itemHarvested->GetFormEditorID());	
-					const char* itemHarvested = a_event.itemHarvested->GetFormEditorID();
-
-					if (strcmp(itemHarvested, "CAS_LL_WoodPile_Random") == 0)
+				{
+					if (a_event.itemHarvested->formType == ENUM_FORM_ID::kMISC || a_event.itemHarvested->formType == ENUM_FORM_ID::kLVLI)
 					{
-						SendHUDMessage::ShowHUDMessage("Firewood Added.", nullptr, true, true);
+						DEBUG("Harvest event sent by player, harvested REFR: {}, harvest object: {}", a_event.referenceHarvested->GetFormEditorID(), a_event.itemHarvested->GetFormEditorID());
+						const char* itemHarvestedEDID = a_event.itemHarvested->GetFormEditorID();
+						GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
+						const char* addedMessage = gameSettingCollection->GetSetting("sAddItemtoInventory")->GetString().data();
+						if (a_event.itemHarvested->formType == ENUM_FORM_ID::kMISC)
+						{
+							TESObjectMISC* miscItemHarvested = (TESObjectMISC*)(a_event.itemHarvested);
+							const char* itemHarvestedName = miscItemHarvested->GetFullName();
+							std::string message = std::string(itemHarvestedName) + " " + addedMessage;
+							SendHUDMessage::ShowHUDMessage(message.c_str(), nullptr, true, true);
+						}
+						else
+						{
+							if (strcmp(itemHarvestedEDID, "CAS_LL_WoodPile_Random") == 0)
+							{
+								std::string message = "Firewood";
+								message += " ";
+								message += addedMessage;
+								SendHUDMessage::ShowHUDMessage(message.c_str(), nullptr, true, true);
+							}
+						}
 					}
-					else 
-					{
-						return BSEventNotifyControl::kContinue;
-					}
-
 				}
 
 				return BSEventNotifyControl::kContinue;

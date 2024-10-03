@@ -40,17 +40,15 @@ namespace RE
 				{
 					if (_stricmp(currentSWFPath.GetString(), "Interface/PipboyMenu.swf") == 0)
 					{
-						Scaleform::GFx::Value loader;
-						Scaleform::GFx::Value urlRequest;
-						Scaleform::GFx::Value rootValue;
-						a_view->asMovieRoot->GetVariable(&rootValue, "root");
+						Scaleform::GFx::Value loader, urlRequest, root;
+						a_view->asMovieRoot->GetVariable(&root, "root");
 						a_view->asMovieRoot->CreateObject(&loader, "flash.display.Loader");
-						Scaleform::GFx::Value newSWFName = "CASPipboy.swf";
-						a_view->asMovieRoot->CreateObject(&urlRequest, "flash.net.URLRequest", &newSWFName, 1);
-						rootValue.SetMember("casPipboy_loader", &loader);
+						Scaleform::GFx::Value pipboy = "CASPipboy.swf";
+						a_view->asMovieRoot->CreateObject(&urlRequest, "flash.net.URLRequest", &pipboy, 1);
+						root.SetMember("casPipboy_loader", &loader);
 						Scaleform::GFx::Value casPipboy;
 						a_view->asMovieRoot->CreateObject(&casPipboy);
-						rootValue.SetMember("casPipboy", &casPipboy);
+						root.SetMember("casPipboy", &casPipboy);
 						RegisterFunction<PipboyReady>(&casPipboy, a_view->asMovieRoot, "ready");
 						RegisterFunction<PipboyHideWorkshopTab>(&casPipboy, a_view->asMovieRoot, "IsWorkshopTabHidden");
 						a_view->asMovieRoot->Invoke("root.casPipboy_loader.load", nullptr, &urlRequest, 1);

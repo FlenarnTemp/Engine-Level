@@ -2,6 +2,7 @@
 #include "Events/InputEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESInitScriptEvent.h"
+#include "Events/TESHavestEvent.h"
 #include "Events/TESHitEvent.h"
 #include "Menus/ExamineConfirmMenu.h"
 #include "Menus/PipboyMenu.h"
@@ -48,8 +49,9 @@ namespace
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
 			RE::Cascadia::InputEventReceiverOverride::Install();
 			RE::Cascadia::BSAnimationGraphEventWatcher::Install();
-			RE::Cascadia::RegisterTESHitEventSink();
 			RE::Cascadia::RegisterTESInitScriptEventSink();
+			RE::Cascadia::RegisterTESHarvestEventSink();
+			RE::Cascadia::RegisterTESHitEventSink();
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:

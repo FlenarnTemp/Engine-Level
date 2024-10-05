@@ -15,7 +15,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("SetWheelZoomEnabled called.");
 					if (a_params.argCount < 1) return;
 					if (!a_params.args[0].IsBoolean()) return;
 
@@ -37,7 +36,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("SetFavoritesEnabled called.");
 					if (a_params.argCount < 1) return;
 					if (!a_params.args[0].IsBoolean()) return;
 
@@ -59,7 +57,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("SetMovementEnabled called.");
 					if (a_params.argCount < 1) return;
 					if (!a_params.args[0].IsBoolean()) return;
 
@@ -99,12 +96,12 @@ namespace RE
 							if (setting)
 							{
 								value = setting->GetInt();
-								DEBUG("GetINISetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
+								DEBUG("DialogueMenu::GetINISetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
 								*a_params.retVal = value;
 							}
 							else
 							{
-								DEBUG("GetINISetting called, requested setting: {:s} which was not found.", a_params.args[0].GetString());
+								WARN("DialogueMenu::GetINISetting called, requested setting: {:s} which was not found.", a_params.args[0].GetString());
 							}
 						}
 					}
@@ -138,7 +135,6 @@ namespace RE
 							value = 40;
 						}
 
-						DEBUG("GetModSetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
 						*a_params.retVal = value;
 					}
 				}
@@ -149,32 +145,31 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("GetSubtitlePosition called.")
-						if (a_params.retVal)
+					if (a_params.retVal)
+					{
+						*a_params.retVal = nullptr;
+
+						BSFixedString menuString("HUDMenu");
+						if (UI::GetSingleton()->GetMenuOpen(menuString))
 						{
-							*a_params.retVal = nullptr;
+							IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+							Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
 
-							BSFixedString menuString("HUDMenu");
-							if (UI::GetSingleton()->GetMenuOpen(menuString))
-							{
-								IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
-								Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = menu->uiMovie->asMovieRoot;
+							movieRoot->CreateArray(a_params.retVal);
 
-								movieRoot->CreateArray(a_params.retVal);
+							Scaleform::GFx::Value subtitleX;
+							movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
+							Scaleform::GFx::Value subtitleY;
+							movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
 
-								Scaleform::GFx::Value subtitleX;
-								movieRoot->GetVariable(&subtitleX, "root.BottomCenterGroup_mc.SubtitleText_mc.x");
-								Scaleform::GFx::Value subtitleY;
-								movieRoot->GetVariable(&subtitleY, "root.BottomCenterGroup_mc.SubtitleText_mc.y");
-
-								a_params.retVal->PushBack(subtitleX);
-								a_params.retVal->PushBack(subtitleY);
-							}
-							else
-							{
-								DEBUG("Unable to retrieve the subtitle position because `HUDMenu` is not open.");
-							}
+							a_params.retVal->PushBack(subtitleX);
+							a_params.retVal->PushBack(subtitleY);
 						}
+						else
+						{
+							DEBUG("Unable to retrieve the subtitle position because `HUDMenu` is not open.");
+						}
+					}
 				}
 			};
 
@@ -189,14 +184,14 @@ namespace RE
 						if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
 						{
 							result = target->GetDisplayFullName();
-							DEBUG("GetTargetName called, target name: {:s}", result);
+							DEBUG("DialogueMenu::GetTargetName called, target name: {:s}", result);
 						}
 						else
 						{
-							DEBUG("GetTargetName called, no target name found.");
+							WARN("DialogueMenu::GetTargetName called, no target name found.");
 						}
 
-						*a_params.retVal = result;
+						*a_params.retVal = "result";
 					}
 				}
 			};
@@ -206,7 +201,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("GetTargetType called.");
 					if (a_params.retVal)
 					{
 						std::uint8_t result = 0;
@@ -225,7 +219,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("IsFrameWorkActive called.");
 					if (a_params.retVal)
 					{
 						// We "cheat" here, we always return true since we're a TC, our theoretical impact on the retail game doesn't matter.
@@ -243,8 +236,8 @@ namespace RE
 					if (a_params.retVal)
 					{
 						if (a_params.argCount < 1) return;
-						if (!a_params.args[0].IsUInt()) return;				
-						
+						if (!a_params.args[0].IsUInt()) return;
+
 						*a_params.retVal = SelectDialogueOption(a_params.args[0].GetUInt());
 					}
 				}
@@ -255,7 +248,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("SetSubtitlePosition called.");
 					if (a_params.retVal)
 					{
 						if (a_params.argCount < 2) return;
@@ -276,7 +268,6 @@ namespace RE
 							*a_params.retVal = true;
 						}
 					}
-
 				}
 			};
 
@@ -285,7 +276,6 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("GetDialogueOptions called.");
 					if (a_params.retVal)
 					{
 						Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> movieRoot = a_params.movie->asMovieRoot;
@@ -329,7 +319,7 @@ namespace RE
 						}
 						else
 						{
-							WARN("GetDialogueOptions - Player dialogue not currently available. No dialogue will be retrieved.");
+							WARN("DialogueMenu::GetDialogueOptions - Player dialogue not currently available. No dialogue will be retrieved.");
 						}
 					}
 				}

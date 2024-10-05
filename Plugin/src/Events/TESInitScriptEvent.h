@@ -21,7 +21,7 @@ namespace RE
 		{
 			TESInitScriptEventWatcher* tesInitScriptEvent = new TESInitScriptEventWatcher();
 			TESInitScriptEventSource::GetSingleton()->RegisterSink(tesInitScriptEvent);
-			INFO("Registed 'TESInitScriptEvent' sink.");
+			INFO("Registered 'TESInitScriptEvent' sink.");
 		}
 	}
 }

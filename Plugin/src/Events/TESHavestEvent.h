@@ -13,7 +13,7 @@ namespace RE
 				{
 					if (a_event.itemHarvested->formType == ENUM_FORM_ID::kMISC || a_event.itemHarvested->formType == ENUM_FORM_ID::kLVLI)
 					{
-						DEBUG("Harvest event sent by player, harvested REFR: {}, harvest object: {}", a_event.referenceHarvested->GetFormEditorID(), a_event.itemHarvested->GetFormEditorID());
+						DEBUG("Harvest event sent by player, harvested REFR: {}, harvest object: {}.", a_event.referenceHarvested->GetFormEditorID(), a_event.itemHarvested->GetFormEditorID());
 						const char* itemHarvestedEDID = a_event.itemHarvested->GetFormEditorID();
 						GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
 						const char* addedMessage = gameSettingCollection->GetSetting("sAddItemtoInventory")->GetString().data();
@@ -28,6 +28,7 @@ namespace RE
 						{
 							if (strcmp(itemHarvestedEDID, "CAS_LL_WoodPile_Random") == 0)
 							{
+								// TODO - figure out a way to aquire FullName of the result from the LVLI roll.
 								std::string message = "Firewood";
 								message += " ";
 								message += addedMessage;

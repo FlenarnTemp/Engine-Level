@@ -14,7 +14,7 @@ namespace RE
 					return BSEventNotifyControl::kContinue;
 				}
 
-				if (a_event.itemHarvested->formType != ENUM_FORM_ID::kMISC || a_event.itemHarvested->formType != ENUM_FORM_ID::kLVLI)
+				if (a_event.itemHarvested->formType != ENUM_FORM_ID::kMISC && a_event.itemHarvested->formType != ENUM_FORM_ID::kLVLI)
 				{
 					return BSEventNotifyControl::kContinue;
 				}

@@ -14,7 +14,7 @@ namespace RE
 				destination->SetMember(name, array);
 			}
 
-			void RegisterString(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, const char* name, const char* string)
+			void RegisterString(Scaleform::GFx::Value* destination, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> asMovieRoot, const char* name, const char* string)
 			{
 				Scaleform::GFx::Value fxValue;
 				asMovieRoot->CreateString(&fxValue, string);

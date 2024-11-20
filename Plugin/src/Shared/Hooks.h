@@ -21,6 +21,10 @@ namespace RE
 			void RegisterTESObjectWEAPFire();
 			void RegisterCombatFormulasCalcWeaponDamage();
 			void RegisterGetEquippedArmorDamageResistance();
+			void RegisterIUUIIUtilsAddItemCardInfoEntry();
+			void RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry();
+			void RegisterIUUIIUtilsPopulateItemCardInfo_Helper();
+
 
 			void RegisterHooks()
 			{
@@ -34,6 +38,9 @@ namespace RE
 				RegisterTESObjectWEAPFire();
 				RegisterCombatFormulasCalcWeaponDamage();
 				RegisterGetEquippedArmorDamageResistance();
+				RegisterIUUIIUtilsAddItemCardInfoEntry();
+				RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry();
+				RegisterIUUIIUtilsPopulateItemCardInfo_Helper();
 			}
 		}
 	}

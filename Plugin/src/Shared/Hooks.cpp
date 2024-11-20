@@ -8,22 +8,60 @@ namespace RE
 
 		namespace Hooks
 		{
+			#define NOP_BYTES(size) std::vector<std::uint8_t>(size, 0x90)
+
+			void HookPipboyDataPopulateItemCardInfo(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data)
+			{
+				a_pipboyInventoryData->PopulateItemCardInfo(a_inventoryItem, a_stack, a_data);
+				DEBUG("Hook for 'PopulateItemCardInfo' ran for object: '{}'.", a_inventoryItem->object->GetFormEditorID());
+
+				ENUM_FORM_ID formType = a_inventoryItem->object->GetFormType();
+
+				if (a_stack->extra->HasType(EXTRA_DATA_TYPE::kHealth))
+				{
+					float condition = a_stack->extra->GetHealthPerc();
+
+					const BSFixedString itemCardInfoListString = BSFixedString("itemCardInfoList");
+
+					PipboyArray* pipboyArray = a_data->GetMember<PipboyArray*>(itemCardInfoListString);
+					const BSFixedStringCS cnd = BSFixedStringCS("CND");
+					a_pipboyInventoryData->AddItemCardInfoEntry(&cnd, condition * 100.0f, pipboyArray);
+				}
+
+				return;
+			}
+
 			void Install(F4SE::Trampoline& trampoline)
 			{
-				// GetInfoForPlayerDialogueOptionHook - { ID 2196817 + Offset-0x40A }
+				// GetInfoForPlayerDialogueOptionHook - { ID 2196817 + 0x40A }
 				typedef TESTopicInfo(GetCurrentTopicInfo_Player_Sig)(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType);
 				REL::Relocation<GetCurrentTopicInfo_Player_Sig> GetCurrentTopicInfo_Player_Location{ REL::ID(2196817), 0x40A };
 				trampoline.write_call<5>(GetCurrentTopicInfo_Player_Location.address(), &RE::GetCurrentTopicInfo_Player_Hook);
 
-				// GetInfoForNPCResponseDialogOptionHook - { ID 2196817 + 0x78E-offset }
+				// GetInfoForNPCResponseDialogOptionHook - { ID 2196817 + 0x7A1 }
 				typedef TESTopicInfo(GetCurrentTopicInfo_NPC_Sig)(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType);
 				REL::Relocation<GetCurrentTopicInfo_NPC_Sig> GetCurrentTopicInfo_NPC_Location{ REL::ID(2196817), 0x7A1 };
 				trampoline.write_call<5>(GetCurrentTopicInfo_NPC_Location.address(), &RE::GetCurrentTopicInfo_NPC_Hook);
 
-				// GetNPCResponseInfoForOptionHook - 2196800 ID + 0x388 offset
-				typedef TESTopicInfo(GetCurrentTopicInfo_NPCAction_Hook)(BGSSceneActionNPCResponseDialogue* apNPCDialogue, BGSScene* apParentScene);
-				REL::Relocation<GetCurrentTopicInfo_NPCAction_Hook> GetCurrentTopicInfo_NPCAction_Location{ REL::ID(2196800), 0x388 };
+				// GetNPCResponseInfoForOptionHook - { ID 2196800 + 0x388 }
+				typedef TESTopicInfo(GetCurrentTopicInfo_NPCAction_Sig)(BGSSceneActionNPCResponseDialogue* apNPCDialogue, BGSScene* apParentScene);
+				REL::Relocation<GetCurrentTopicInfo_NPCAction_Sig> GetCurrentTopicInfo_NPCAction_Location{ REL::ID(2196800), 0x388 };
 				trampoline.write_call<5>(GetCurrentTopicInfo_NPCAction_Location.address(), &RE::GetCurrentTopicInfo_NPCAction_Hook);
+
+				// PopulateItemCardInfo - { ID 2225264 + 0x651 }
+				typedef void(PopulateItemCardInfo1_Sig)(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data);
+				REL::Relocation<PopulateItemCardInfo1_Sig> PopulateItemCardInfo1_Location{ REL::ID(2225264), 0x651 };
+				trampoline.write_branch<5>(PopulateItemCardInfo1_Location.address(), &HookPipboyDataPopulateItemCardInfo);
+
+				// PopulateItemCardInfo - { ID 2225279 + 0x40F }
+				typedef void(PopulateItemCardInfo2_Sig)(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data);
+				REL::Relocation<PopulateItemCardInfo2_Sig> PopulateItemCardInfo2_Location{ REL::ID(2225279), 0x40F };
+				trampoline.write_call<5>(PopulateItemCardInfo2_Location.address(), &HookPipboyDataPopulateItemCardInfo);
+
+				// InventoryUserUIUtils::PopulateItemCardInfo_Helper - { ID 2222625 + 0x1226 }
+				REL::Relocation<std::uintptr_t> InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP{ REL::ID(2222625), 0x1226 };
+				auto InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP_bytes = NOP_BYTES(5);
+				REL::safe_write<std::uint8_t>(InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP.address(), std::span{ InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP_bytes });
 			}
 
 			DetourXS hook_ShowBuildFailureMessage;
@@ -58,14 +96,14 @@ namespace RE
 									auto tester = examineMenu->sharedContainerRef.get();
 									if (tester)
 									{
-										
+
 									}
-									
+
 									initDataRepair->availableComponents = availableComponents;
 
 									// TODO  - list available components.
 								}
-								
+
 
 								examineMenu->ShowConfirmMenu(initDataRepair, repairFailureCallback);
 							}
@@ -240,7 +278,7 @@ namespace RE
 							{
 								break;
 							}
-							
+
 							if (formType == ENUM_FORM_ID::kWEAP)
 							{
 								TESObjectWEAP* tempREFR = static_cast<TESObjectWEAP*>(a_boundObject);
@@ -270,7 +308,7 @@ namespace RE
 									break;
 								}
 							}
-							
+
 							// GetHealthPerc return -1.0 if it can't find the kHealth type.
 							if (traverse->extra->GetHealthPerc() < 0)
 							{
@@ -290,7 +328,7 @@ namespace RE
 				}
 				AddItemOriginal(a_this, a_boundObject, a_stack, a_oldCount, a_newCount);
 			}
-			
+
 			DetourXS hook_ExamineMenuBuildConfirmed;
 			typedef void(ExamineMenuBuildConfirmedSig)(ExamineMenu*, bool);
 			REL::Relocation<ExamineMenuBuildConfirmedSig> ExamineMenuBuildConfirmedOriginal;
@@ -312,7 +350,7 @@ namespace RE
 							case ENUM_FORM_ID::kARMO:
 							case ENUM_FORM_ID::kWEAP:
 								BGSInventoryItem::Stack* stack = inventoryItem->GetStackByID(inventoryUUIEntry->stackIndex.at(0));
-								
+
 								if (stack)
 								{
 									stack->extra->SetHealthPerc(1.0f);
@@ -372,7 +410,7 @@ namespace RE
 				}
 
 				TESObjectWEAP* weapon = (TESObjectWEAP*)a_weapon->object;
-				
+
 				// No degradation to mines/grenades.
 				if (weapon->weaponData.type == WEAPON_TYPE::kGrenade || weapon->weaponData.type == WEAPON_TYPE::kMine)
 				{
@@ -407,7 +445,7 @@ namespace RE
 					// If ammo is mapped to a degradation value override default of 1%.
 					float conditionReduction = 0.01f;
 					TESObjectWEAP::InstanceData* data = (TESObjectWEAP::InstanceData*)(a_weapon->instanceData.get());
-					
+
 					TESAmmo* ammoInstance = data->ammo;
 
 					auto it = ammoDegradationMap.find(ammoInstance);
@@ -425,7 +463,7 @@ namespace RE
 					std::uint32_t flags = data->flags.underlying();
 					if (flags & std::uint32_t(WEAPON_FLAGS::kAutomatic))
 					{
-						conditionReduction *= 0.5f; 
+						conditionReduction *= 0.5f;
 					}
 					else if (flags & std::uint32_t(WEAPON_FLAGS::kBoltAction))
 					{
@@ -436,9 +474,9 @@ namespace RE
 
 					ExtraDataList* extraDataList = inventoryItem->stackData->extra.get();
 
-					float currentHealth = extraDataList->GetHealthPerc();	
+					float currentHealth = extraDataList->GetHealthPerc();
 					float newHealth = std::max(currentHealth - conditionReduction, 0.0f);
-					
+
 					if (newHealth == 0.0f)
 					{
 						ActorEquipManager::GetSingleton()->UnequipItem(playerCharacter, &equippedWeapon, false);
@@ -453,7 +491,7 @@ namespace RE
 			DetourXS hook_CombatFormulasCalcWeaponDamage;
 			typedef float(CombatFormulasCalcWeaponDamageSig)(const TESForm*, const TESObjectWEAP::InstanceData*, const TESAmmo*, float, float);
 			REL::Relocation<CombatFormulasCalcWeaponDamageSig> CombatFormulasCalcWeaponDamageOriginal;
-			
+
 			float HookCombatFormulasCalcWeaponDamage(const TESForm* a_actorForm, const TESObjectWEAP::InstanceData* a_weapon, const TESAmmo* a_ammo, float a_condition, float a_damageMultiplier)
 			{
 				float retailDamage = CombatFormulasCalcWeaponDamageOriginal(a_actorForm, a_weapon, a_ammo, a_condition, a_damageMultiplier);
@@ -461,7 +499,7 @@ namespace RE
 				{
 					retailDamage = retailDamage * (0.5f + std::min((0.5f * a_condition) / 0.75, 0.5));
 				}
-				
+
 				//DEBUG("CombatFormulas::CalcWeaponDamage - custom damage calculation(condition): {}", retailDamage);
 				return retailDamage;
 			}
@@ -486,17 +524,97 @@ namespace RE
 				}
 			}
 
+			DetourXS hook_IUUIIUtilsAddItemCardInfoEntry;
+			typedef void(IUUIIUtilsAddItemCardInfoEntrySig)(Scaleform::GFx::Value&, Scaleform::GFx::Value&, const BSFixedStringCS&, Scaleform::GFx::Value&, float, float, float);
+			REL::Relocation<IUUIIUtilsAddItemCardInfoEntrySig> IUUIIUtilsAddItemCardInfoEntryOriginal;
+
+			void HookIUUIIUtilsAddItemCardInfoEntry(Scaleform::GFx::Value& a_array, Scaleform::GFx::Value& a_newEntry, const BSFixedStringCS& a_textID, Scaleform::GFx::Value& a_value, float a_difference, float a_totalDamage, float a_compareDamage)
+			{
+				IUUIIUtilsAddItemCardInfoEntryOriginal(a_array, a_newEntry, a_textID, a_value, a_difference, a_totalDamage, a_compareDamage);
+
+				if (std::string(a_textID.c_str()) == "CND")
+				{
+					INFO("CND entry in UI.");
+
+					bool showAsPercent = true;
+					std::uint32_t precision = 1;
+
+					SetMemberAS3(a_newEntry, "showAsPercent", showAsPercent);
+					SetMemberAS3(a_newEntry, "precision", precision);
+				}
+			}
+
+			DetourXS hook_PipboyInventoryDataBaseAddItemCardInfoEntry;
+			typedef PipboyObject* (PipboyInventoryDataBaseAddItemCardInfoEntrySig)(PipboyInventoryData*, const BSFixedStringCS*, PipboyArray*);
+			REL::Relocation<PipboyInventoryDataBaseAddItemCardInfoEntrySig> PipboyInventoryDataBaseAddItemCardInfoEntryOriginal;
+
+			PipboyObject* HookPipboyInventoryDataBaseAddItemCardInfoEntry(PipboyInventoryData* a_inventory, const BSFixedStringCS* a_textID, PipboyArray* a_array)
+			{
+				DEBUG("Hook 'PipboyInventoryData::BaseAddItemsCardInfoEntry' fired off.");
+
+				PipboyObject* result = PipboyInventoryDataBaseAddItemCardInfoEntryOriginal(a_inventory, a_textID, a_array);
+
+				if (std::string(a_textID->c_str()) == "CND")
+				{
+					PipboyPrimitiveValue<bool>* showAsPercent = new PipboyPrimitiveValue<bool>(true, result);
+					PipboyPrimitiveValue<std::uint32_t>* precision = new PipboyPrimitiveValue<std::uint32_t>(1, result);
+
+					const BSFixedString showAsPercentString = BSFixedString("showAsPercent");
+					const BSFixedString precisionString = BSFixedString("precision");
+
+					result->AddMember(&showAsPercentString, showAsPercent);
+					result->AddMember(&precisionString, precision);
+				}
+
+				return result;
+			}
+
+			DetourXS hook_IUUIIUtilsPopulateItemCardInfo_Helper;
+			typedef void(IUUIIUtilsPopulateItemCardInfo_HelperSig)(Scaleform::GFx::Value*, const BGSInventoryItem*, std::uint32_t, BSScrapArray<BSTTuple<BGSInventoryItem const*, std::uint32_t>>, bool);
+			REL::Relocation<IUUIIUtilsPopulateItemCardInfo_HelperSig> IUUIIUtilsPopulateItemCardInfo_HelperOriginal;
+
+			void HookIUUIIUtilsPopulateItemCardInfo_Helper(Scaleform::GFx::Value* a_menuObj, const BGSInventoryItem* a_item, std::uint32_t a_itemStackID, BSScrapArray<BSTTuple<BGSInventoryItem const*, std::uint32_t>> a_comparisonItems, bool a_forceArmorCompare)
+			{
+				IUUIIUtilsPopulateItemCardInfo_HelperOriginal(a_menuObj, a_item, a_itemStackID, a_comparisonItems, a_forceArmorCompare);
+
+				if (!UI::GetSingleton()->GetMenuOpen("CookingMenu") && a_item->stackData->extra->HasType(EXTRA_DATA_TYPE::kHealth))
+				{
+					Scaleform::GFx::Value defaultArray = a_menuObj->HasMember("ItemCardInfoList") ? GetMemberAS3(*a_menuObj, "ItemCardInfoList") : *a_menuObj;
+					
+					float condition = a_item->stackData->extra->GetHealthPerc();
+					InventoryUserUIUtils::AddItemCardInfoEntry(defaultArray, "CND", condition * 100.0f);
+
+					std::uint32_t cndIndexPosition = 0;
+					if (a_item->object->GetFormType() == ENUM_FORM_ID::kWEAP)
+					{
+						cndIndexPosition = 1;
+					}
+
+					Scaleform::GFx::Value cndEntry;
+					defaultArray.GetElement(defaultArray.GetArraySize() - 1, &cndEntry);
+					for (int i = defaultArray.GetArraySize() - 1; i > cndIndexPosition; --i)
+					{
+						Scaleform::GFx::Value tempEntry;
+						defaultArray.GetElement(i - 1, &tempEntry);
+						defaultArray.SetElement(i, tempEntry);
+					}
+
+					defaultArray.SetElement(cndIndexPosition, cndEntry);
+				}
+
+				return;
+			}
 			// ========== REGISTERS ==========
 			void RegisterGetBuildConfirmQuestion()
 			{
 				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };
 				if (hook_GetBuildConfirmQuestion.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExamineMenuGetBuildConfirmQuestion))
 				{
-					DEBUG("Installed ExamineMenu::GetBuildConfirmQuestion hook.");
+					DEBUG("Installed 'ExamineMenu::GetBuildConfirmQuestion' hook.");
 				}
 				else
 				{
-					FATAL("Failed to hook ExamineMenu::GetBuildConfirmQuestion, exiting.");
+					FATAL("Failed to hook 'ExamineMenu::GetBuildConfirmQuestion', exiting.");
 				}
 			}
 
@@ -505,11 +623,11 @@ namespace RE
 				REL::Relocation<ShowBuildFailureMessageSig> functionLocation{ REL::ID(2224959) };
 				if (hook_ShowBuildFailureMessage.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookWorkbenchMenuBaseShowBuildFailureMessage))
 				{
-					DEBUG("Installed WorkbenchMenuBase::ShowBuildFailureMessage hook.");
+					DEBUG("Installed 'WorkbenchMenuBase::ShowBuildFailureMessage' hook.");
 				}
 				else
 				{
-					FATAL("Failed to hook WorkbenchMenuBase::ShowBuildFailureMessage, exiting.");
+					FATAL("Failed to hook 'WorkbenchMenuBase::ShowBuildFailureMessage', exiting.");
 				}
 			}
 
@@ -518,12 +636,12 @@ namespace RE
 				REL::Relocation<SetHealthPercSig> functionLocation{ REL::ID(2190124) };
 				if (hook_SetHealthPerc.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExtraDataListSetHealthPerc))
 				{
-					DEBUG("Installed ExtraDataList::SetHealthPerc hook.");
+					DEBUG("Installed 'ExtraDataList::SetHealthPerc' hook.");
 					SetHealthPercOriginal = reinterpret_cast<uintptr_t>(hook_SetHealthPerc.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook ExtraDataList::SetHealthPerc, exiting.");
+					FATAL("Failed to hook 'ExtraDataList::SetHealthPerc', exiting.");
 				}
 			}
 
@@ -532,12 +650,12 @@ namespace RE
 				REL::Relocation<AddItemSig> functionLocation{ REL::ID(2194159) };
 				if (hook_AddItem.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookBGSInventoryListAddItem))
 				{
-					DEBUG("Installed BGSInventoryList::AddItem hook.");
+					DEBUG("Installed 'BGSInventoryList::AddItem' hook.");
 					AddItemOriginal = reinterpret_cast<uintptr_t>(hook_AddItem.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook BGSInventoryList::AddItem, exiting.");
+					FATAL("Failed to hook 'BGSInventoryList::AddItem', exiting.");
 				}
 			}
 
@@ -546,12 +664,12 @@ namespace RE
 				REL::Relocation<GetInventoryValueSig> functionLocation{ REL::ID(2194127) };
 				if (hook_GetInventoryValue.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookBGSInventoryItemUtilsGetInventoryValue))
 				{
-					DEBUG("Installed BGSInventoryItemUtils::GetInventoryValue hook.");
+					DEBUG("Installed 'BGSInventoryItemUtils::GetInventoryValue' hook.");
 					GetInventoryValueOriginal = reinterpret_cast<uintptr_t>(hook_GetInventoryValue.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook BGSInventoryItemUtils::GetInventoryValue, exiting.");
+					FATAL("Failed to hook 'BGSInventoryItemUtils::GetInventoryValue', exiting.");
 				}
 			}
 
@@ -560,11 +678,11 @@ namespace RE
 				REL::Relocation<QCurrentModChoiceDataSig> functionLocation{ REL::ID(2224958) };
 				if (hook_QCurrentModChoiceData.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookWorkbenchMenuBaseQCurrentModChoiceData))
 				{
-					DEBUG("Installed WorkbenchMenuBase::QCurrentModChoiceData hook.");
+					DEBUG("Installed 'WorkbenchMenuBase::QCurrentModChoiceData' hook.");
 				}
 				else
 				{
-					FATAL("Failed to hook BGSInventoryItemUtils::GetInventoryValue, exiting.");
+					FATAL("Failed to hook 'BGSInventoryItemUtils::GetInventoryValue', exiting.");
 				}
 			}
 
@@ -573,12 +691,12 @@ namespace RE
 				REL::Relocation<ExamineMenuBuildConfirmedSig> functionLocation{ REL::ID(2223013) };
 				if (hook_ExamineMenuBuildConfirmed.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExamineMenuBuildConfirmed))
 				{
-					DEBUG("Installed ExamineMenu::BuildConfirmed hook.");
+					DEBUG("Installed 'ExamineMenu::BuildConfirmed' hook.");
 					ExamineMenuBuildConfirmedOriginal = reinterpret_cast<uintptr_t>(hook_ExamineMenuBuildConfirmed.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook ExamineMenu::BuildConfirmed, exiting.");
+					FATAL("Failed to hook 'ExamineMenu::BuildConfirmed', exiting.");
 				}
 			}
 
@@ -587,12 +705,12 @@ namespace RE
 				REL::Relocation<TESObjectWEAPFireSig> functionLocation{ REL::ID(2198960) };
 				if (hook_TESObjectWEAPFire.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookTESObjectWEAPFire))
 				{
-					DEBUG("Installed TESObjectWEAP::Fire hook.");
+					DEBUG("Installed 'TESObjectWEAP::Fire' hook.");
 					TESObjectWEAPFireOriginal = reinterpret_cast<uintptr_t>(hook_TESObjectWEAPFire.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook TESObjectWEAP::Fire, exiting.");
+					FATAL("Failed to hook 'TESObjectWEAP::Fire', exiting.");
 				}
 			}
 
@@ -601,12 +719,12 @@ namespace RE
 				REL::Relocation<CombatFormulasCalcWeaponDamageSig> functionLocation{ REL::ID(2209001) };
 				if (hook_CombatFormulasCalcWeaponDamage.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookCombatFormulasCalcWeaponDamage))
 				{
-					DEBUG("Installed CombatFormulas::CalcWeaponDamage hook.");
+					DEBUG("Installed 'CombatFormulas::CalcWeaponDamage' hook.");
 					CombatFormulasCalcWeaponDamageOriginal = reinterpret_cast<uintptr_t>(hook_CombatFormulasCalcWeaponDamage.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook CombatFormulas::CalcWeaponDamage, exiting.");
+					FATAL("Failed to hook 'CombatFormulas::CalcWeaponDamage', exiting.");
 				}
 			}
 
@@ -615,12 +733,54 @@ namespace RE
 				REL::Relocation<GetEquippedArmorDamageResistanceSig> functionLocation{ REL::ID(2227189) };
 				if (hook_GetEquippedArmorDamageResistance.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookGetEquippedDamageResistance))
 				{
-					DEBUG("Installed ActorUtils::GetEquippedArmorDamageResistance hook.");
+					DEBUG("Installed 'ActorUtils::GetEquippedArmorDamageResistance' hook.");
 					GetEquippedArmorDamageResistanceOriginal = reinterpret_cast<uintptr_t>(hook_GetEquippedArmorDamageResistance.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook ActorUtils::GetEquippedArmorDamageResistance, exiting.")
+					FATAL("Failed to hook 'ActorUtils::GetEquippedArmorDamageResistance', exiting.");
+				}
+			}
+
+			void RegisterIUUIIUtilsAddItemCardInfoEntry()
+			{
+				REL::Relocation<IUUIIUtilsAddItemCardInfoEntrySig> functionLocation{ REL::ID(2222648) };
+				if (hook_IUUIIUtilsAddItemCardInfoEntry.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookIUUIIUtilsAddItemCardInfoEntry))
+				{
+					DEBUG("Installed 'IUUIIUtils::AddItemCardInfoEntry' hook.");
+					IUUIIUtilsAddItemCardInfoEntryOriginal = reinterpret_cast<uintptr_t>(hook_IUUIIUtilsAddItemCardInfoEntry.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook 'IUUIIUtils::AddItemCardInfoEntry', exiting.");
+				}
+			}
+
+			void RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry()
+			{
+				REL::Relocation<PipboyInventoryDataBaseAddItemCardInfoEntrySig> functionLocation{ REL::ID(2225270) };
+				if (hook_PipboyInventoryDataBaseAddItemCardInfoEntry.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookPipboyInventoryDataBaseAddItemCardInfoEntry))
+				{
+					DEBUG("Installed 'PipboyInventoryData::BaseAddItemCardInfoEntry' hook.");
+					PipboyInventoryDataBaseAddItemCardInfoEntryOriginal = reinterpret_cast<uintptr_t>(hook_PipboyInventoryDataBaseAddItemCardInfoEntry.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook 'PipboyInventoryData::BaseAddItemCardInfoEntry', exiting.");
+				}
+			}
+
+			void RegisterIUUIIUtilsPopulateItemCardInfo_Helper()
+			{
+				REL::Relocation<IUUIIUtilsPopulateItemCardInfo_HelperSig> functionLocation{ REL::ID(2222625) };
+				if (hook_IUUIIUtilsPopulateItemCardInfo_Helper.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookIUUIIUtilsPopulateItemCardInfo_Helper))
+				{
+					DEBUG("Installed 'IUUIIUtils::PopulateItemCardInfo_Helper' hook.");
+					IUUIIUtilsPopulateItemCardInfo_HelperOriginal = reinterpret_cast<uintptr_t>(hook_IUUIIUtilsPopulateItemCardInfo_Helper.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook 'IUUIIUtils::PopulateItemCardInfo_Helper', exiting.");
 				}
 			}
 		}

@@ -841,8 +841,8 @@ namespace RE
 		}
 		// Re-enable player dialogue.
 		SetPlayerDialogue(true);
-		DEBUG("GetCurrentTopicInfo_Player_Hook - default function return.")
-			return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
+		DEBUG("GetCurrentTopicInfo_Player_Hook - default function return.");
+		return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
 	}
 
 	TESTopicInfo* GetCurrentTopicInfo_NPC_Hook(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType)

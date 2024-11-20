@@ -13,21 +13,22 @@ namespace RE
 			void HookPipboyDataPopulateItemCardInfo(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data)
 			{
 				a_pipboyInventoryData->PopulateItemCardInfo(a_inventoryItem, a_stack, a_data);
-				DEBUG("Hook for 'PopulateItemCardInfo' ran for object: '{}'.", a_inventoryItem->object->GetFormEditorID());
-
-				ENUM_FORM_ID formType = a_inventoryItem->object->GetFormType();
 
 				if (a_stack->extra->HasType(EXTRA_DATA_TYPE::kHealth))
 				{
-					float condition = a_stack->extra->GetHealthPerc();
-
-					const BSFixedString itemCardInfoListString = BSFixedString("itemCardInfoList");
-
-					PipboyArray* pipboyArray = a_data->GetMember<PipboyArray*>(itemCardInfoListString);
+					PipboyArray* pipboyArray = a_data->GetMember<PipboyArray*>(BSFixedString("itemCardInfoList"));
 					const BSFixedStringCS cnd = BSFixedStringCS("CND");
-					a_pipboyInventoryData->AddItemCardInfoEntry(&cnd, condition * 100.0f, pipboyArray);
-				}
+					a_pipboyInventoryData->AddItemCardInfoEntry(&cnd, a_stack->extra->GetHealthPerc() * 100.0f, pipboyArray);
 
+					std::uint32_t cndIndexPosition = a_inventoryItem->object->GetFormType() == ENUM_FORM_ID::kWEAP ? 1 : 0;
+
+					PipboyValue* cndEntry = std::move(pipboyArray->elements.back());
+					for (std::size_t i = pipboyArray->elements.size() - 1; i > cndIndexPosition; --i)
+					{
+						pipboyArray->elements[i] = std::move(pipboyArray->elements[i - 1]);
+					}
+					pipboyArray->elements[cndIndexPosition] = std::move(cndEntry);
+				}
 				return;
 			}
 
@@ -62,6 +63,11 @@ namespace RE
 				REL::Relocation<std::uintptr_t> InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP{ REL::ID(2222625), 0x1226 };
 				auto InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP_bytes = NOP_BYTES(5);
 				REL::safe_write<std::uint8_t>(InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP.address(), std::span{ InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP_bytes });
+
+				// PipboyInventoryData::PopulateItemCardInfo - { 2225266 + 0x8CD }
+				REL::Relocation<std::uintptr_t> PipboyInventoryDataPopulateItemCardInfo_NOP{ REL::ID(2225266), 0x8CD };
+				auto PipboyInventoryDataPopulateItemCardInfo_NOP_bytes = NOP_BYTES(5);
+				REL::safe_write<std::uint8_t>(PipboyInventoryDataPopulateItemCardInfo_NOP.address(), std::span{ PipboyInventoryDataPopulateItemCardInfo_NOP_bytes });
 			}
 
 			DetourXS hook_ShowBuildFailureMessage;
@@ -534,8 +540,6 @@ namespace RE
 
 				if (std::string(a_textID.c_str()) == "CND")
 				{
-					INFO("CND entry in UI.");
-
 					bool showAsPercent = true;
 					std::uint32_t precision = 1;
 
@@ -584,11 +588,7 @@ namespace RE
 					float condition = a_item->stackData->extra->GetHealthPerc();
 					InventoryUserUIUtils::AddItemCardInfoEntry(defaultArray, "CND", condition * 100.0f);
 
-					std::uint32_t cndIndexPosition = 0;
-					if (a_item->object->GetFormType() == ENUM_FORM_ID::kWEAP)
-					{
-						cndIndexPosition = 1;
-					}
+					std::uint32_t cndIndexPosition = a_item->object->GetFormType() == ENUM_FORM_ID::kWEAP ? 1 : 0;
 
 					Scaleform::GFx::Value cndEntry;
 					defaultArray.GetElement(defaultArray.GetArraySize() - 1, &cndEntry);
@@ -601,7 +601,6 @@ namespace RE
 
 					defaultArray.SetElement(cndIndexPosition, cndEntry);
 				}
-
 				return;
 			}
 			// ========== REGISTERS ==========

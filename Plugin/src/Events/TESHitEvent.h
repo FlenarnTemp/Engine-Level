@@ -81,7 +81,8 @@ namespace RE
 										if (newHealth == 0.0f)
 										{
 											ActorEquipManager::GetSingleton()->UnequipItem(playerCharacter, &equippedWeapon, false);
-											SendHUDMessage::ShowHUDMessage("Your weapon has broken.", "UIWorkshopModeItemScrapGeneric", true, true);
+											GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
+											SendHUDMessage::ShowHUDMessage(gameSettingCollection->GetSetting("sWeaponBreak")->GetString().data(), "UIWorkshopModeItemScrapGeneric", true, true);
 										}
 										extraDataList->SetHealthPerc(newHealth);
 										PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);

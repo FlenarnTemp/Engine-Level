@@ -189,9 +189,10 @@ namespace RE
 						else
 						{
 							WARN("DialogueMenu::GetTargetName called, no target name found.");
+							result = "Error: No name found.";
 						}
 
-						*a_params.retVal = "result";
+						*a_params.retVal = result;
 					}
 				}
 			};

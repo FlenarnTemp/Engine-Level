@@ -22,8 +22,6 @@ namespace RE
 		void DefineItemDegradationFormsFromGame()
 		{
 			INFO("Item Degradation: Linking degradation forms.");
-
-
 			TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
 
 			// Armor Type Keywords

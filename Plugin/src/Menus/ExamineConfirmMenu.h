@@ -8,21 +8,22 @@ namespace RE
 	{
 		namespace ExamineConfirmMenu
 		{
-			// TODO - this doesn't quite work as it should.
-
-			class OnCancelPress : public Scaleform::GFx::FunctionHandler
+			class OnEscapePress : public Scaleform::GFx::FunctionHandler
 			{
 			public:
 				virtual void Call(const Params& a_params)
 				{
+					DEBUG("this.BGSCodeObj.OnEscapePress");
 					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 
-					DEBUG("OnCancelPress");
+					
 
-					if (examineMenu->repairing)
+					if (examineMenu)
 					{
+						DEBUG("Examine menu!");
 						examineMenu->repairing = false;
 					}
+					
 				}
 			};
 
@@ -37,7 +38,7 @@ namespace RE
 						Scaleform::GFx::Value bgsCodeObj;
 						a_view->asMovieRoot->GetVariable(&bgsCodeObj, "root.Menu_mc.BGSCodeObj");
 
-						RegisterFunction<OnCancelPress>(&bgsCodeObj, a_view->asMovieRoot, "onCancelPress");
+						RegisterFunction<OnEscapePress>(&bgsCodeObj, a_view->asMovieRoot, "OnEscapePress");
 					}
 					return true;
 				}

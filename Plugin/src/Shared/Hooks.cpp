@@ -8,7 +8,7 @@ namespace RE
 
 		namespace Hooks
 		{
-			#define NOP_BYTES(size) std::vector<std::uint8_t>(size, 0x90)
+#define NOP_BYTES(size) std::vector<std::uint8_t>(size, 0x90)
 
 			void HookPipboyDataPopulateItemCardInfo(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data)
 			{
@@ -30,6 +30,46 @@ namespace RE
 					pipboyArray->elements[cndIndexPosition] = std::move(cndEntry);
 				}
 				return;
+			}
+
+			std::int64_t HookActorUtilsArmorRatingVisitorBaseOperator(ActorUtils::ArmorRatingVisitorBase* a_this, BGSInventoryItem* a_item, std::uint32_t a_stackID)
+			{
+				std::int64_t result = a_this->operator()(a_item, a_stackID);
+
+				BGSInventoryItem::Stack* stack = nullptr;
+
+				// Retail logic followed here, don't ask.
+				if (a_stackID == -1)
+				{
+					BGSInventoryItem::Stack* pointer = a_item->stackData.get();
+					while (pointer)
+					{
+						//BGSInventoryItem::Stack::Flag::kSlotMask = 7
+						if (!a_this->checkEquipped || (stack == nullptr && (pointer->flags.underlying() & 7) != 0))
+						{
+							stack = pointer;
+						}
+
+						if (stack)
+						{
+							break;
+						}
+
+						pointer = pointer->nextStack.get();
+					}
+				}
+				else
+				{
+					stack = a_item->GetStackByID(a_stackID);
+				}
+
+				if (stack && stack->extra && stack->extra->HasType(EXTRA_DATA_TYPE::kHealth))
+				{
+					float condition = stack->extra->GetHealthPerc();
+					a_this->rating = a_this->rating * (0.66f + std::min((0.34f * condition) / 0.5f, 0.34f));
+				}
+
+				return result;
 			}
 
 			void Install(F4SE::Trampoline& trampoline)
@@ -68,6 +108,30 @@ namespace RE
 				REL::Relocation<std::uintptr_t> PipboyInventoryDataPopulateItemCardInfo_NOP{ REL::ID(2225266), 0x8CD };
 				auto PipboyInventoryDataPopulateItemCardInfo_NOP_bytes = NOP_BYTES(5);
 				REL::safe_write<std::uint8_t>(PipboyInventoryDataPopulateItemCardInfo_NOP.address(), std::span{ PipboyInventoryDataPopulateItemCardInfo_NOP_bytes });
+
+				// Actor::GetDesirability - { 2229946 + 0x56 }
+				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_1{ REL::ID(2229946), 0x56 };
+				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_1.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
+
+				// Actor::CalcArmorRating - { 2230008 + 0xFC }
+				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_2{ REL::ID(2230008), 0xFC };
+				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_2.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
+
+				// Actor::CalcArmorRating - { 2230009 + 0x2B }
+				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_3{ REL::ID(2230009), 0x2B };
+				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_3.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
+
+				// sub_140BFBE70 - { 2230010 + 0x13C } TODO: Further RE func, inlined in .98X?
+				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_4{ REL::ID(2230010), 0x13C };
+				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_4.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
+
+				// CombatBehaviourFindObject::EvaluateArmor { 2241004 + 0x4ED }
+				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_5{ REL::ID(2241004), 0x4ED };
+				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_5.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
+
+				// CombatBehaviourFindObject::EvaluateArmor { 2241004 + 0x579}
+				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_6{ REL::ID(2241004), 0x579 };
+				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_6.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
 			}
 
 			DetourXS hook_ShowBuildFailureMessage;
@@ -114,13 +178,17 @@ namespace RE
 								examineMenu->ShowConfirmMenu(initDataRepair, repairFailureCallback);
 							}
 
-							for (const auto& tuple : *requiredItems) {
-								TESForm* form = tuple.first;
-								BGSTypedFormValuePair::SharedVal value = tuple.second;
+							if (requiredItems)
+							{
+								for (const auto& tuple : *requiredItems) {
+									TESForm* form = tuple.first;
+									BGSTypedFormValuePair::SharedVal value = tuple.second;
 
-								const char* fullName = TESFullName::GetFullName(*form).data();
-								DEBUG("Component: {}, amount: {}", fullName, value.i);
+									const char* fullName = TESFullName::GetFullName(*form).data();
+									DEBUG("Component: {}, amount: {}", fullName, value.i);
+								}
 							}
+
 							a_this->repairing = false;
 						}
 					}
@@ -315,10 +383,10 @@ namespace RE
 								}
 							}
 
-							// GetHealthPerc return -1.0 if it can't find the kHealth type.
-							if (traverse->extra->GetHealthPerc() < 0)
+							// GetHealthPerc returns -1.0 if it can't find the 'kHealth' type.
+							if (traverse->extra->GetHealthPerc() < 0.0f)
 							{
-								traverse->extra->SetHealthPerc(BSRandom::Float(0.55f, 0.85f));
+								traverse->extra->SetHealthPerc(BSRandom::Float(0.50f, 0.85f));
 								//INFO("BGSInventoryList::AddItem: Health initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
 								break;
 							}
@@ -409,6 +477,8 @@ namespace RE
 					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
 				}
 
+				DEBUG("Player fired gun! Bang bang");
+
 				// God Mod - no degradation.
 				if (playerCharacter->IsGodMode())
 				{
@@ -462,7 +532,7 @@ namespace RE
 
 					if (conditionReduction == 0.01f)
 					{
-						WARN("TESObjectWEAP::Fire - Ammo type '{}' is not declared in 'ammoDegradationMap'.", ammoInstance->GetFormEditorID())
+						WARN("TESObjectWEAP::Fire - Ammo type '{}' is not declared in 'ammoDegradationMap'.", ammoInstance->GetFormEditorID());
 					}
 
 					// TODO: Rework these numbers after gameplay tests.
@@ -505,8 +575,6 @@ namespace RE
 				{
 					retailDamage = retailDamage * (0.5f + std::min((0.5f * a_condition) / 0.75, 0.5));
 				}
-
-				//DEBUG("CombatFormulas::CalcWeaponDamage - custom damage calculation(condition): {}", retailDamage);
 				return retailDamage;
 			}
 
@@ -554,8 +622,6 @@ namespace RE
 
 			PipboyObject* HookPipboyInventoryDataBaseAddItemCardInfoEntry(PipboyInventoryData* a_inventory, const BSFixedStringCS* a_textID, PipboyArray* a_array)
 			{
-				DEBUG("Hook 'PipboyInventoryData::BaseAddItemsCardInfoEntry' fired off.");
-
 				PipboyObject* result = PipboyInventoryDataBaseAddItemCardInfoEntryOriginal(a_inventory, a_textID, a_array);
 
 				if (std::string(a_textID->c_str()) == "CND")
@@ -584,7 +650,7 @@ namespace RE
 				if (!UI::GetSingleton()->GetMenuOpen("CookingMenu") && a_item->stackData->extra->HasType(EXTRA_DATA_TYPE::kHealth))
 				{
 					Scaleform::GFx::Value defaultArray = a_menuObj->HasMember("ItemCardInfoList") ? GetMemberAS3(*a_menuObj, "ItemCardInfoList") : *a_menuObj;
-					
+
 					float condition = a_item->stackData->extra->GetHealthPerc();
 					InventoryUserUIUtils::AddItemCardInfoEntry(defaultArray, "CND", condition * 100.0f);
 
@@ -592,7 +658,7 @@ namespace RE
 
 					Scaleform::GFx::Value cndEntry;
 					defaultArray.GetElement(defaultArray.GetArraySize() - 1, &cndEntry);
-					for (int i = defaultArray.GetArraySize() - 1; i > cndIndexPosition; --i)
+					for (std::uint32_t i = defaultArray.GetArraySize() - 1; i > cndIndexPosition; --i)
 					{
 						Scaleform::GFx::Value tempEntry;
 						defaultArray.GetElement(i - 1, &tempEntry);
@@ -603,6 +669,31 @@ namespace RE
 				}
 				return;
 			}
+
+			DetourXS hook_PipboyInventoryUtilsFillResistTypeInfo;
+			typedef void(PipboyInventoryUtilsFillResistTypeInfoSig)(const BGSInventoryItem*, const BGSInventoryItem::Stack*, BSScrapArray<BSTTuple<std::uint32_t, float>>*, float);
+			REL::Relocation<PipboyInventoryUtilsFillResistTypeInfoSig> PipboyInventoryUtilsFillResistTypeInfo_Original;
+
+			void HookPipboyInventoryUtilsFillResistTypeInfo(const BGSInventoryItem* a_item, const BGSInventoryItem::Stack* a_stack, BSScrapArray<BSTTuple<std::uint32_t, float>>* a_resistValuesPerType, float a_scale)
+			{
+				PipboyInventoryUtilsFillResistTypeInfo_Original(a_item, a_stack, a_resistValuesPerType, a_scale);
+
+				// Return early if need be.
+				if (!a_stack->extra || !a_stack->extra->HasType(EXTRA_DATA_TYPE::kHealth))
+				{
+					return;
+				}
+				float condition = a_stack->extra->GetHealthPerc();
+				for (std::uint32_t type = 0; type < 6; type++)
+				{
+					float resistance = a_resistValuesPerType->at(type).second;
+					if (resistance != 0.0f && type == 0)
+					{
+						a_resistValuesPerType->at(type).second = resistance * (0.66f + std::min(0.34 * condition / 0.5, 0.34));
+					}
+				}
+			}
+
 			// ========== REGISTERS ==========
 			void RegisterGetBuildConfirmQuestion()
 			{
@@ -782,6 +873,34 @@ namespace RE
 					FATAL("Failed to hook 'IUUIIUtils::PopulateItemCardInfo_Helper', exiting.");
 				}
 			}
+
+			void RegisterPipboyInventoryUtilsFillResistTypeInfo()
+			{
+				REL::Relocation<PipboyInventoryUtilsFillResistTypeInfoSig> functionLocation{ REL::ID(2225235) };
+				if (hook_PipboyInventoryUtilsFillResistTypeInfo.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookPipboyInventoryUtilsFillResistTypeInfo))
+				{
+					DEBUG("Installed 'PipboyInventoryUtils::FillResistTypeInfo' hook.");
+					PipboyInventoryUtilsFillResistTypeInfo_Original = reinterpret_cast<uintptr_t>(hook_PipboyInventoryUtilsFillResistTypeInfo.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook 'PipboyInventoryUtils::FillResistTypeInfo', exiting.");
+				}
+			}
+
+			/**void RegisterActorUtilsArmorRatingVisitorBaseOperator()
+			{
+				REL::Relocation<ActorUtilsArmorRatingVisitorBaseOperatorSig> functionLocation{ REL::ID(2227206) };
+				if (hook_ActorUtilsArmorRatingVisitorBaseOperator.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookActorUtilsArmorRatingVisitorBaseOperator))
+				{
+					DEBUG("Installed 'ActorUtils::ArmorRatingVisitorBaseOperator' hook.");
+					ActorUtilsArmorRatingVisitorBaseOperator_Original = reinterpret_cast<uintptr_t>(hook_ActorUtilsArmorRatingVisitorBaseOperator.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook: 'ActorUtils::ArmorRatingVisitorBaseOperator', exiting.");
+				}
+			}*/
 		}
 	}
 }

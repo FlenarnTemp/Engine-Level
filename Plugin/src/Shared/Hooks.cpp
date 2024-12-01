@@ -161,6 +161,9 @@ namespace RE
 								BSTHashMap<TESBoundObject*, std::uint32_t> availableComponents;
 
 								std::uint32_t size = requiredItems->size();
+
+								auto* currentItem = size ? requiredItems
+
 								if (size)
 								{
 									auto tester = examineMenu->sharedContainerRef.get();
@@ -365,7 +368,7 @@ namespace RE
 								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
 								if (tempREFR->HasKeyword(noDegradation))
 								{
-									DEBUG("'noDegradation' keyword found on weapon.");
+									DEBUG("'noDegradation' keyword found on weapon: {}.", tempREFR->GetFormEditorID());
 									traverse->extra->SetHealthPerc(1.0);
 									break;
 								}
@@ -377,7 +380,7 @@ namespace RE
 								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
 								if (tempREFR->HasKeyword(noDegradation))
 								{
-									DEBUG("'noDegradation' keyword found on armor.");
+									DEBUG("'noDegradation' keyword found on armor: {}.", tempREFR->GetFormEditorID());
 									traverse->extra->SetHealthPerc(1.0);
 									break;
 								}
@@ -387,7 +390,6 @@ namespace RE
 							if (traverse->extra->GetHealthPerc() < 0.0f)
 							{
 								traverse->extra->SetHealthPerc(BSRandom::Float(0.50f, 0.85f));
-								//INFO("BGSInventoryList::AddItem: Health initialized: {:s}", std::to_string(traverse->extra->GetHealthPerc()));
 								break;
 							}
 
@@ -477,8 +479,6 @@ namespace RE
 					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
 				}
 
-				DEBUG("Player fired gun! Bang bang");
-
 				// God Mod - no degradation.
 				if (playerCharacter->IsGodMode())
 				{
@@ -556,7 +556,8 @@ namespace RE
 					if (newHealth == 0.0f)
 					{
 						ActorEquipManager::GetSingleton()->UnequipItem(playerCharacter, &equippedWeapon, false);
-						SendHUDMessage::ShowHUDMessage("Your weapon has broken.", "UIWorkshopModeItemScrapGeneric", true, true);
+						GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
+						SendHUDMessage::ShowHUDMessage(gameSettingCollection->GetSetting("sWeaponBreak")->GetString().data(), "UIWorkshopModeItemScrapGeneric", true, true);
 					}
 					extraDataList->SetHealthPerc(newHealth);
 					PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);

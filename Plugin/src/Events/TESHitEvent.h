@@ -29,6 +29,12 @@ namespace RE
 
 				Actor* hitActor = (Actor*)target;
 
+				// Extra power armor check.
+				if (PowerArmor::ActorInPowerArmor(*hitActor))
+				{
+					return BSEventNotifyControl::kContinue;
+				}
+
 				if (hitActor != PlayerCharacter::GetSingleton())
 				{
 					TESObjectREFR* cause = a_event.cause.get();
@@ -45,7 +51,7 @@ namespace RE
 								TESObjectREFR* sourceREFR = a_event.hitData.sourceRef.get().get();
 								if (!sourceREFR)
 								{
-									// If sourceREFR is 'nullptr', melee attack.
+									// If sourceREFR is 'nullptr' it's a melee attack.
 									TESFormID weaponFormID = a_event.hitData.weapon.object->GetFormID();
 									BGSInventoryItem* inventoryItem = nullptr;
 
@@ -69,13 +75,14 @@ namespace RE
 
 										float newHealth;
 
+										// Random amount if melee weapon, 'else' statement handles weapon bashing.
 										if (weapon->IsMeleeWeapon())
 										{
 											newHealth = std::max(currentHealth - BSRandom::Float(0.005, 0.015), 0.0f);
 										}
 										else
 										{
-											newHealth = std::max(currentHealth - 0.015f, 0.0f);
+											newHealth = std::max(currentHealth - 0.015f, 0.0f); // Always 1.5% degradation when weapon bashing.
 										}
 
 										if (newHealth == 0.0f)

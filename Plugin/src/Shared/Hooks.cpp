@@ -378,7 +378,11 @@ namespace RE
 							{
 								TESObjectARMO* tempREFR = static_cast<TESObjectARMO*>(a_boundObject);
 								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
-								if (tempREFR->HasKeyword(noDegradation))
+
+								BGSKeyword* objectTypeArmor = dataHandler->LookupForm<BGSKeyword>(0x2BD72E, "FalloutCascadia.esm");
+
+
+								if (tempREFR->HasKeyword(noDegradation) || !tempREFR->HasKeyword(objectTypeArmor))
 								{
 									DEBUG("'noDegradation' keyword found on armor: {}.", tempREFR->GetFormEditorID());
 									traverse->extra->SetHealthPerc(1.0);

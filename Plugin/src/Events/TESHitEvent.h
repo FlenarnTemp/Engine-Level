@@ -14,7 +14,7 @@ namespace RE
 				TESObjectREFR* target = a_event.target.get();
 
 				// Return early on invalid events.
-				// Note: Unsure about the logic RE; Power Armor here.
+				// Note: Unsure about the logic RE Power Armor here.
 				if (!target || !a_event.usesHitData || target->extraList->GetByType(kPowerArmor) != nullptr)
 				{
 					return BSEventNotifyControl::kContinue;

@@ -55,43 +55,43 @@ namespace
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:
-			INFO("{:s} - kGameLoaded", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kGameLoaded'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostLoad:
-			INFO("{:s} - kPostLoad", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kPostLoad'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostLoadGame:
-			INFO("{:s} - kPostLoadGame", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kPostLoadGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostPostLoad:
-			INFO("{:s} - kPostPostLoad", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kPostPostLoad'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostSaveGame:
-			INFO("{:s} - kPostSaveGame", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kPostSaveGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kDeleteGame:
-			INFO("{:s} - kDeleteGame", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kDeleteGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kNewGame:
-			INFO("{:s} - kNewGame", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kNewGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kInputLoaded:
-			INFO("{:s} - kInputLoaded", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kInputLoaded'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPreLoadGame:
-			INFO("{:s} - kPreLoadGame", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kPreLoadGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPreSaveGame:
-			INFO("{:s} - kPreSaveGame", "Cascadia Gameplay Systems");
+			INFO("{:s} - 'kPreSaveGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		default:
@@ -144,13 +144,13 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	{
 		if (!scaleform->Register("Cascadia-DialogueMenu", RE::Cascadia::DialogueMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register 'DialogueMenu', marking as incompatible.");
+			FATAL("Failed to register 'DialogueMenu', marking as incompatible."sv);
 			return false;
 		}
 
 		if (!scaleform->Register("Cascadia-ExamineMenu", RE::Cascadia::ExamineMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register 'ExamineMenu', marking as incompatible.");
+			FATAL("Failed to register 'ExamineMenu', marking as incompatible."sv);
 			return false;
 		}
 
@@ -162,7 +162,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 
 		if (!scaleform->Register("Cascadia-ExamineConfirmMenu", RE::Cascadia::ExamineConfirmMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register 'ExamineConfirmMenu', marking as incompatible.");
+			FATAL("Failed to register 'ExamineConfirmMenu', marking as incompatible."sv);
 			return false;
 		}
 	}
@@ -170,7 +170,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	const F4SE::PapyrusInterface* papyrus = F4SE::GetPapyrusInterface();
 	if (!papyrus)
 	{
-		FATAL("Failed to register Papyrus handler, marking as incompatible.");
+		FATAL("Failed to register Papyrus handler, marking as incompatible."sv);
 		return false;
 	}
 	else

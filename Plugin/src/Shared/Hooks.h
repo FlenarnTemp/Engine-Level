@@ -25,6 +25,7 @@ namespace RE
 			void RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry();
 			void RegisterIUUIIUtilsPopulateItemCardInfo_Helper();
 			void RegisterPipboyInventoryUtilsFillResistTypeInfo();
+			void RegisterFavoritesManagerUseQuickkeyItem();
 
 			void RegisterHooks()
 			{
@@ -42,6 +43,7 @@ namespace RE
 				RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry();
 				RegisterIUUIIUtilsPopulateItemCardInfo_Helper();
 				RegisterPipboyInventoryUtilsFillResistTypeInfo();
+				RegisterFavoritesManagerUseQuickkeyItem();
 			}
 		}
 	}

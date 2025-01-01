@@ -162,7 +162,7 @@ namespace RE
 
 								std::uint32_t size = requiredItems->size();
 
-								auto* currentItem = size ? requiredItems
+								//auto* currentItem = size ? requiredItems;
 
 								if (size)
 								{
@@ -335,8 +335,8 @@ namespace RE
 			REL::Relocation<AddItemSig> AddItemOriginal;
 
 			// All health initialization occurs here, this triggers both when a NPC is spawned with objects, added to inventories through
-			// a command or any other way, items also stay uninitialized until then picked up saving a 'float' per object from player saves until
-			// they're picked up and modified further.
+			// a command or any other way, items also stay uninitialized until picked up saving a 'float' per object from player saves until
+			// they're picked up and serialized.
 			void HookBGSInventoryListAddItem(BGSInventoryList* a_this, TESBoundObject* a_boundObject, const BGSInventoryItem::Stack* a_stack, std::uint32_t* a_oldCount, std::uint32_t* a_newCount)
 			{
 				ENUM_FORM_ID formType = a_boundObject->GetFormType();
@@ -368,8 +368,8 @@ namespace RE
 								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
 								if (tempREFR->HasKeyword(noDegradation))
 								{
-									DEBUG("'noDegradation' keyword found on weapon: {}.", tempREFR->GetFormEditorID());
-									traverse->extra->SetHealthPerc(1.0);
+									DEBUG("'CAS_NoDegradation' keyword found on weapon: {}.", tempREFR->GetFormEditorID());
+									//traverse->extra->SetHealthPerc(1.0);
 									break;
 								}
 							}
@@ -379,13 +379,15 @@ namespace RE
 								TESObjectARMO* tempREFR = static_cast<TESObjectARMO*>(a_boundObject);
 								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
 
-								BGSKeyword* objectTypeArmor = dataHandler->LookupForm<BGSKeyword>(0x2BD72E, "FalloutCascadia.esm");
-
-
-								if (tempREFR->HasKeyword(noDegradation) || !tempREFR->HasKeyword(objectTypeArmor))
+								if (tempREFR->armorData.rating == 0 && !tempREFR->armorData.damageTypes)
 								{
-									DEBUG("'noDegradation' keyword found on armor: {}.", tempREFR->GetFormEditorID());
-									traverse->extra->SetHealthPerc(1.0);
+									break;
+								}
+
+								if (tempREFR->HasKeyword(noDegradation))
+								{
+									DEBUG("'CAS_NoDegradation' keyword found on armor: {}.", tempREFR->GetFormEditorID());
+									//traverse->extra->SetHealthPerc(1.0);
 									break;
 								}
 							}
@@ -550,7 +552,7 @@ namespace RE
 						conditionReduction *= 2.0f;
 					}
 
-					// TODO: Add in perk bonus for slower degradation.
+					// TODO: Factor in perk/skill bonus for slower degradation.
 
 					ExtraDataList* extraDataList = inventoryItem->stackData->extra.get();
 
@@ -699,7 +701,39 @@ namespace RE
 				}
 			}
 
+			DetourXS hook_FavoritesManagerUseQuickkeyItem;
+			typedef bool* (FavoritesManagerUseQuickkeyItemSig)(FavoritesManager*, std::uint32_t);
+			REL::Relocation<FavoritesManagerUseQuickkeyItemSig> FavoritesManagerUseQuickkeyItem_Original;
+			bool HookFavoritesManagerUseQuickkeyItem(FavoritesManager* a_this, std::uint32_t a_quickkeyIndex)
+			{
+				DEBUG("FavoritesManager::UseQuickkeyItem, quickkey index: {}", a_quickkeyIndex);
+
+				if (a_quickkeyIndex == 1)
+				{
+					// TODO: Ammo swapping call takes place here.
+					return false;
+				}
+				else
+				{
+					return FavoritesManagerUseQuickkeyItem_Original(a_this, a_quickkeyIndex);
+				}
+			}
+
 			// ========== REGISTERS ==========
+			void RegisterFavoritesManagerUseQuickkeyItem()
+			{
+				REL::Relocation<FavoritesManagerUseQuickkeyItemSig> functionLocation{ REL::ID(2248744) };
+				if (hook_FavoritesManagerUseQuickkeyItem.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookFavoritesManagerUseQuickkeyItem))
+				{
+					DEBUG("Installed 'FavoritesManager::UseQuickkeyItem' hook.");
+					FavoritesManagerUseQuickkeyItem_Original = reinterpret_cast<uintptr_t>(hook_FavoritesManagerUseQuickkeyItem.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook 'FavoritesManager::UseQuickkeyItem', exiting.");
+				}
+			}
+
 			void RegisterGetBuildConfirmQuestion()
 			{
 				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };

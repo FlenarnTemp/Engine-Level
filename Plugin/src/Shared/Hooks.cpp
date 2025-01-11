@@ -8,7 +8,7 @@ namespace RE
 
 		namespace Hooks
 		{
-#define NOP_BYTES(size) std::vector<std::uint8_t>(size, 0x90)
+			#define NOP_BYTES(size) std::vector<std::uint8_t>(size, 0x90)
 
 			void HookPipboyDataPopulateItemCardInfo(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data)
 			{
@@ -44,7 +44,7 @@ namespace RE
 					BGSInventoryItem::Stack* pointer = a_item->stackData.get();
 					while (pointer)
 					{
-						//BGSInventoryItem::Stack::Flag::kSlotMask = 7
+						// BGSInventoryItem::Stack::Flag::kSlotMask = 7
 						if (!a_this->checkEquipped || (stack == nullptr && (pointer->flags.underlying() & 7) != 0))
 						{
 							stack = pointer;
@@ -70,6 +70,20 @@ namespace RE
 				}
 
 				return result;
+			}
+
+			bool HookFavoritesManagerUseQuickkeyItem(FavoritesManager* a_this, std::uint32_t a_quickkeyIndex)
+			{
+				DEBUG("'FavoritesManager::UseQuickkeyItem' - quickkey index: {}.", a_quickkeyIndex);
+				if (a_quickkeyIndex == 1)
+				{
+					// TODO - Ammo swapping event happens here.
+					return false;
+				}
+				else
+				{
+					return a_this->UseQuickkeyItem(a_quickkeyIndex);
+				}
 			}
 
 			void Install(F4SE::Trampoline& trampoline)
@@ -129,9 +143,17 @@ namespace RE
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_5{ REL::ID(2241004), 0x4ED };
 				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_5.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
 
-				// CombatBehaviourFindObject::EvaluateArmor { 2241004 + 0x579}
+				// CombatBehaviourFindObject::EvaluateArmor { 2241004 + 0x579 }
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_6{ REL::ID(2241004), 0x579 };
 				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_6.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
+
+				// FavoritesManager::UseQuickkeyItem - { ID 2248740 + 0x5B }
+				REL::Relocation<std::uintptr_t> FavoritesManagerUseQuickkeyItem_1{ REL::ID(2248740), 0x5B };
+				trampoline.write_call<5>(FavoritesManagerUseQuickkeyItem_1.address(), &HookFavoritesManagerUseQuickkeyItem);
+
+				// FavoritesManager::UseQuickkeyItem - { ID 2248766 + 0x68 }
+				REL::Relocation<std::uintptr_t> FavoritesManagerUseQuickkeyItem_2{ REL::ID(2248766), 0x68 };
+				trampoline.write_call<5>(FavoritesManagerUseQuickkeyItem_2.address(), &HookFavoritesManagerUseQuickkeyItem);
 			}
 
 			DetourXS hook_ShowBuildFailureMessage;
@@ -176,7 +198,6 @@ namespace RE
 
 									// TODO  - list available components.
 								}
-
 
 								examineMenu->ShowConfirmMenu(initDataRepair, repairFailureCallback);
 							}
@@ -289,7 +310,7 @@ namespace RE
 						}
 					}
 				}
-				else // Original logic come into play here.
+				else // Retail logic come into play here.
 				{
 					std::uint32_t modChoiceIndex = a_this->modChoiceIndex;
 					if (modChoiceIndex >= a_this->modChoiceArray.size())
@@ -369,7 +390,6 @@ namespace RE
 								if (tempREFR->HasKeyword(noDegradation))
 								{
 									DEBUG("'CAS_NoDegradation' keyword found on weapon: {}.", tempREFR->GetFormEditorID());
-									//traverse->extra->SetHealthPerc(1.0);
 									break;
 								}
 							}
@@ -387,7 +407,6 @@ namespace RE
 								if (tempREFR->HasKeyword(noDegradation))
 								{
 									DEBUG("'CAS_NoDegradation' keyword found on armor: {}.", tempREFR->GetFormEditorID());
-									//traverse->extra->SetHealthPerc(1.0);
 									break;
 								}
 							}
@@ -395,7 +414,7 @@ namespace RE
 							// GetHealthPerc returns -1.0 if it can't find the 'kHealth' type.
 							if (traverse->extra->GetHealthPerc() < 0.0f)
 							{
-								traverse->extra->SetHealthPerc(BSRandom::Float(0.50f, 0.85f));
+								traverse->extra->SetHealthPerc(BSRandom::Float(0.45f, 0.85f));
 								break;
 							}
 
@@ -701,39 +720,7 @@ namespace RE
 				}
 			}
 
-			DetourXS hook_FavoritesManagerUseQuickkeyItem;
-			typedef bool* (FavoritesManagerUseQuickkeyItemSig)(FavoritesManager*, std::uint32_t);
-			REL::Relocation<FavoritesManagerUseQuickkeyItemSig> FavoritesManagerUseQuickkeyItem_Original;
-			bool HookFavoritesManagerUseQuickkeyItem(FavoritesManager* a_this, std::uint32_t a_quickkeyIndex)
-			{
-				DEBUG("FavoritesManager::UseQuickkeyItem, quickkey index: {}", a_quickkeyIndex);
-
-				if (a_quickkeyIndex == 1)
-				{
-					// TODO: Ammo swapping call takes place here.
-					return false;
-				}
-				else
-				{
-					return FavoritesManagerUseQuickkeyItem_Original(a_this, a_quickkeyIndex);
-				}
-			}
-
 			// ========== REGISTERS ==========
-			void RegisterFavoritesManagerUseQuickkeyItem()
-			{
-				REL::Relocation<FavoritesManagerUseQuickkeyItemSig> functionLocation{ REL::ID(2248744) };
-				if (hook_FavoritesManagerUseQuickkeyItem.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookFavoritesManagerUseQuickkeyItem))
-				{
-					DEBUG("Installed 'FavoritesManager::UseQuickkeyItem' hook.");
-					FavoritesManagerUseQuickkeyItem_Original = reinterpret_cast<uintptr_t>(hook_FavoritesManagerUseQuickkeyItem.GetTrampoline());
-				}
-				else
-				{
-					FATAL("Failed to hook 'FavoritesManager::UseQuickkeyItem', exiting.");
-				}
-			}
-
 			void RegisterGetBuildConfirmQuestion()
 			{
 				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };

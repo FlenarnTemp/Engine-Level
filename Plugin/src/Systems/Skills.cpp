@@ -100,7 +100,7 @@ namespace RE
 
 			AVVector CascadiaSkillsList;
 
-			void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue)
+			/**void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue)
 			{
 				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
 
@@ -165,7 +165,7 @@ namespace RE
 					arraySkills[6] = 0;
 
 					asMovieRoot->Invoke("root.casPipboy_loader.content.registerTab", nullptr, arraySkills, 7);
-			}
+			}*/
 
 			// Returns ActorValueInfo based on Skill Name.
 			ActorValueInfo* GetSkillByName(std::string mySkill)

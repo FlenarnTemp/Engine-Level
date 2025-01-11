@@ -7,16 +7,17 @@ namespace RE
 {
 	namespace Cascadia
 	{
+		Scaleform::GFx::Value loader;
+
 		namespace PipboyMenu
 		{
-			
-
 			class PipboyReady : public Scaleform::GFx::FunctionHandler
 			{
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					Cascadia::Skills::PopulateSkillEntries(a_params.movie->asMovieRoot.get());
+					DEBUG("PipboyMenu::PipboyReady function called.");
+					//Cascadia::Skills::PopulateSkillEntries(a_params.movie->asMovieRoot, &loader);
 				}
 			};
 
@@ -35,24 +36,30 @@ namespace RE
 			bool RegisterScaleform(Scaleform::GFx::Movie* a_view, Scaleform::GFx::Value* a_value)
 			{
 				Scaleform::GFx::Value currentSWFPath;
+				Scaleform::GFx::ASMovieRootBase* movieRoot = a_view->asMovieRoot.get();
+
 				// Register native code handlers.
 				if (a_view->asMovieRoot->GetVariable(&currentSWFPath, "root.loaderInfo.url"))
 				{
 					if (_stricmp(currentSWFPath.GetString(), "Interface/PipboyMenu.swf") == 0)
 					{
-						Scaleform::GFx::Value loader, urlRequest, root;
-						a_view->asMovieRoot->GetVariable(&root, "root");
-						a_view->asMovieRoot->CreateObject(&loader, "flash.display.Loader");
+						Scaleform::GFx::Value urlRequest, root;
+						movieRoot->GetVariable(&root, "root");
+						movieRoot->CreateObject(&loader, "flash.display.Loader");
 						Scaleform::GFx::Value pipboy = "CASPipboy.swf";
-						a_view->asMovieRoot->CreateObject(&urlRequest, "flash.net.URLRequest", &pipboy, 1);
-						root.SetMember("casPipboy_loader", &loader);
+						movieRoot->CreateObject(&urlRequest, "flash.net.URLRequest", &pipboy, 1);
+						SetMemberAS3(root, "casPipboy_loader", &loader);
+						
 						Scaleform::GFx::Value casPipboy;
-						a_view->asMovieRoot->CreateObject(&casPipboy);
-						root.SetMember("casPipboy", &casPipboy);
+						movieRoot->CreateObject(&casPipboy);
+						
+						SetMemberAS3(root, "casPipboy", casPipboy);
+
+						
 						RegisterFunction<PipboyReady>(&casPipboy, a_view->asMovieRoot, "ready");
 						RegisterFunction<PipboyHideWorkshopTab>(&casPipboy, a_view->asMovieRoot, "IsWorkshopTabHidden");
-						a_view->asMovieRoot->Invoke("root.casPipboy_loader.load", nullptr, &urlRequest, 1);
-						a_view->asMovieRoot->Invoke("root.Menu_mc.addChild", nullptr, &loader, 1);
+						InvokeAS3(loader, "load", urlRequest);
+						InvokeAS3(a_view->asMovieRoot, "root.Menu_mc.addChild", loader);
 					}
 					return true;
 				}

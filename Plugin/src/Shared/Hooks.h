@@ -3,6 +3,7 @@
 #include "Shared/SharedFunctions.h"
 #include "Systems/Dialogue.h"
 #include "detourXS/detourxs.h"
+#include "Systems/AmmoSwitch.h"
 
 namespace RE
 {

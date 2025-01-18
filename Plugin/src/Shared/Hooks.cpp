@@ -77,8 +77,7 @@ namespace RE
 				DEBUG("'FavoritesManager::UseQuickkeyItem' - quickkey index: {}.", a_quickkeyIndex);
 				if (a_quickkeyIndex == 1)
 				{
-					// TODO - Ammo swapping event happens here.
-					return false;
+					return AmmoSwitch::InitializeAmmoSwitch();
 				}
 				else
 				{
@@ -123,23 +122,23 @@ namespace RE
 				auto PipboyInventoryDataPopulateItemCardInfo_NOP_bytes = NOP_BYTES(5);
 				REL::safe_write<std::uint8_t>(PipboyInventoryDataPopulateItemCardInfo_NOP.address(), std::span{ PipboyInventoryDataPopulateItemCardInfo_NOP_bytes });
 
-				// Actor::GetDesirability - { 2229946 + 0x56 }
+				// Actor::GetDesirability - { 2229946 + 0x56 } - .984
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_1{ REL::ID(2229946), 0x56 };
 				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_1.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
 
-				// Actor::CalcArmorRating - { 2230008 + 0xFC }
+				// Actor::CalcArmorRating - { 2230008 + 0xFC } - .984
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_2{ REL::ID(2230008), 0xFC };
 				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_2.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
 
-				// Actor::CalcArmorRating - { 2230009 + 0x2B }
+				// Actor::CalcArmorRating - { 2230009 + 0x2B } - .984
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_3{ REL::ID(2230009), 0x2B };
 				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_3.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
 
-				// sub_140BFBE70 - { 2230010 + 0x13C } TODO: Further RE func, inlined in .98X?
+				// sub_140BFBE70 - { 2230010 + 0x13C } - .984 - TODO: Further RE func needed, inlined in .980? 
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_4{ REL::ID(2230010), 0x13C };
 				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_4.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
 
-				// CombatBehaviourFindObject::EvaluateArmor { 2241004 + 0x4ED }
+				// CombatBehaviourFindObject::EvaluateArmor { 2241004 + 0x4ED } - .984
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_5{ REL::ID(2241004), 0x4ED };
 				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_5.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);
 

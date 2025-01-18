@@ -37,6 +37,8 @@ namespace
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
 			INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
+			RE::Cascadia::AmmoSwitch::DefineAmmoLists();
+
 			if (RE::Cascadia::Skills::DefineSkillsFormsFromGame())
 			{
 				RE::Cascadia::Skills::RegisterForSkillLink();

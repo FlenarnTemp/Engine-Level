@@ -36,7 +36,6 @@ namespace
 		switch (a_msg->type)
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
-			INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
 			RE::Cascadia::AmmoSwitch::DefineAmmoLists();
 
 			if (RE::Cascadia::Skills::DefineSkillsFormsFromGame())
@@ -54,6 +53,7 @@ namespace
 			RE::Cascadia::RegisterTESInitScriptEventSink();
 			RE::Cascadia::RegisterTESHarvestEventSink();
 			RE::Cascadia::RegisterTESHitEventSink();
+			INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:
@@ -65,8 +65,8 @@ namespace
 			break;
 
 		case F4SE::MessagingInterface::kPostLoadGame:
-			INFO("{:s} - 'kPostLoadGame'.", "Cascadia Gameplay Systems");
 			RE::Cascadia::AmmoSwitch::PostLoadGameAmmoFix();
+			INFO("{:s} - 'kPostLoadGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostPostLoad:

@@ -1,18 +1,23 @@
 #pragma once
 
-/**namespace AmmoSwitch
+namespace RE
 {
-	RE::TESAmmo* GetCoreAmmo();
-	RE::TESAmmo* GetNextAvailableAmmo();
-
-	void ResetToCoreAmmo();
-
-#ifndef AmmoSwitchValuesStruct
-#define AmmoSwitchValuesStruct
-	struct AmmoSwitchValues_Struct
+	namespace Cascadia
 	{
-		bool isCurrentlySwitching = false;
-	};
-#endif
-	extern AmmoSwitchValues_Struct AmmoSwitchValues;
-}*/
+		namespace AmmoSwitch
+		{
+			extern bool switchingAmmo;
+
+			extern BSTArray<BGSKeyword*> keywordsAmmo;
+			extern std::unordered_map<BGSKeyword*, BGSListForm*> keywordFormlistMap;
+			extern BGSKeyword* noFormlistWEAP;
+			extern BGSKeyword* uniqueFormlistWEAP;
+
+			bool InitializeAmmoSwitch();
+
+			void DefineAmmoLists();
+
+			void PostLoadGameAmmoFix();
+		}
+	} 
+}

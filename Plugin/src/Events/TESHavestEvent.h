@@ -51,7 +51,7 @@ namespace RE
 		{
 			TESHarvestEventWatcher* tesHarvestEvent = new TESHarvestEventWatcher();
 			TESHarvestEvent::ItemHarvested::GetEventSource()->RegisterSink(tesHarvestEvent);
-			INFO("Registered 'TESHarvestEvent::ItemHarvested' sink.");
+			DEBUG("Registered 'TESHarvestEvent::ItemHarvested' sink.");
 		}
 	}
 }

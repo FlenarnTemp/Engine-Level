@@ -141,7 +141,7 @@ namespace RE
 		{
 			TESHitEventWatcher* tesHitEvent = new TESHitEventWatcher();
 			TESHitEvent::GetEventSource()->RegisterSink(tesHitEvent);
-			INFO("Registered 'TESHitEvent' sink.");
+			DEBUG("Registered 'TESHitEvent' sink.");
 		}
 	}
 }

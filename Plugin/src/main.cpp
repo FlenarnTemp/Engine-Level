@@ -66,6 +66,7 @@ namespace
 
 		case F4SE::MessagingInterface::kPostLoadGame:
 			INFO("{:s} - 'kPostLoadGame'.", "Cascadia Gameplay Systems");
+			RE::Cascadia::AmmoSwitch::PostLoadGameAmmoFix();
 			break;
 
 		case F4SE::MessagingInterface::kPostPostLoad:

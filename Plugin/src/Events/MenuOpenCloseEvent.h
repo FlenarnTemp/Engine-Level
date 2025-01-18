@@ -16,12 +16,10 @@ namespace RE
 				{
 					if (a_event.opening)
 					{
-						DEBUG("Opening DialogueMenu");
 						DialogueMenu::savedSubtitlePosition = DialogueMenu::GetSubtitlePosition();
 					}
 					else
 					{
-						DEBUG("Closing DialogueMenu.");
 						DialogueMenu::SetSubtitlePosition(DialogueMenu::savedSubtitlePosition.first, DialogueMenu::savedSubtitlePosition.second);
 					}
 				}
@@ -33,7 +31,7 @@ namespace RE
 		{
 			MenuOpenCloseEventWatcher* menuOpenCloseEvent = new MenuOpenCloseEventWatcher();
 			UI::GetSingleton()->GetEventSource<MenuOpenCloseEvent>()->RegisterSink(menuOpenCloseEvent);
-			INFO("Registered 'MenuOpenCloseEvent' sink.");
+			DEBUG("Registered 'MenuOpenCloseEvent' sink.");
 		}
 	}
 }

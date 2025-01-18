@@ -40,7 +40,86 @@ namespace RE
 
 						if (weapon->HasKeyword(AmmoSwitch::uniqueFormlistWEAP))
 						{
+							std::uint32_t keywordCount = weapon->GetNumKeywords();
+							if (keywordCount > 0)
+							{
+								bool weaponFoundKeyword = false;
+								for (std::uint32_t i = 0; i < keywordCount; ++i)
+								{
+									std::optional<BGSKeyword*> bgsKeyword = weapon->GetKeywordAt(i);
+									if (bgsKeyword.has_value())
+									{
+										const char* formEditorID = bgsKeyword.value()->GetFormEditorID();
+										if (strncmp(formEditorID, uniqueListPrefix, strlen(uniqueListPrefix)) == 0)
+										{
+											weaponFoundKeyword = true;
+											auto mapEntry = AmmoSwitch::keywordFormlistMap.find(bgsKeyword.value());
+											if (mapEntry != AmmoSwitch::keywordFormlistMap.end())
+											{
+												BGSListForm* formList = mapEntry->second;
+												std::uint32_t formListSize = formList->arrayOfForms.size();
+												std::uint32_t index = 0;
+												for (index; index < formListSize; ++index)
+												{
+													if (formList->arrayOfForms.begin()[index] == (TESForm*)currentAmmo)
+													{
+														break;
+													}
+												}
 
+												if (formListSize != 0)
+												{
+													bool hasAmmoInFormlist = false;
+													std::uint32_t firstFoundIndex = -1;
+													for (std::uint32_t i = 1; i < formListSize; i++)
+													{
+														std::uint32_t currentIndex = (index + i) % formListSize;
+														TESBoundObject* a_object = (TESBoundObject*)formList->arrayOfForms[currentIndex];
+														if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
+														{
+															firstFoundIndex = currentIndex;
+															hasAmmoInFormlist = true;
+														}
+													}
+
+													if (hasAmmoInFormlist)
+													{
+														TESAmmo* ammoToSwitchTo = (TESAmmo*)formList->arrayOfForms[firstFoundIndex]; 
+
+														// TESTING CODE STARTS HERE
+														if (currentAmmo->shellCasing.model != ammoToSwitchTo->shellCasing.model)
+														{
+															DEBUG("'BSEventNotifyControl::ProcessEvent' - ammo should impact material swap for ammo.");
+															BGSMaterialSwap* test = currentAmmo->swapForm;
+															if (test)
+															{
+																DEBUG("matswap name: {}", test->GetFormEditorID());
+																DEBUG("test print: {}", test->swapMap.size());
+																
+															}
+														}
+														// TESTING CODE ENDS HERE
+
+														instanceDataWEAP->ammo = ammoToSwitchTo;
+
+														playerCharacter->currentProcess->SetCurrentAmmo(BGSEquipIndex{ 0 }, ammoToSwitchTo);
+														playerCharacter->SetCurrentAmmoCount(BGSEquipIndex{ 0 }, 0);
+														(Actor*)playerCharacter->ReloadWeapon(weaponInstance, BGSEquipIndex{ 0 });
+														PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
+													}
+													else
+													{
+														FATAL("'BSEventNotifyControl::ProcessEvent' - !hasAmmoInFormList");
+														AmmoSwitch::switchingAmmo = false;
+														FnProcessEvent fn = fnHash.at(*(uint64_t*)this);
+														return fn ? (this->*fn)(a_event, a_source) : BSEventNotifyControl::kContinue;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
 						}
 						else
 						{

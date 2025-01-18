@@ -62,7 +62,7 @@ namespace RE
 											BGSListForm* formList = mapEntry->second;
 											std::uint32_t formListSize = formList->arrayOfForms.size();
 											std::uint32_t index = 0;
-											for (index = 0; index < formListSize; ++index)
+											for (index; index < formListSize; ++index)
 											{
 												if (formList->arrayOfForms.begin()[index] == (TESForm*)currentAmmo)
 												{

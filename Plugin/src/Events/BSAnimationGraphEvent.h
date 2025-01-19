@@ -86,20 +86,6 @@ namespace RE
 													{
 														TESAmmo* ammoToSwitchTo = (TESAmmo*)formList->arrayOfForms[firstFoundIndex]; 
 
-														// TESTING CODE STARTS HERE
-														if (currentAmmo->shellCasing.model != ammoToSwitchTo->shellCasing.model)
-														{
-															DEBUG("'BSEventNotifyControl::ProcessEvent' - ammo should impact material swap for ammo.");
-															BGSMaterialSwap* test = currentAmmo->swapForm;
-															if (test)
-															{
-																DEBUG("matswap name: {}", test->GetFormEditorID());
-																DEBUG("test print: {}", test->swapMap.size());
-																
-															}
-														}
-														// TESTING CODE ENDS HERE
-
 														instanceDataWEAP->ammo = ammoToSwitchTo;
 
 														playerCharacter->currentProcess->SetCurrentAmmo(BGSEquipIndex{ 0 }, ammoToSwitchTo);
@@ -166,20 +152,6 @@ namespace RE
 													if (hasAmmoInFormlist)
 													{
 														TESAmmo* ammoToSwitchTo = (TESAmmo*)formList->arrayOfForms[firstFoundIndex]; 
-
-														// TESTING CODE STARTS HERE
-														if (currentAmmo->shellCasing.model != ammoToSwitchTo->shellCasing.model)
-														{
-															DEBUG("'BSEventNotifyControl::ProcessEvent' - ammo should impact material swap for ammo.");
-															BGSMaterialSwap* test = currentAmmo->swapForm;
-															if (test)
-															{
-																DEBUG("matswap name: {}", test->GetFormEditorID());
-																DEBUG("test print: {}", test->swapMap.size());
-																
-															}
-														}
-														// TESTING CODE ENDS HERE
 
 														instanceDataWEAP->ammo = ammoToSwitchTo;
 

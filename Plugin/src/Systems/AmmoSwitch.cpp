@@ -207,8 +207,8 @@ namespace RE
 				TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
 				BSTArray<TESForm*> ammoEntries = dataHandler->formArrays[std::to_underlying(ENUM_FORM_ID::kAMMO)];
 				BSTArray<TESForm*> keywordEntries = dataHandler->formArrays[std::to_underlying(ENUM_FORM_ID::kKYWD)];
-				noFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x0008E1, "CAS_AmmoSwitching.esp");
-				uniqueFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x0008E2, "CAS_AmmoSwitching.esp");
+				noFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x2D9AB8, "FalloutCascadia.esm");
+				uniqueFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x2D9AB9, "FalloutCascadia.esm");
 				
 				const char* standardListPrefix = "CAS_AmmoSwitch_Standard_";
 				const char* uniqueListPrefix = "CAS_AmmoSwitch_Unique_";
@@ -223,10 +223,7 @@ namespace RE
 						keywordsAmmo.push_back((BGSKeyword*)tesForm);
 						keywordFormlistMap[(BGSKeyword*)tesForm] = new BGSListForm;
 					}
-				}
-
-				DEBUG("Matched keyword count: {}", keywordsAmmo.size());
-				
+				}				
 				for (TESForm* tesForm : ammoEntries)
 				{
 					TESAmmo* tesAMMO = static_cast<TESAmmo*>(tesForm);

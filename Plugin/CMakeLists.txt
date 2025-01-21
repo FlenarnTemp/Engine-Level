@@ -51,7 +51,7 @@ add_library(
 		${CMAKE_CURRENT_BINARY_DIR}/version.rc
 		.clang-format
 		vcpkg.json
-)
+ "src/Menus/ExamineConfirmMenu.h" "src/Serialization/Json.h"  "src/Menus/PipboyMenu.h" "src/Events/BSAnimationGraphEvent.h" "src/Events/TESHitEvent.h" "src/Events/TESHavestEvent.h" "src/Scripts/ObScript/ToggleMarkers.h" "src/Shared/SharedDeclarations.h")
 
 # include dir
 target_include_directories(

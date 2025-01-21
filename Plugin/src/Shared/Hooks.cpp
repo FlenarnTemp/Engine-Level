@@ -365,10 +365,6 @@ namespace RE
 					if (formType == ENUM_FORM_ID::kWEAP || formType == ENUM_FORM_ID::kARMO)
 					{
 						std::uint32_t iterCount = 0;
-
-						TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
-						BGSKeyword* noDegradation = dataHandler->LookupForm<BGSKeyword>(0x2BD72E, "FalloutCascadia.esm");
-
 						for (const BGSInventoryItem::Stack* traverse = a_stack; traverse; traverse->nextStack)
 						{
 							if (!traverse || !traverse->extra)
@@ -386,7 +382,7 @@ namespace RE
 								}
 
 								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
-								if (tempREFR->HasKeyword(noDegradation))
+								if (tempREFR->HasKeyword(Shared::noDegradation))
 								{
 									DEBUG("'CAS_NoDegradation' keyword found on weapon: {}.", tempREFR->GetFormEditorID());
 									break;
@@ -403,7 +399,7 @@ namespace RE
 									break;
 								}
 
-								if (tempREFR->HasKeyword(noDegradation))
+								if (tempREFR->HasKeyword(Shared::noDegradation))
 								{
 									DEBUG("'CAS_NoDegradation' keyword found on armor: {}.", tempREFR->GetFormEditorID());
 									break;
@@ -517,11 +513,8 @@ namespace RE
 					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
 				}
 
-				TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
-				BGSKeyword* noDegradation = dataHandler->LookupForm<BGSKeyword>(0x2BD72E, "FalloutCascadia.esm");
-
 				// No degradation on objects with 'noDegradation' keyword.
-				if (weapon->HasKeyword(noDegradation))
+				if (weapon->HasKeyword(Shared::noDegradation))
 				{
 					return TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
 				}

@@ -8,6 +8,7 @@
 #include "Menus/PipboyMenu.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
+#include "Shared/SharedDeclarations.h"
 #include "Systems/Skills.h"
 
 namespace RE
@@ -37,7 +38,7 @@ namespace
 		{
 		case F4SE::MessagingInterface::kGameDataReady:
 			RE::Cascadia::AmmoSwitch::DefineAmmoLists();
-
+			RE::Cascadia::Shared::InitializeSharedVariables();
 			if (RE::Cascadia::Skills::DefineSkillsFormsFromGame())
 			{
 				RE::Cascadia::Skills::RegisterForSkillLink();

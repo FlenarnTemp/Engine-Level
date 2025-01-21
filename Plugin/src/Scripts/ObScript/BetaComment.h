@@ -29,11 +29,11 @@ namespace ObScript
 				it->parameters = params.data();
 				it->executeFunction = Execute;
 
-				DEBUG("Registered BetaComment."sv);
+				DEBUG("Registered 'BetaComment' command.");
 			}
 			else
 			{
-				WARN("WARNING: Failed to register BetaComment."sv);
+				WARN("Failed to register 'BetaComment' command.");
 			}
 		}
 

@@ -52,7 +52,7 @@ namespace RE
 							if (iter->second->GetFormID() != a_this->GetFormID())
 							{
 								WARN(
-									"EditorID Conflict: {:08X} and {:08X} are both {:s}"sv,
+									"EditorID Conflict: {:08X} and {:08X} are both {:s}."sv,
 									iter->second->GetFormID(),
 									a_this->GetFormID(),
 									a_editorID);

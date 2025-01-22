@@ -226,7 +226,7 @@ namespace RE
 					InstallHook<BGSLensFlare>();
 					InstallHook<BGSGodRays>();
 
-					DEBUG("Installed Patch: LoadEditorIDs"sv);
+					DEBUG("Installed Patch: 'LoadEditorIDs'.");
 				}
 			};
 		}

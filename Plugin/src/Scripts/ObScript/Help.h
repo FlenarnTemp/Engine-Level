@@ -30,11 +30,11 @@ namespace ObScript
 				it->parameters = params.data();
 				it->executeFunction = Execute;
 
-				DEBUG("Registered Help."sv);
+				DEBUG("Registered 'Help' command.");
 			}
 			else
 			{
-				DEBUG("Failed to register Help."sv);
+				DEBUG("Failed to register 'Help' command.");
 			}
 		}
 

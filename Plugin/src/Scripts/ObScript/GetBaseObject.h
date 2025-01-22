@@ -23,11 +23,11 @@ namespace ObScript
 				it->referenceFunction = true;
 				it->executeFunction = Execute;
 
-				DEBUG("Registered GetBaseObject."sv);
+				DEBUG("Registered 'GetBaseObject' command.");
 			}
 			else
 			{
-				DEBUG("WARNING: Failed to register GetBaseObject."sv);
+				DEBUG("WARNING: Failed to register 'GetBaseObject' command.");
 			}
 		}
 

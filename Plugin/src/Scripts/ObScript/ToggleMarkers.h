@@ -26,7 +26,7 @@ namespace ObScript
 			}
 			else
 			{
-				WARN("Failed to register 'ToggleMarkers' command");
+				WARN("Failed to register 'ToggleMarkers' command.");
 			}
 		}
 	
@@ -48,7 +48,7 @@ namespace ObScript
 			bShowMarkersSetting->SetBinary(showMarkers);
 			DEBUG("'ToggleMarkers' - value set to: {}", showMarkers);
 
-			CullMarkers(RE::TES::GetSingleton(), showMarkers);
+			CullMarkers(RE::TES::GetSingleton(), !showMarkers);
 			if (showMarkers)
 			{
 				RE::ConsoleLog::GetSingleton()->PrintLine("Toggle markers on.");
@@ -77,7 +77,7 @@ namespace ObScript
 		static void CullMarkers(RE::TES* tes, bool hideMarkers)
 		{
 			RE::INIPrefSettingCollection* INIPrefSettingCollection = RE::INIPrefSettingCollection::GetSingleton();
-			RE::Setting* uGridsToLoadSetting = INIPrefSettingCollection ->GetSetting("uGridsToLoad:General");
+			RE::Setting* uGridsToLoadSetting = INIPrefSettingCollection->GetSetting("uGridsToLoad:General");
 			std::uint32_t uGridsToLoad = uGridsToLoadSetting->GetUInt();
 
 			RE::SetCullMarkersFunctor setCullMarkersFunctor;

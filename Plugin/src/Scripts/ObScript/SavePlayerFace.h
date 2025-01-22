@@ -32,11 +32,11 @@ namespace ObScript
 				it->parameters = params.data();
 				it->executeFunction = Execute;
 
-				DEBUG("Registered SavePCFace."sv);
+				DEBUG("Registered 'SavePCFace' command.");
 			}
 			else
 			{
-				WARN("WARNING: Failed to register SavePCFace."sv);
+				WARN("WARNING: Failed to register 'SavePCFace' command.");
 			}
 		}
 

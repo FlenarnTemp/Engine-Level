@@ -5,6 +5,7 @@
 #include "ObScript/GetDefaultObject.h"
 #include "ObScript/Help.h"
 #include "ObScript/SavePlayerFace.h"
+#include "ObScript/TestLoadingMenu.h"
 #include "ObScript/ToggleMarkers.h"
 
 namespace ObScript
@@ -16,6 +17,7 @@ namespace ObScript
 		ObScript::GetDefaultObject::Install();
 		ObScript::Help::Install();
 		ObScript::SavePlayerFace::Install();
+		ObScript::TestLoadingMenu::Install();
 		ObScript::ToggleMarkers::Install();
 	}
 }

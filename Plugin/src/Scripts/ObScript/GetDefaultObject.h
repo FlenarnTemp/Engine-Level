@@ -29,11 +29,11 @@ namespace ObScript
 				it->parameters = params.data();
 				it->executeFunction = Execute;
 
-				DEBUG("Registered GetDefaultObject."sv);
+				DEBUG("Registered 'GetDefaultObject' command.");
 			}
 			else
 			{
-				DEBUG("WARNING: Failed to register GetDefaultObject."sv);
+				DEBUG("Failed to register 'GetDefaultObject' command.");
 			}
 		}
 

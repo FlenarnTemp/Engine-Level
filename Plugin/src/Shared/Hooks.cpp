@@ -198,6 +198,17 @@ namespace RE
 									// TODO  - list available components.
 								}
 
+								for (std::uint32_t i = 0; i < size; ++i)
+								{
+									auto test = requiredItems->at(i);
+
+									TESForm* temp1 = test.first;
+									BGSTypedFormValuePair::SharedVal temp2 = test.second;
+									DEBUG("temp1 edid: {}", temp1->GetFormEditorID());
+									DEBUG("temp2 'i' value: {}", temp2.i);
+									
+								}
+
 								examineMenu->ShowConfirmMenu(initDataRepair, repairFailureCallback);
 							}
 
@@ -521,7 +532,7 @@ namespace RE
 
 				TESObjectWEAPFireOriginal(a_weapon, a_source, a_equipIndex, a_ammo, a_poison);
 
-				BGSInventoryItem* inventoryItem = nullptr;
+				BGSInventoryItem* inventoryItem = nullptr;;
 				TESFormID weaponFormID = a_weapon->object->GetFormID();
 				for (BGSInventoryItem& item : playerCharacter->inventoryList->data)
 				{

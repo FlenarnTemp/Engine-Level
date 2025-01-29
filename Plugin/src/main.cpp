@@ -1,6 +1,7 @@
 #include "Events/BSAnimationGraphEvent.h"
 #include "Events/InputEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
+#include "Events/TESCellFullyLoadedEvent.h"
 #include "Events/TESInitScriptEvent.h"
 #include "Events/TESHavestEvent.h"
 #include "Events/TESHitEvent.h"
@@ -54,6 +55,7 @@ namespace
 			RE::Cascadia::RegisterTESInitScriptEventSink();
 			RE::Cascadia::RegisterTESHarvestEventSink();
 			RE::Cascadia::RegisterTESHitEventSink();
+			RE::Cascadia::RegisterForCellFullyLoaded(RE::Cascadia::CellFullyLoadedListener::GetSingleton());
 			INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
 			break;
 

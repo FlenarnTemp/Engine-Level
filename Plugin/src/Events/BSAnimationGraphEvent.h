@@ -23,168 +23,31 @@ namespace RE
 				if (a_event.tag == ReloadComplete && AmmoSwitch::switchingAmmo == true)
 				{
 					DEBUG("'BSEventNotifyControl::ProcessEvent' - 'ReloadComplete'.");
-					BGSObjectInstance* equippedInstance = new BGSObjectInstance(nullptr, nullptr);
-					PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
 
-					playerCharacter->GetEquippedItem(equippedInstance, BGSEquipIndex{ 0 });
+					BGSObjectInstanceT<TESObjectWEAP>* weaponInstance = new BGSObjectInstanceT<TESObjectWEAP>{ static_cast<TESObjectWEAP*>(AmmoSwitch::equippedInstance->object), AmmoSwitch::equippedInstance->instanceData.get() };
+					TESObjectWEAP::InstanceData* instanceDataWEAP = (TESObjectWEAP::InstanceData*)(weaponInstance->instanceData.get());
 
-					if (equippedInstance->object && equippedInstance->object->formType == ENUM_FORM_ID::kWEAP && static_cast<TESObjectWEAP*>(equippedInstance->object)->weaponData.type == WEAPON_TYPE::kGun)
+					if (AmmoSwitch::ammoToSwitchTo)
 					{
-						BGSObjectInstanceT<TESObjectWEAP>* weaponInstance = new BGSObjectInstanceT<TESObjectWEAP>{ static_cast<TESObjectWEAP*>(equippedInstance->object), equippedInstance->instanceData.get() };
-						TESObjectWEAP::InstanceData* instanceDataWEAP = (TESObjectWEAP::InstanceData*)(weaponInstance->instanceData.get());
-						TESObjectWEAP* weapon = static_cast<TESObjectWEAP*>(equippedInstance->object);
-						const char* standardListPrefix = "CAS_AmmoSwitch_Standard_";
-						const char* uniqueListPrefix = "CAS_AmmoSwitch_Unique_";
-
-						TESAmmo* currentAmmo = instanceDataWEAP->ammo;
-
-						if (weapon->HasKeyword(AmmoSwitch::uniqueFormlistWEAP))
-						{
-							std::uint32_t keywordCount = weapon->GetNumKeywords();
-							if (keywordCount > 0)
-							{
-								bool weaponFoundKeyword = false;
-								for (std::uint32_t i = 0; i < keywordCount; ++i)
-								{
-									std::optional<BGSKeyword*> bgsKeyword = weapon->GetKeywordAt(i);
-									if (bgsKeyword.has_value())
-									{
-										const char* formEditorID = bgsKeyword.value()->GetFormEditorID();
-										if (strncmp(formEditorID, uniqueListPrefix, strlen(uniqueListPrefix)) == 0)
-										{
-											weaponFoundKeyword = true;
-											auto mapEntry = AmmoSwitch::keywordFormlistMap.find(bgsKeyword.value());
-											if (mapEntry != AmmoSwitch::keywordFormlistMap.end())
-											{
-												BGSListForm* formList = mapEntry->second;
-												std::uint32_t formListSize = formList->arrayOfForms.size();
-												std::uint32_t index = 0;
-												for (index; index < formListSize; ++index)
-												{
-													if (formList->arrayOfForms.begin()[index] == (TESForm*)currentAmmo)
-													{
-														break;
-													}
-												}
-
-												if (formListSize != 0)
-												{
-													bool hasAmmoInFormlist = false;
-													std::uint32_t firstFoundIndex = -1;
-													for (std::uint32_t i = 1; i < formListSize; i++)
-													{
-														std::uint32_t currentIndex = (index + i) % formListSize;
-														TESBoundObject* a_object = (TESBoundObject*)formList->arrayOfForms[currentIndex];
-														if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
-														{
-															firstFoundIndex = currentIndex;
-															hasAmmoInFormlist = true;
-														}
-													}
-
-													if (hasAmmoInFormlist)
-													{
-														TESAmmo* ammoToSwitchTo = (TESAmmo*)formList->arrayOfForms[firstFoundIndex]; 
-
-														instanceDataWEAP->ammo = ammoToSwitchTo;
-
-														playerCharacter->currentProcess->SetCurrentAmmo(BGSEquipIndex{ 0 }, ammoToSwitchTo);
-														playerCharacter->SetCurrentAmmoCount(BGSEquipIndex{ 0 }, 0);
-														(Actor*)playerCharacter->ReloadWeapon(weaponInstance, BGSEquipIndex{ 0 });
-														PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
-													}
-													else
-													{
-														FATAL("'BSEventNotifyControl::ProcessEvent' - !hasAmmoInFormList");
-														AmmoSwitch::switchingAmmo = false;
-														FnProcessEvent fn = fnHash.at(*(uint64_t*)this);
-														return fn ? (this->*fn)(a_event, a_source) : BSEventNotifyControl::kContinue;
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-						else
-						{
-							std::uint32_t keywordCount = currentAmmo->GetNumKeywords();
-							if (keywordCount > 0)
-							{
-								for (std::uint32_t i = 0; i < keywordCount; ++i)
-								{
-									std::optional<BGSKeyword*> bgsKeyword = currentAmmo->GetKeywordAt(i);
-									if (bgsKeyword.has_value())
-									{
-										const char* formEditorID = bgsKeyword.value()->GetFormEditorID();
-										if (strncmp(formEditorID, standardListPrefix, strlen(standardListPrefix)) == 0)
-										{
-											auto mapEntry = AmmoSwitch::keywordFormlistMap.find(bgsKeyword.value());
-											if (mapEntry != AmmoSwitch::keywordFormlistMap.end())
-											{
-												BGSListForm* formList = mapEntry->second;
-												std::uint32_t formListSize = formList->arrayOfForms.size();
-												std::uint32_t index = 0;
-												for (index = 0; index < formListSize; ++index)
-												{
-													if (formList->arrayOfForms.begin()[index] == (TESForm*)currentAmmo)
-													{
-														break;
-													}
-												}
-
-												if (formListSize != 0)
-												{
-													bool hasAmmoInFormlist = false;
-													std::uint32_t firstFoundIndex = -1;
-													for (std::uint32_t i = 1; i < formListSize; i++)
-													{
-														std::uint32_t currentIndex = (index + i) % formListSize;
-														TESBoundObject* a_object = (TESBoundObject*)formList->arrayOfForms[currentIndex];
-														if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
-														{
-															firstFoundIndex = currentIndex;
-															hasAmmoInFormlist = true;
-														}
-													}
-
-													if (hasAmmoInFormlist)
-													{
-														TESAmmo* ammoToSwitchTo = (TESAmmo*)formList->arrayOfForms[firstFoundIndex]; 
-
-														instanceDataWEAP->ammo = ammoToSwitchTo;
-
-														playerCharacter->currentProcess->SetCurrentAmmo(BGSEquipIndex{ 0 }, ammoToSwitchTo);
-														playerCharacter->SetCurrentAmmoCount(BGSEquipIndex{ 0 }, 0);
-														(Actor*)playerCharacter->ReloadWeapon(weaponInstance, BGSEquipIndex{ 0 });
-														PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
-													}
-													else
-													{
-														FATAL("'BSEventNotifyControl::ProcessEvent' - !hasAmmoInFormList");
-														AmmoSwitch::switchingAmmo = false;
-														FnProcessEvent fn = fnHash.at(*(uint64_t*)this);
-														return fn ? (this->*fn)(a_event, a_source) : BSEventNotifyControl::kContinue;
-													}
-												}
-											}
-										}
-									}
-								}
-								
-							}
-						}
+						instanceDataWEAP->ammo = AmmoSwitch::ammoToSwitchTo;
+						PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+						playerCharacter->currentProcess->SetCurrentAmmo(BGSEquipIndex{ 0 }, AmmoSwitch::ammoToSwitchTo);
+						playerCharacter->SetCurrentAmmoCount(BGSEquipIndex{ 0 }, 0);
+						(Actor*)playerCharacter->ReloadWeapon(weaponInstance, BGSEquipIndex{ 0 });
+						PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
 					}
+						
 					AmmoSwitch::switchingAmmo = false;
-					FnProcessEvent fn = fnHash.at(*(uint64_t*)this);
-					return fn ? (this->*fn)(a_event, a_source) : BSEventNotifyControl::kContinue;
+					AmmoSwitch::ammoToSwitchTo = nullptr;
+					AmmoSwitch::equippedInstance = nullptr;
 				}
 
 				if (a_event.tag == reloadStateExit && AmmoSwitch::switchingAmmo == true)
 				{
 					DEBUG("'BSEventNotifyControl::ProcessEvent' - 'reloadStateExit'.");
 					AmmoSwitch::switchingAmmo = false;
+					AmmoSwitch::ammoToSwitchTo = nullptr;
+					AmmoSwitch::equippedInstance = nullptr;
 				}
 
 				FnProcessEvent fn = fnHash.at(*(uint64_t*)this);

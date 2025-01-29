@@ -7,199 +7,182 @@ namespace RE
 		namespace AmmoSwitch
 		{
 			bool switchingAmmo = false;
+			TESAmmo* ammoToSwitchTo;
+			BGSObjectInstance* equippedInstance;
 
 			BSTArray<BGSKeyword*> keywordsAmmo;
 			std::unordered_map<BGSKeyword*, BGSListForm*> keywordFormlistMap;
 			BGSKeyword* noFormlistWEAP;
 			BGSKeyword* uniqueFormlistWEAP;
+			BGSKeyword* materialChange;
 
-			bool InitializeAmmoSwitch()
-			{
+			bool InitializeAmmoSwitch() {
 				// Return true to make sure proper menu audio is played if ammo switch is successfully initiated, otherwise false return.
-				BGSObjectInstance* equippedInstance = new BGSObjectInstance(nullptr, nullptr);
+				equippedInstance = new BGSObjectInstance(nullptr, nullptr);
 				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
-				playerCharacter->GetEquippedItem(equippedInstance, BGSEquipIndex{ 0 });
+				playerCharacter->GetEquippedItem(equippedInstance, BGSEquipIndex{0});
 
-				if (equippedInstance->object && equippedInstance->object->formType == ENUM_FORM_ID::kWEAP && static_cast<TESObjectWEAP*>(equippedInstance->object)->weaponData.type == WEAPON_TYPE::kGun)
-				{
-					TESObjectWEAP* weapon = static_cast<TESObjectWEAP*>(equippedInstance->object);
-					TESObjectWEAP::InstanceData* instanceDataWEAP = (TESObjectWEAP::InstanceData*)(equippedInstance->instanceData.get());
-					const char* standardListPrefix = "CAS_AmmoSwitch_Standard_";
-					const char* uniqueListPrefix = "CAS_AmmoSwitch_Unique_";
+				if (equippedInstance->object && equippedInstance->object->formType == ENUM_FORM_ID::kWEAP &&
+				    static_cast<TESObjectWEAP*>(equippedInstance->object)->weaponData.type == WEAPON_TYPE::kGun) {
+				    TESObjectWEAP* weapon = static_cast<TESObjectWEAP*>(equippedInstance->object);
+				    TESObjectWEAP::InstanceData* instanceDataWEAP = (TESObjectWEAP::InstanceData*)(equippedInstance->instanceData.get());
 
-					// Junkjet and other very unique weapons in terms of ammunition.
-					if (weapon->HasKeyword(noFormlistWEAP))
-					{
-						DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - weapon '{}' is flagged for no ammo switching.", weapon->GetFormEditorID());
-						return false;
-					}
+				    const char* standardListPrefix = "CAS_AmmoSwitch_Standard_";
+				    const char* uniqueListPrefix = "CAS_AmmoSwitch_Unique_";
 
-					TESAmmo* currentAmmo = instanceDataWEAP->ammo;
-					if (currentAmmo == nullptr)
-					{
-						// Just in case.
-						return false;
-					}
+				    // Junkjet and other very unique weapons in terms of ammunition.
+				    if (weapon->HasKeyword(noFormlistWEAP)) {
+				        DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - weapon '{}' is flagged for no ammo switching.", weapon->GetFormEditorID());
+				        return false;
+				    }
 
-					if (weapon->HasKeyword(uniqueFormlistWEAP))
-					{
-						std::uint32_t keywordCount = weapon->GetNumKeywords();
-						if (keywordCount > 0)
-						{
-							bool weaponFoundKeyword = false;
-							for (std::uint32_t i = 0; i < keywordCount; ++i)
-							{
-								std::optional<BGSKeyword*> bgsKeyword = weapon->GetKeywordAt(i);
-								if (bgsKeyword.has_value())
-								{
-									const char* formEditorID = bgsKeyword.value()->GetFormEditorID();
-									if (strncmp(formEditorID, uniqueListPrefix, strlen(uniqueListPrefix)) == 0)
-									{
-										weaponFoundKeyword = true;
-										auto mapEntry = keywordFormlistMap.find(bgsKeyword.value());
-										if (mapEntry != keywordFormlistMap.end())
+				    TESAmmo* currentAmmo = instanceDataWEAP->ammo;
+				    if (currentAmmo == nullptr) {
+				        // Just in case.
+				        return false;
+				    }
+
+				    const bool isUnique = weapon->HasKeyword(uniqueFormlistWEAP);
+				    const char* prefix = isUnique ? uniqueListPrefix : standardListPrefix;
+				    auto getKeywordCount = [isUnique, weapon, currentAmmo]() -> std::uint32_t {
+				        return isUnique ? weapon->GetNumKeywords() : currentAmmo->GetNumKeywords();
+				    };
+				    auto getKeywordAt = [isUnique, weapon, currentAmmo](std::uint32_t i) -> std::optional<BGSKeyword*> {
+				        return isUnique ? weapon->GetKeywordAt(i) : currentAmmo->GetKeywordAt(i);
+				    };
+
+				    std::uint32_t keywordCount = getKeywordCount();
+				    if (keywordCount > 0) {
+				        bool foundKeyword = false;
+				        for (std::uint32_t i = 0; i < keywordCount; ++i) {
+				            std::optional<BGSKeyword*> bgsKeyword = getKeywordAt(i);
+				            if (bgsKeyword.has_value()) {
+				                const char* formEditorID = bgsKeyword.value()->GetFormEditorID();
+				                if (strncmp(formEditorID, prefix, strlen(prefix)) == 0) {
+				                    foundKeyword = true;
+				                    if (FindAmmoInFormlist(bgsKeyword.value(), currentAmmo, playerCharacter)) {
+										if (ammoToSwitchTo->HasKeyword(materialChange))
 										{
-											BGSListForm* formList = mapEntry->second;
-											std::uint32_t formListSize = formList->arrayOfForms.size();
-											std::uint32_t index = 0;
-											for (index; index < formListSize; ++index)
-											{
-												if (formList->arrayOfForms.begin()[index] == (TESForm*)currentAmmo)
-												{
-													DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - current ammo position in found formlist: {}.", index);
-													break;
-												}
-											}
-
-											if (formListSize != 0)
-											{
-												bool hasAmmoInFormlist = false;
-												std::uint32_t firstFoundIndex = -1;
-												for (std::uint32_t i = 1; i < formListSize; i++)
-												{
-													std::uint32_t currentIndex = (index + i) % formListSize;
-													TESBoundObject* a_object = (TESBoundObject*)formList->arrayOfForms[currentIndex];
-													if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
-													{
-														firstFoundIndex = currentIndex;
-														hasAmmoInFormlist = true;
-													}
-												}
-
-												if (!hasAmmoInFormlist)
-												{
-													return false;
-												}
-											}
-											else
-											{
-												return false;
-											}
+											MaterialSwap(currentAmmo);
 										}
-										else
-										{
-											FATAL("'AmmoSwitch::InitializeAmmoSwitch' - keyword not found in 'keywordFormlistMap'.");
-										}
-									}
-									
-								}
-							}
-							if (!weaponFoundKeyword)
-							{
-								DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - weapon: {} flagged for unique ammo switch formlist, no matching keyword found.", weapon->GetFormEditorID());
-								return false;
-							}
-						}
-						else
-						{
-							return false;
-						}
-					}
-					else
-					{
-						std::uint32_t keywordCount = currentAmmo->GetNumKeywords();
-						if (keywordCount > 0)
-						{
-							bool ammoFoundKeyword = false;
-							for (std::uint32_t i = 0; i < keywordCount; ++i)
-							{
-								std::optional<BGSKeyword*> bgsKeyword = currentAmmo->GetKeywordAt(i);
-								if (bgsKeyword.has_value())
-								{
-									const char* formEditorID = bgsKeyword.value()->GetFormEditorID();
-									if (strncmp(formEditorID, standardListPrefix, strlen(standardListPrefix)) == 0)
-									{
-										ammoFoundKeyword = true;
-										auto mapEntry = keywordFormlistMap.find(bgsKeyword.value());
-										if (mapEntry != keywordFormlistMap.end())
-										{
-											BGSListForm* formList = mapEntry->second;
-											std::uint32_t formListSize = formList->arrayOfForms.size();
-											std::uint32_t index = 0;
-											for (index = 0; index < formListSize; ++index)
-											{
-												if (formList->arrayOfForms.begin()[index] == (TESForm*)currentAmmo)
-												{
-													DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - current ammo position in found formlist: {}.", index);
-													break;
-												}
-											}
+				                        break;
+				                    }
+				                }
+				            }
+				        }
+				        if (!foundKeyword) {
+				            DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - {} flagged for ammo switch but no matching keyword found.", isUnique ? "weapon" : "ammo");
+				            return false;
+				        }
+				    } else {
+				        return false;
+				    }
 
-											if (formListSize != 0)
-											{
-												bool hasAmmoInFormlist = false;
-												std::uint32_t firstFoundIndex = -1;
-												for (std::uint32_t i = 1; i < formListSize; i++)
-												{
-													std::uint32_t currentIndex = (index + i) % formListSize;
-													TESBoundObject* a_object = (TESBoundObject*)formList->arrayOfForms[currentIndex];
-													if (playerCharacter->GetInventoryObjectCount(a_object) != 0)
-													{
-														firstFoundIndex = currentIndex;
-														hasAmmoInFormlist = true;
-													}
-												}
-
-												if (!hasAmmoInFormlist)
-												{
-													return false;
-												}
-											}
-											else
-											{
-												return false;
-											}
-										}
-										else
-										{
-											FATAL("'AmmoSwitch::InitializeAmmoSwitch' - keyword not found in 'keywordFormlistMap'.");
-										}
-									}
-								}
-							}
-							if (!ammoFoundKeyword)
-							{
-								DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - ammo: {} no keyword matching 'CAS_AmmoSwitch_Standard_X' standard found.", currentAmmo->GetFormEditorID());
-								return false;
-							}
-						}
-						else
-						{
-							return false;
-						}
-					}
-
-					if (playerCharacter->NotifyAnimationGraphImpl("reloadStart")) // Fails if no weapon is drawn, amongst other things.
-					{
-						switchingAmmo = true;
-					}
-					else
-					{
-						return false;
-					}
-					return true;
+				    if (playerCharacter->NotifyAnimationGraphImpl("reloadStart")) { // Fails if no weapon is drawn, amongst other things.
+				        switchingAmmo = true;
+				    } else {
+				        return false;
+				    }
+				    return true;
 				}
 				return false;
+			}
+
+			bool FindAmmoInFormlist(BGSKeyword* keyword, TESAmmo* currentAmmo, PlayerCharacter* playerCharacter) {
+			    auto mapEntry = keywordFormlistMap.find(keyword);
+			    if (mapEntry != keywordFormlistMap.end()) {
+			        BGSListForm* formList = mapEntry->second;
+			        std::uint32_t formListSize = formList->arrayOfForms.size();
+			        if (formListSize != 0) {
+			            std::uint32_t index = 0;
+			            for (; index < formListSize; ++index) {
+			                if (formList->arrayOfForms.begin()[index] == (TESForm*)currentAmmo) {
+			                    DEBUG("'AmmoSwitch::FindAmmoInFormlist' - current ammo position in found formlist: {}.", index);
+			                    break;
+			                }
+			            }
+			
+			            for (std::uint32_t i = 1; i < formListSize; i++) {
+			                std::uint32_t currentIndex = (index + i) % formListSize;
+			                TESBoundObject* a_object = (TESBoundObject*)formList->arrayOfForms[currentIndex];
+			                if (playerCharacter->GetInventoryObjectCount(a_object) != 0 && currentAmmo != (TESAmmo*)a_object) {
+			                    ammoToSwitchTo = (TESAmmo*)a_object;
+			                    return true;
+			                }
+			            }
+			        }
+			    } else {
+			        FATAL("'AmmoSwitch::FindAmmoInFormlist' - keyword not found in 'keywordFormlistMap'.");
+			    }
+			    return false;
+			}
+
+			bool MaterialSwap(TESAmmo* currentAmmo)
+			{
+				DEBUG("'AmmoSwitch::MaterialSwap' init.");
+
+				if (ammoToSwitchTo->swapForm)
+				{
+					//DEBUG("'AmmoSwitch::MaterialSwap', ammunition: {} does not have a swapForm.", ammoToSwitchTo->GetFormEditorID());
+
+					BGSMaterialSwap* materialSwap = ammoToSwitchTo->swapForm;
+					BSTHashMap<BSFixedString, BGSMaterialSwap::Entry> swapMap = materialSwap->swapMap;
+					if (swapMap.size() != 1)
+					{
+						WARN("'AmmoSwitch::MaterialSwap' - ammo: {} has too many entries in swapMap: {}", ammoToSwitchTo->GetFormEditorID(), swapMap.size());
+						return false;
+					}
+					PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+
+					TESFileContainer sourceFiles = materialSwap->sourceFiles;
+
+
+					TESObjectWEAP::InstanceData* instanceDataWEAP = (TESObjectWEAP::InstanceData*)(equippedInstance->instanceData.get());
+					 
+					BSTArray<BGSMaterialSwap*>* test = instanceDataWEAP->materialSwaps;
+					if (test)
+					{
+						DEBUG("WEAPON HAS MATERIAL SWAP ARRAY!");
+					}
+					else
+					{
+						DEBUG("non existant, so sad...");
+						BSTArray<BGSMaterialSwap*>* test = new BSTArray<BGSMaterialSwap*>;
+						instanceDataWEAP->materialSwaps = test;
+						DEBUG("tried establishing new array for it?");
+						instanceDataWEAP->materialSwaps->push_back(materialSwap);
+						
+					}
+
+					BGSInventoryItem* inventoryItem = nullptr;
+					TESObjectWEAP* tesWEAP = (TESObjectWEAP*)equippedInstance->object;
+					TESFormID weaponFormID = tesWEAP->GetFormID();
+					for (BGSInventoryItem& item : playerCharacter->inventoryList->data)
+					{
+						if (item.object->GetFormID() == weaponFormID)
+						{
+							inventoryItem = &item;
+							break;
+						}
+					}
+
+					if (inventoryItem)
+					{
+						ExtraDataList* extraDataList = inventoryItem->stackData->extra.get();
+						BGSObjectInstanceExtra* objectModData = (BGSObjectInstanceExtra*)extraDataList->GetByType(EXTRA_DATA_TYPE::kObjectInstance);
+						if (objectModData)
+						{
+							DEBUG("'AmmoSwitch::MaterialSwap' - OMOD count on '{}' is: {}.", tesWEAP->GetFormEditorID(), objectModData->GetNumMods(false));
+						}
+						auto test = equippedInstance->instanceData.get();
+					}
+				}
+				else
+				{
+					// Assumed to be the 'default' ammunition (at the very least refer to .nif for original material) of this type.
+					// TODO!
+				}
+				return true;
 			}
 
 			void DefineAmmoLists()
@@ -209,6 +192,7 @@ namespace RE
 				BSTArray<TESForm*> keywordEntries = dataHandler->formArrays[std::to_underlying(ENUM_FORM_ID::kKYWD)];
 				noFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x2D9AB8, "FalloutCascadia.esm");
 				uniqueFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x2D9AB9, "FalloutCascadia.esm");
+				materialChange = dataHandler->LookupForm<BGSKeyword>(0x000001, "CAS_AmmoSwitch_Extension.esp");
 				
 				const char* standardListPrefix = "CAS_AmmoSwitch_Standard_";
 				const char* uniqueListPrefix = "CAS_AmmoSwitch_Unique_";

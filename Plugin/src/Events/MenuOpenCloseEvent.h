@@ -2,6 +2,7 @@
 
 #include "Menus/ExamineMenu.h"
 #include "Menus/DialogueMenu.h"
+#include "Menus/LevelUpMenu.h"
 
 namespace RE
 {
@@ -23,6 +24,12 @@ namespace RE
 						DialogueMenu::SetSubtitlePosition(DialogueMenu::savedSubtitlePosition.first, DialogueMenu::savedSubtitlePosition.second);
 					}
 				}
+
+				if (a_event.menuName == BSFixedString("CASLevelUpMenu"))
+				{
+					UI::GetSingleton()->RegisterMenu("CASLevelUpMenu", LevelUpMenu::CASLevelUpMenu::CreateCASLevelUpMenu);
+				}
+
 				return BSEventNotifyControl::kContinue;
 			}
 		};

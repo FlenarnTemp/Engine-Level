@@ -31,92 +31,92 @@ namespace RE
 
 				switch (gender)
 				{
-				case 1:
-				{
-					// Female
-					FacialBoneRegion femaleRegions[32];
-
-					femaleRegions[0].id = 100000;
-					femaleRegions[1].id = 100001;
-					femaleRegions[2].id = 100002;
-					femaleRegions[3].id = 100003;
-					femaleRegions[4].id = 100004;
-					femaleRegions[5].id = 100005;
-					femaleRegions[6].id = 100006;
-					femaleRegions[7].id = 100007;
-					femaleRegions[8].id = 100008;
-					femaleRegions[9].id = 100009;
-					femaleRegions[10].id = 100010;
-					femaleRegions[11].id = 100011;
-					femaleRegions[12].id = 100012;
-					femaleRegions[13].id = 100013;
-					femaleRegions[14].id = 100014;
-					femaleRegions[15].id = 100015;
-					femaleRegions[16].id = 100016;
-					femaleRegions[17].id = 100027;
-					femaleRegions[18].id = 100017;
-					femaleRegions[19].id = 100018;
-					femaleRegions[20].id = 100019;
-					femaleRegions[21].id = 100020;
-					femaleRegions[22].id = 100021;
-					femaleRegions[23].id = 100022;
-					femaleRegions[24].id = 100023;
-					femaleRegions[25].id = 100024;
-					femaleRegions[26].id = 100025;
-					femaleRegions[27].id = 100026;
-					femaleRegions[28].id = 58;
-					femaleRegions[29].id = 59;
-					femaleRegions[30].id = 10062;
-					femaleRegions[31].id = 10063;
-
-					for (std::uint32_t i = 0; i < 32; i++)
+					case 1:
 					{
-						regions.push_back(femaleRegions[i]);
+						// Female
+						FacialBoneRegion femaleRegions[32];
+
+						femaleRegions[0].id = 100000;
+						femaleRegions[1].id = 100001;
+						femaleRegions[2].id = 100002;
+						femaleRegions[3].id = 100003;
+						femaleRegions[4].id = 100004;
+						femaleRegions[5].id = 100005;
+						femaleRegions[6].id = 100006;
+						femaleRegions[7].id = 100007;
+						femaleRegions[8].id = 100008;
+						femaleRegions[9].id = 100009;
+						femaleRegions[10].id = 100010;
+						femaleRegions[11].id = 100011;
+						femaleRegions[12].id = 100012;
+						femaleRegions[13].id = 100013;
+						femaleRegions[14].id = 100014;
+						femaleRegions[15].id = 100015;
+						femaleRegions[16].id = 100016;
+						femaleRegions[17].id = 100027;
+						femaleRegions[18].id = 100017;
+						femaleRegions[19].id = 100018;
+						femaleRegions[20].id = 100019;
+						femaleRegions[21].id = 100020;
+						femaleRegions[22].id = 100021;
+						femaleRegions[23].id = 100022;
+						femaleRegions[24].id = 100023;
+						femaleRegions[25].id = 100024;
+						femaleRegions[26].id = 100025;
+						femaleRegions[27].id = 100026;
+						femaleRegions[28].id = 58;
+						femaleRegions[29].id = 59;
+						femaleRegions[30].id = 10062;
+						femaleRegions[31].id = 10063;
+
+						for (std::uint32_t i = 0; i < 32; i++)
+						{
+							regions.push_back(femaleRegions[i]);
+						}
 					}
-				}
-				default:
-				{
-					// Male
-					FacialBoneRegion maleRegions[32];
-
-					maleRegions[0].id = 0;
-					maleRegions[1].id = 1;
-					maleRegions[2].id = 2;
-					maleRegions[3].id = 3;
-					maleRegions[4].id = 4;
-					maleRegions[5].id = 5;
-					maleRegions[6].id = 6;
-					maleRegions[7].id = 7;
-					maleRegions[8].id = 8;
-					maleRegions[9].id = 9;
-					maleRegions[10].id = 10;
-					maleRegions[11].id = 927646266;
-					maleRegions[12].id = 921646267;
-					maleRegions[13].id = 921646268;
-					maleRegions[14].id = 921646269;
-					maleRegions[15].id = 921646270;
-					maleRegions[16].id = 921646271;
-					maleRegions[17].id = 921646272;
-					maleRegions[18].id = 921646273;
-					maleRegions[19].id = 921646274;
-					maleRegions[20].id = 921646275;
-					maleRegions[21].id = 921646276;
-					maleRegions[22].id = 921646277;
-					maleRegions[23].id = 921646278;
-					maleRegions[24].id = 921646279;
-					maleRegions[25].id = 25;
-					maleRegions[26].id = 26;
-					maleRegions[27].id = 27;
-					maleRegions[28].id = 60;
-					maleRegions[29].id = 61;
-					maleRegions[30].id = 62;
-					maleRegions[31].id = 63;
-
-					for (std::uint32_t i = 0; i < 32; i++)
+					default:
 					{
-						regions.push_back(maleRegions[i]);
+						// Male
+						FacialBoneRegion maleRegions[32];
+
+						maleRegions[0].id = 0;
+						maleRegions[1].id = 1;
+						maleRegions[2].id = 2;
+						maleRegions[3].id = 3;
+						maleRegions[4].id = 4;
+						maleRegions[5].id = 5;
+						maleRegions[6].id = 6;
+						maleRegions[7].id = 7;
+						maleRegions[8].id = 8;
+						maleRegions[9].id = 9;
+						maleRegions[10].id = 10;
+						maleRegions[11].id = 927646266;
+						maleRegions[12].id = 921646267;
+						maleRegions[13].id = 921646268;
+						maleRegions[14].id = 921646269;
+						maleRegions[15].id = 921646270;
+						maleRegions[16].id = 921646271;
+						maleRegions[17].id = 921646272;
+						maleRegions[18].id = 921646273;
+						maleRegions[19].id = 921646274;
+						maleRegions[20].id = 921646275;
+						maleRegions[21].id = 921646276;
+						maleRegions[22].id = 921646277;
+						maleRegions[23].id = 921646278;
+						maleRegions[24].id = 921646279;
+						maleRegions[25].id = 25;
+						maleRegions[26].id = 26;
+						maleRegions[27].id = 27;
+						maleRegions[28].id = 60;
+						maleRegions[29].id = 61;
+						maleRegions[30].id = 62;
+						maleRegions[31].id = 63;
+
+						for (std::uint32_t i = 0; i < 32; i++)
+						{
+							regions.push_back(maleRegions[i]);
+						}
 					}
-				}
 				}
 
 				return regions;

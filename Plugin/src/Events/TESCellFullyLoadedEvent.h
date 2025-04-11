@@ -15,8 +15,6 @@ namespace RE
 
 			virtual BSEventNotifyControl ProcessEvent(const TESCellFullyLoadedEvent& a_event, BSTEventSource<TESCellFullyLoadedEvent>*) override
 			{
-				DEBUG("EVENT FIRED");
-
 				if (a_event.cell)
 				{
 					a_event.cell->UpdateAllDecals();

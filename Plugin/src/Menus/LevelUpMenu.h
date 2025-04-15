@@ -43,7 +43,7 @@ namespace RE
 				kIntelligence = 5,
 				kAgility = 6,
 				kLuck = 7,
-				kIntenseTraining = 8,
+				kIntenseTrainingPerk = 8,
 				kCancel = 9
 			};
 
@@ -84,6 +84,48 @@ namespace RE
 				// Return -1 if the editor ID is not found.
 				return static_cast<std::uint32_t>(-1);
 			}
+
+			class CASLevelUpMenu :
+				public GameMenuBase
+			{
+			public:
+				static IMenu* CreateCASLevelUpMenu(const UIMessage&)
+				{
+					return new CASLevelUpMenu();
+				}
+
+				const char* sMenuName = "CASLevelUpMenu";
+
+				CASLevelUpMenu()
+				{
+					menuFlags.set(
+						UI_MENU_FLAGS::kUsesCursor,
+						UI_MENU_FLAGS::kTopmostRenderedMenu,
+						UI_MENU_FLAGS::kUpdateUsesCursor,
+						UI_MENU_FLAGS::kUsesBlurredBackground
+					);
+
+					depthPriority = UI_DEPTH_PRIORITY::kTerminal;
+
+					const auto ScaleformManager = BSScaleformManager::GetSingleton();
+					if (ScaleformManager->LoadMovieEx(*this, "Interface/CASLevelUpMenu.swf", "root", Scaleform::GFx::Movie::ScaleModeType::kExactFit))
+					{
+						Scaleform::GFx::ASMovieRootBase* movieRoot = uiMovie.get()->asMovieRoot.get();
+						Scaleform::GFx::Value bgsCodeObj;
+						movieRoot->GetVariable(&bgsCodeObj, "root.Menu_mc.BGSCodeObj");
+
+						// TODO
+						filterHolder = RE::msvc::make_unique<BSGFxShaderFXTarget>(*uiMovie, "root.Menu_mc");
+						if (filterHolder)
+						{
+							filterHolder->CreateAndSetFiltersToHUD(HUDColorTypes::kGameplayHUDColor);
+							shaderFXObjects.push_back(filterHolder.get());
+						}
+
+						movieRoot->Invoke("root.Menu_mc.onCodeObjCreate", nullptr, nullptr, 0);
+					}
+				};
+			};
 		}
 	}
 }

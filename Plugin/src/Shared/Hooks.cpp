@@ -45,7 +45,7 @@ namespace RE
 					while (pointer)
 					{
 						// BGSInventoryItem::Stack::Flag::kSlotMask = 7
-						if (!a_this->checkEquipped || (stack == nullptr && (pointer->flags.underlying() & 7) != 0))
+						if (!a_this->checkEquipped || (stack ==	 nullptr && (pointer->flags.underlying() & 7) != 0))
 						{
 							stack = pointer;
 						}
@@ -83,6 +83,13 @@ namespace RE
 				{
 					return a_this->UseQuickkeyItem(a_quickkeyIndex);
 				}
+			}
+
+			void HookWorkbenchMenuBaseShowBuildFailureMessage_PowerArmorModMenu()
+			{
+				GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
+				SendHUDMessage::ShowHUDMessage(gameSettingCollection->GetSetting("sCannotBuildMessage")->GetString().data(), nullptr, true, true);
+				return;
 			}
 
 			void Install(F4SE::Trampoline& trampoline)
@@ -153,6 +160,10 @@ namespace RE
 				// FavoritesManager::UseQuickkeyItem - { ID 2248766 + 0x68 }
 				REL::Relocation<std::uintptr_t> FavoritesManagerUseQuickkeyItem_2{ REL::ID(2248766), 0x68 };
 				trampoline.write_call<5>(FavoritesManagerUseQuickkeyItem_2.address(), &HookFavoritesManagerUseQuickkeyItem);
+
+				// WorkbenchMenuBase::ShowBuildFailureMessage { ID 2224322 + 0x2C5 } - .980
+				REL::Relocation<std::uintptr_t> WorkbenchMenuBaseShowBuildFailureMessage_PowerArmorModMenu{ REL::ID(2224322), 0x2C5 };
+				trampoline.write_jmp<5>(WorkbenchMenuBaseShowBuildFailureMessage_PowerArmorModMenu.address(), &HookWorkbenchMenuBaseShowBuildFailureMessage_PowerArmorModMenu);
 			}
 
 			DetourXS hook_ShowBuildFailureMessage;
@@ -187,6 +198,20 @@ namespace RE
 
 								if (size)
 								{
+									BSTHashMap<std::uint32_t, TESForm*> crcMAP;
+
+									for (std::uint32_t i = 0; i < size; ++i) {
+										const auto& tuple = requiredItems->at(i);
+										TESForm* form = tuple.first;
+										const auto& value = tuple.second;
+
+										if (!form) continue;
+
+										auto name = TESFullName::GetFullName(*form);
+										if (name.empty()) continue;
+
+										
+									}
 									auto tester = examineMenu->sharedContainerRef.get();
 									if (tester)
 									{
@@ -546,6 +571,7 @@ namespace RE
 				if (inventoryItem)
 				{
 					EquippedItem& equippedWeapon = playerCharacter->currentProcess->middleHigh->equippedItems[0];
+
 					// If ammo is mapped to a degradation value override default of 1%.
 					float conditionReduction = 0.01f;
 					TESObjectWEAP::InstanceData* data = (TESObjectWEAP::InstanceData*)(a_weapon->instanceData.get());
@@ -723,7 +749,41 @@ namespace RE
 				}
 			}
 
+			DetourXS hook_InventoryUserUIUtilsPopulateMenuObj;
+			typedef std::int64_t (InventoryUserUIUtilsPopulateMenuObjSig)(const PipboyObject*, PipboyObject*);
+			REL::Relocation<InventoryUserUIUtilsPopulateMenuObjSig> InventoryUserUIUtilsPopulateMenuObj_Original;
+
+			std::int64_t HookInventoryUserUIUtilsPopulateMenuObj(const PipboyObject* a_entry, PipboyObject* a_p2)
+			{
+				std::int64_t returnValue = InventoryUserUIUtilsPopulateMenuObj_Original(a_entry, a_p2);
+				auto i = 0;
+
+				for (const auto& pair : a_p2->memberMap) {
+
+					//DEBUG(pair.first.c_str());
+				}
+
+				//DEBUG(a_p2->memberMap.find("isLegendary")->second->kBool);
+
+				
+				return returnValue;
+			}
+
 			// ========== REGISTERS ==========
+			void RegisterInventoryUserUIUtilsPopulateMenuObj()
+			{
+				REL::Relocation<InventoryUserUIUtilsPopulateMenuObjSig> functionLocation{ REL::ID(2224177) };
+				if (hook_InventoryUserUIUtilsPopulateMenuObj.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookInventoryUserUIUtilsPopulateMenuObj))
+				{
+					DEBUG("Installed 'InventoryUserUIUtils::PopulateMenuObj' hook.");
+					InventoryUserUIUtilsPopulateMenuObj_Original = reinterpret_cast<uintptr_t>(hook_InventoryUserUIUtilsPopulateMenuObj.GetTrampoline());
+				}
+				else
+				{
+					FATAL("Failed to hook 'InventoryUserUIUtils::PopulateMenuObj', exiting.");
+				}
+			}
+
 			void RegisterGetBuildConfirmQuestion()
 			{
 				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };

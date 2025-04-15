@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Menus/LevelUpMenu.h"
+
 namespace ObScript
 {
 	class TestLoadingMenu
@@ -40,7 +42,10 @@ namespace ObScript
 			std::uint32_t& a_offset)
 		{
 
-			RE::LoadingMenu::StartTestingLoadMenu();
+			F4SE::GetTaskInterface()->AddTask([]() {
+				RE::UIMessageQueue::GetSingleton()->AddMessage("CASLevelUpMenu", RE::UI_MESSAGE_TYPE::kShow);
+			});
+			//RE::LoadingMenu::StartTestingLoadMenu();
 
 			return true;
 		}

@@ -15,15 +15,11 @@ namespace RE
 				{
 					DEBUG("this.BGSCodeObj.OnEscapePress");
 					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
-
-					
-
 					if (examineMenu)
 					{
 						DEBUG("Examine menu!");
 						examineMenu->repairing = false;
 					}
-					
 				}
 			};
 

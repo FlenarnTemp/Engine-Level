@@ -116,7 +116,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	DKUtil::Logger::Init(Plugin::NAME, std::to_string(Plugin::Version));
 	INFO("{} v{} loaded."sv, Plugin::NAME, Plugin::Version);
 
-	auto& trampoline = F4SE::GetTrampoline();
+	auto& trampoline = REL::GetTrampoline();
 	trampoline.create(1024 * 32);
 
 	RE::Cascadia::Hooks::Install(trampoline);

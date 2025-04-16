@@ -38,10 +38,10 @@ source_group(
 
 # dependencies
 find_package(spdlog CONFIG REQUIRED)
+
 find_dependency_path(DKUtil include/DKUtil/Logger.hpp)
 find_dependency_path(CommonLibF4/CommonLibF4 include/F4SE/F4SE.h)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../extern/jsoncpp ${CMAKE_BINARY_DIR}/extern/jsoncpp)
 
 # cmake target
 # runtime
@@ -71,7 +71,6 @@ target_link_libraries(
 		DKUtil::DKUtil
 		CommonLibF4::CommonLibF4
 		spdlog::spdlog
-		jsoncpp_lib
 )
 
 # compiler def

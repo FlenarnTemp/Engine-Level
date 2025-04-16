@@ -4,8 +4,6 @@ namespace RE
 {
 	namespace Cascadia
 	{
-		
-
 		namespace Skills
 		{
 			typedef std::vector<ActorValueInfo*> AVVector;
@@ -21,6 +19,19 @@ namespace RE
 				LuckID,
 				ExperienceID
 			};
+
+			struct VanillaAV_Struct
+			{
+				// Vanilla SPECIAL Values
+				ActorValueInfo* Strength;
+				ActorValueInfo* Perception;
+				ActorValueInfo* Endurance;
+				ActorValueInfo* Charisma;
+				ActorValueInfo* Intelligence;
+				ActorValueInfo* Agility;
+				ActorValueInfo* Luck;
+			};
+			extern VanillaAV_Struct VanillaActorValues;
 
 			void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue);
 			void PopulateSkillEntries(Scaleform::GFx::ASMovieRootBase* asMovieRoot);

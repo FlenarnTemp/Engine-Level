@@ -7,6 +7,8 @@ namespace RE
 	{
 		namespace Skills
 		{
+			VanillaAV_Struct VanillaActorValues;
+
 			struct CascadiaAV_Struct
 			{
 				// Skill Values
@@ -26,19 +28,6 @@ namespace RE
 				ActorValueInfo* WeaponCNDResist;
 			};
 			CascadiaAV_Struct CascadiaActorValues;
-
-			struct VanillaAV_Struct
-			{
-				// Vanilla SPECIAL Values
-				ActorValueInfo* Strength;
-				ActorValueInfo* Perception;
-				ActorValueInfo* Endurance;
-				ActorValueInfo* Charisma;
-				ActorValueInfo* Intelligence;
-				ActorValueInfo* Agility;
-				ActorValueInfo* Luck;
-			};
-			VanillaAV_Struct VanillaActorValues;
 
 			struct CascadiaPerks_Struct
 			{

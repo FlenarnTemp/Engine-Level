@@ -2,6 +2,7 @@
 
 #include "Shared/SharedFunctions.h"
 #include "Systems/Skills.h"
+#include "Serialization/Serialization.h"
 
 namespace RE
 {
@@ -129,11 +130,62 @@ namespace RE
 				return skillPointsValue;
 			}
 
+			bool CanLevelUpMenuBeShown()
+			{
+				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+				if (playerCharacter->IsInCombat())
+				{
+					return false;
+				}
+
+				if (InMenuMode())
+				{
+					return false;
+				}
+
+				// TODO - Is player in scene 
+
+				if (IsXPMetervisible())
+				{
+					return false;
+				}
+
+				return true;
+			}
+
+			// Waits for level up to be ready and then shows menu
+			void WaitForLevelUpReady()
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+				if (!CanLevelUpMenuBeShown())
+				{
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+					std::async(std::launch::async, WaitForLevelUpReady);
+					return;
+				}
+				else
+				{
+					// Scaleform open menu internal
+				}
+			}
+
 			// Called from 'LevelIncrease::Event'
 			void HandleLevelup()
 			{
 				float pointsToAdd = GetSkillPointsToAdd();
+
+				Serialization::ModSkillPoints(pointsToAdd);
+
+				// UpdateLevelUpFormsFromGame
+
+				Serialization::SetReadyToLevelUp(true);
+
+				std::thread LevelUpWait(WaitForLevelUpReady);
+				LevelUpWait.detach();
 			}
+
+			
 
 			void HandleLevelUpMenuOpen()
 			{

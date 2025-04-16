@@ -8,6 +8,12 @@ namespace RE
 	{
 		namespace LevelUpMenu
 		{
+			float perkPoints;
+
+			std::uint32_t menuModeType;
+
+			std::uint32_t tagPointsValue;
+
 			enum SkillArray
 			{
 				Barter = 0,
@@ -85,6 +91,24 @@ namespace RE
 				return static_cast<std::uint32_t>(-1);
 			}
 
+			void HandleLevelUpMenuOpen()
+			{
+				switch (menuModeType)
+				{
+				case kLevelUp:
+					break;
+
+				case kTagSkills:
+					break;
+
+				case kSpecialRespec:
+					break;
+
+				case kIntenseTraining:
+					break;
+				}
+			}
+
 			class CASLevelUpMenu :
 				public GameMenuBase
 			{
@@ -126,6 +150,22 @@ namespace RE
 					}
 				};
 			};
+
+			bool RegisterScaleform(Scaleform::GFx::Movie* a_view, Scaleform::GFx::Value* a_value)
+			{
+				Scaleform::GFx::Value currentSWFPath;
+				// Register native code handlers.
+				if (a_view->asMovieRoot->GetVariable(&currentSWFPath, "root.loaderInfo.url"))
+				{
+					if (_stricmp(currentSWFPath.GetString(), "Interface/CASLevelUpMenu.swf") == 0)
+					{
+						Scaleform::GFx::Value bgsCodeObj;
+						a_view->asMovieRoot->GetVariable(&bgsCodeObj, "root.Menu_mc.BGSCodeObj");
+					}
+					return true;
+				}
+				return false;
+			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 #include "Events/BSAnimationGraphEvent.h"
 #include "Events/InputEvent.h"
+#include "Events/LevelIncreaseEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESCellFullyLoadedEvent.h"
 #include "Events/TESInitScriptEvent.h"
@@ -56,6 +57,8 @@ namespace
 			RE::Cascadia::RegisterTESHarvestEventSink();
 			RE::Cascadia::RegisterTESHitEventSink();
 			RE::Cascadia::RegisterForCellFullyLoaded(RE::Cascadia::CellFullyLoadedListener::GetSingleton());
+			RE::Cascadia::RegisterLevelIncreaseEventSink();
+
 			INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
 			break;
 
@@ -169,6 +172,12 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 		if (!scaleform->Register("Cascadia-ExamineConfirmMenu", RE::Cascadia::ExamineConfirmMenu::RegisterScaleform))
 		{
 			FATAL("Failed to register 'ExamineConfirmMenu', marking as incompatible."sv);
+			return false;
+		}
+
+		if (!scaleform->Register("Cascadia-LevelUpMenu", RE::Cascadia::LevelUpMenu::RegisterScaleform))
+		{
+			FATAL("Failed to register 'LevelUpMenu', marking as incompatible."sv);
 			return false;
 		}
 	}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Menus/LevelUpMenu.h"
+
 namespace RE
 {
 	namespace Cascadia
@@ -9,8 +11,8 @@ namespace RE
 		{
 			virtual BSEventNotifyControl ProcessEvent(const LevelIncrease::Event& a_event, BSTEventSource<LevelIncrease::Event>*) override
 			{
-				DEBUG("Player leveled up.");
 
+				LevelUpMenu::HandleLevelup();
 				return BSEventNotifyControl::kContinue;
 			}
 		};

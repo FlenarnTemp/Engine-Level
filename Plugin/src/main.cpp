@@ -10,6 +10,7 @@
 #include "Menus/PipboyMenu.h"
 #include "Patches/Patches.h"
 #include "Scripts/ObScript.h"
+#include "Serialization/Serialization.h"
 #include "Shared/SharedDeclarations.h"
 #include "Systems/Skills.h"
 
@@ -133,7 +134,9 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	else
 	{
 		serialization->SetUniqueID('CAS');
-		//serialization->SetRevertCallback(Cascadia::Serialization::RevertCallback());
+		serialization->SetRevertCallback(Cascadia::Serialization::RevertCallback);
+		serialization->SetSaveCallback(Cascadia::Serialization::SaveCallback);
+		serialization->SetLoadCallback(Cascadia::Serialization::LoadCallback);
 	}
 
 	const F4SE::MessagingInterface* messaging = F4SE::GetMessagingInterface();

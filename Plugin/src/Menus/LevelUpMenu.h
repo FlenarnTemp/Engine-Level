@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shared/SharedFunctions.h"
+#include "Systems/Skills.h"
 
 namespace RE
 {
@@ -89,6 +90,49 @@ namespace RE
 
 				// Return -1 if the editor ID is not found.
 				return static_cast<std::uint32_t>(-1);
+			}
+
+			float GetSkillPointsToAdd()
+			{
+				// Fallout 3 formula is 10 + base intelligence
+				// Extra 3 points if the player has "Educated" perk
+				// Using a global in 'FalloutCascaida.esm' we can adjust the base value.
+
+				TESGlobal* baseSkillPointsGlobal = TESDataHandler::GetSingleton()->LookupForm<TESGlobal>(0x1F9DFD, "FalloutCascadia.esm");
+				float skillPointsValue = 0;
+
+				if (baseSkillPointsGlobal)
+				{
+					skillPointsValue = baseSkillPointsGlobal->value;
+				}
+				else
+				{
+					skillPointsValue = 10;
+				}
+
+				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+
+				float playerIntelligence = playerCharacter->GetBaseActorValue(*Skills::VanillaActorValues.Intelligence);
+
+				skillPointsValue = (skillPointsValue + playerIntelligence);
+
+				BGSPerk* educatedPerk = TESDataHandler::GetSingleton()->LookupForm<BGSPerk>(0x0F399E, "FalloutCascadia.esm");
+
+				if (educatedPerk)
+				{
+					if (playerCharacter->GetPerkRank(educatedPerk) != 0)
+					{
+						skillPointsValue = (skillPointsValue + 3);
+					}
+				}
+
+				return skillPointsValue;
+			}
+
+			// Called from 'LevelIncrease::Event'
+			void HandleLevelup()
+			{
+				float pointsToAdd = GetSkillPointsToAdd();
 			}
 
 			void HandleLevelUpMenuOpen()

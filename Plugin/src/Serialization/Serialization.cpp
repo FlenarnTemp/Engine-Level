@@ -2,7 +2,7 @@
 
 namespace Cascadia
 {
-	/**namespace Serialization
+	namespace Serialization
 	{
 		auto CASSerialization::GetSingleton() -> CASSerialization*
 		{
@@ -10,76 +10,73 @@ namespace Cascadia
 			return std::addressof(singleton);
 		}
 
-		/* Level Up Menu Related *
+		/* Level Up Menu Related */
 		std::int32_t playerSkillPoints = 0;
 		std::set<std::uint32_t> taggedSkills;
 		bool playerReadyToLevelUp = false;
-
-		void CASSerialization::Serialize(F4SE::SerializationInterface* a_f4se)
+		
+		void CASSerialization::Serialize(const F4SE::SerializationInterface* a_intfc)
 		{
 			DEBUG("Serialize save data.");
-			Json::StreamWriterBuilder builder;
-			builder["commentStyle"] = "None";
-			builder["indentation"] = "";
+			std::int32_t test = 12;
 
-			const std::unique_ptr<Json::StreamWriter> writer = std::unique_ptr<Json::StreamWriter>(builder.newStreamWriter());
-			Json::OStringStream ss;
-			Json::Value value;
+			a_intfc->WriteRecord('USKP', SerializationVersion, &test, sizeof(int32_t));
 
-			writer->write(value, std::addressof(ss));
-			auto str = ss.str();
-
-			a_f4se->WriteRecord(
-				SerializationType,
-				SerializationVersion,
-				str.data(),
-				static_cast<std::uint32_t>(str.size()));
+			std::uint32_t taggedSkillCount = taggedSkills.size();
 			
+			a_intfc->OpenRecord('UTSK', SerializationVersion);
+			a_intfc->WriteRecordData(&taggedSkillCount, sizeof(uint32_t));
+			for (auto& form : taggedSkills)
+			{
+				std::uint32_t formID = form;
+				a_intfc->WriteRecordData(&formID, sizeof(uint32_t));
+			}
+			DEBUG("Saving tagged skills.");
+
+			a_intfc->WriteRecord('BPRL', SerializationVersion, &playerReadyToLevelUp, sizeof(bool));
+		
 		}
 
-		void CASSerialization::Deserialize(F4SE::SerializationInterface* a_f4se)
+		void CASSerialization::Deserialize(const F4SE::SerializationInterface* a_intfc)
 		{
 			DEBUG("Deserialize save data.");
 			std::uint32_t type;
 			std::uint32_t version;
 			std::uint32_t length;
 
-			a_f4se->GetNextRecordInfo(type, version, length);
-
-			if (type != SerializationType)
+			while (a_intfc->GetNextRecordInfo(type, version, length))
 			{
-				FATAL("Serialization type mismatch.");
-				return;
-			}
+				switch (type) {
+				case 'BPRL':
+					DEBUG("Found PlayerReadyToLevelUp data.");
+					a_intfc->ReadRecordData(&playerReadyToLevelUp, sizeof(bool));
+					break;
 
-			if (version != SerializationVersion)
-			{
-				FATAL("Serialization version mismatch.");
-				return;
-			}
+				case 'USKP':
+					DEBUG("Found playerSkillPoints data.");
+					a_intfc->ReadRecordData(&playerSkillPoints, sizeof(int32_t));
+					DEBUG(playerSkillPoints);
+					break;
 
-			Json::CharReaderBuilder builder;
-			const auto reader = std::unique_ptr<Json::CharReader>(builder.newCharReader());
+				case 'UTSK':
+					DEBUG("Found tagged skills data.");
+					std::uint32_t taggedSkillsCount = 0;
+					a_intfc->ReadRecordData(&taggedSkillsCount, sizeof(uint32_t));
 
-			std::unique_ptr<char[]> buffer = std::make_unique<char[]>(length);
-			a_f4se->ReadRecordData(buffer.get(), length);
+					for (std::uint32_t i = 0; i < taggedSkillsCount; i++)
+					{
+						std::uint32_t oldFormID = 0;
+						std::uint32_t newFormID = 0;
 
-			std::unique_ptr<char[]>::pointer begin = buffer.get();
-			std::unique_ptr<char[]>::pointer end = begin + length;
+						a_intfc->ReadRecordData(&oldFormID, sizeof(uint32_t));
+						newFormID = a_intfc->ResolveFormID(oldFormID).value_or(0);
 
-			Json::Value value;
-			std::string errors;
-
-			if (!reader->parse(begin, end, std::addressof(value), nullptr))
-			{
-				FATAL("Failed to parse serialized data.");
-				return;
-			}
-
-			if (!value.isObject())
-			{
-				FATAL("Failed to parse serialized data.");
-				return;
+						if (!newFormID != 0)
+						{
+							taggedSkills.insert(newFormID);
+						}
+					}
+				}
 			}
 		}
 
@@ -90,7 +87,20 @@ namespace Cascadia
 			playerReadyToLevelUp = false;
 			taggedSkills.clear();
 		}
-	}*/
+
+		void RevertCallback([[maybe_unused]] const F4SE::SerializationInterface* a_intfc)
+		{
+			CASSerialization::GetSingleton()->Revert();
+		}
+
+		void SaveCallback(const F4SE::SerializationInterface* a_intfc)
+		{
+			CASSerialization::GetSingleton()->Serialize(a_intfc);
+		}
+
+		void LoadCallback(const F4SE::SerializationInterface* a_intfc)
+		{
+			CASSerialization::GetSingleton()->Deserialize(a_intfc);
+		}
+	}
 }
-
-

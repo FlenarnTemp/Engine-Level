@@ -39,6 +39,12 @@ namespace RE
 			//	Level Up Functions
 			bool IsReadyToLevelUp();
 			void SetReadyToLevelUp(bool bReady);
+
+			// Tagged skills
+			void SetSkillTagged(TESFormID skillFormid);
+			void RemoveSkillTagged(TESFormID skillFormid);
+			bool IsSkillTagged(TESFormID skillFormID);
+			std::uint32_t GetSkillsTagged();
 		}
 	}
 }

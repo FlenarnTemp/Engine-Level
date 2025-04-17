@@ -128,6 +128,26 @@ namespace RE
 			{
 				playerReadyToLevelUp = ready;
 			}
+
+			void SetSkillTagged(TESFormID skillFormid)
+			{
+				taggedSkills.insert(skillFormid);
+			}
+
+			void RemoveSkillTagged(TESFormID skillFormid)
+			{
+				taggedSkills.erase(skillFormid);
+			}
+			
+			bool IsSkillTagged(TESFormID skillFormID)
+			{
+				return taggedSkills.find(skillFormID) != taggedSkills.end();
+			}
+
+			std::uint32_t GetSkillsTagged()
+			{
+				return taggedSkills.size();
+			}
 		}
 	}
 }

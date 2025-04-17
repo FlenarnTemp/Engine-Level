@@ -3,9 +3,10 @@
 #include "Events/LevelIncreaseEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESCellFullyLoadedEvent.h"
-#include "Events/TESInitScriptEvent.h"
 #include "Events/TESHavestEvent.h"
 #include "Events/TESHitEvent.h"
+#include "Events/TESInitScriptEvent.h"
+#include "Events/TESLoadGameEvent.h"
 #include "Menus/ExamineConfirmMenu.h"
 #include "Menus/PipboyMenu.h"
 #include "Patches/Patches.h"
@@ -59,6 +60,7 @@ namespace
 			RE::Cascadia::RegisterTESHitEventSink();
 			RE::Cascadia::RegisterForCellFullyLoaded(RE::Cascadia::CellFullyLoadedListener::GetSingleton());
 			RE::Cascadia::RegisterLevelIncreaseEventSink();
+			RE::Cascadia::RegisterTESLoadGameEventSink();
 
 			INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
 			break;

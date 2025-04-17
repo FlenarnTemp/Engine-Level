@@ -166,6 +166,8 @@ namespace RE
 				}
 				else
 				{
+					UIMessageQueue* uiMessageQueue = UIMessageQueue::GetSingleton();
+					uiMessageQueue->AddMessage("LevelUpMenu", UI_MESSAGE_TYPE::kShow);
 					// Scaleform open menu internal
 				}
 			}
@@ -185,6 +187,15 @@ namespace RE
 				LevelUpWait.detach();
 			}
 
+			// Check if player saved in the middle of a level up.
+			void CheckForLevelUp()
+			{
+				if (Serialization::IsReadyToLevelUp())
+				{
+					std::thread LevelUpWait(WaitForLevelUpReady);
+					LevelUpWait.detach();
+				}
+			}
 			
 
 			void HandleLevelUpMenuOpen()

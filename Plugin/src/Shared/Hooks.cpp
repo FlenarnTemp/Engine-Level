@@ -129,6 +129,16 @@ namespace RE
 				auto PipboyInventoryDataPopulateItemCardInfo_NOP_bytes = NOP_BYTES(5);
 				REL::safe_write<std::uint8_t>(PipboyInventoryDataPopulateItemCardInfo_NOP.address(), std::span{ PipboyInventoryDataPopulateItemCardInfo_NOP_bytes });
 
+				// HUDExperienceMeter::UpdateDisplayObject - { 2220382 + 0x221 }
+				REL::Relocation<std::uintptr_t> HUDExperienceMeterUpdateDisplayObject_NOP_1{ REL::ID(2220382), 0x221 };
+				auto HUDExperienceMeterUpdateDisplayObject_NOP_bytes_1 = NOP_BYTES(5);
+				REL::safe_write<std::uint8_t>(HUDExperienceMeterUpdateDisplayObject_NOP_1.address(), std::span{ HUDExperienceMeterUpdateDisplayObject_NOP_bytes_1 });
+
+				// HUDExperienceMeter::UpdateDisplayObject - { 2220382 + 0x26B }
+				REL::Relocation<std::uintptr_t> HUDExperienceMeterUpdateDisplayObject_NOP_2{ REL::ID(2220382), 0x26B };
+				auto HUDExperienceMeterUpdateDisplayObject_NOP_bytes_2 = NOP_BYTES(5);
+				REL::safe_write<std::uint8_t>(HUDExperienceMeterUpdateDisplayObject_NOP_2.address(), std::span{ HUDExperienceMeterUpdateDisplayObject_NOP_bytes_2 });
+
 				// Actor::GetDesirability - { 2229946 + 0x56 } - .984
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_1{ REL::ID(2229946), 0x56 };
 				trampoline.write_call<5>(ActorUtilsArmorRatingVisitorBaseoperator_1.address(), &HookActorUtilsArmorRatingVisitorBaseOperator);

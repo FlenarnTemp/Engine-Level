@@ -118,6 +118,16 @@ namespace RE
 			{
 				playerSkillPoints += modValue;
 			}
+
+			bool IsReadyToLevelUp()
+			{
+				return playerReadyToLevelUp;
+			}
+
+			void SetReadyToLevelUp(bool ready)
+			{
+				playerReadyToLevelUp = ready;
+			}
 		}
 	}
 }

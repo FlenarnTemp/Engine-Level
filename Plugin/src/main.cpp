@@ -134,9 +134,9 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	else
 	{
 		serialization->SetUniqueID('CAS');
-		serialization->SetRevertCallback(Cascadia::Serialization::RevertCallback);
-		serialization->SetSaveCallback(Cascadia::Serialization::SaveCallback);
-		serialization->SetLoadCallback(Cascadia::Serialization::LoadCallback);
+		serialization->SetRevertCallback(RE::Cascadia::Serialization::RevertCallback);
+		serialization->SetSaveCallback(RE::Cascadia::Serialization::SaveCallback);
+		serialization->SetLoadCallback(RE::Cascadia::Serialization::LoadCallback);
 	}
 
 	const F4SE::MessagingInterface* messaging = F4SE::GetMessagingInterface();

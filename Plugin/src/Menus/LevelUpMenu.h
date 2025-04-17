@@ -143,7 +143,7 @@ namespace RE
 					return false;
 				}
 
-				// TODO - Is player in scene 
+				// TODO - Is player in scene
 
 				if (IsXPMetervisible())
 				{

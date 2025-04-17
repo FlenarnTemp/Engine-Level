@@ -171,7 +171,6 @@ namespace RE
 
 			void HookWorkbenchMenuBaseShowBuildFailureMessage(WorkbenchMenuBase* a_this)
 			{
-				GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
 				if (a_this->repairing)
 				{
 					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
@@ -192,14 +191,11 @@ namespace RE
 
 								BSTHashMap<TESBoundObject*, std::uint32_t> availableComponents;
 
+								BSTTuple<TESBoundObject*, std::uint32_t> insertObject;
+
 								std::uint32_t size = requiredItems->size();
-
-								//auto* currentItem = size ? requiredItems;
-
 								if (size)
 								{
-									BSTHashMap<std::uint32_t, TESForm*> crcMAP;
-
 									for (std::uint32_t i = 0; i < size; ++i) {
 										const auto& tuple = requiredItems->at(i);
 										TESForm* form = tuple.first;
@@ -207,53 +203,42 @@ namespace RE
 
 										if (!form) continue;
 
-										auto name = TESFullName::GetFullName(*form);
-										if (name.empty()) continue;
+										if (!form->IsBoundObject()) continue;
 
-										
+										TESObjectREFR* sharedContainerREF = examineMenu.get()->sharedContainerRef.get();
+										BGSInventoryList* inventoryList = sharedContainerREF->inventoryList;
+
+										if (inventoryList)
+										{
+											TESBoundObject* object = reinterpret_cast<TESBoundObject*>(form);
+
+											//DEBUG("'sharedContainerREF' has inventory list.");
+											std::uint32_t availableCount = GetAvailableComponentCount(inventoryList, form);
+											insertObject = { object, availableCount };
+										}
+										else
+										{
+											BaseFormComponent* container = sharedContainerREF->HasContainer();
+											if (container)
+											{
+												DEBUG("'sharedContainerREF' has container - HANDLE SOMEHOW");
+											}
+										}
+
+										availableComponents.insert(insertObject);										
 									}
-									auto tester = examineMenu->sharedContainerRef.get();
-									if (tester)
-									{
-
-									}
-
 									initDataRepair->availableComponents = availableComponents;
-
-									// TODO  - list available components.
-								}
-
-								for (std::uint32_t i = 0; i < size; ++i)
-								{
-									auto test = requiredItems->at(i);
-
-									TESForm* temp1 = test.first;
-									BGSTypedFormValuePair::SharedVal temp2 = test.second;
-									DEBUG("temp1 edid: {}", temp1->GetFormEditorID());
-									DEBUG("temp2 'i' value: {}", temp2.i);
-									
 								}
 
 								examineMenu->ShowConfirmMenu(initDataRepair, repairFailureCallback);
 							}
-
-							if (requiredItems)
-							{
-								for (const auto& tuple : *requiredItems) {
-									TESForm* form = tuple.first;
-									BGSTypedFormValuePair::SharedVal value = tuple.second;
-
-									const char* fullName = TESFullName::GetFullName(*form).data();
-									DEBUG("Component: {}, amount: {}", fullName, value.i);
-								}
-							}
-
 							a_this->repairing = false;
 						}
 					}
 				}
 				else
 				{
+					GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
 					SendHUDMessage::ShowHUDMessage(gameSettingCollection->GetSetting("sCannotBuildMessage")->GetString().data(), nullptr, true, true);
 				}
 			}

@@ -25,11 +25,6 @@ namespace RE
 					}
 				}
 
-				if (a_event.menuName == BSFixedString("CASLevelUpMenu"))
-				{
-					UI::GetSingleton()->RegisterMenu("CASLevelUpMenu", LevelUpMenu::CASLevelUpMenu::CreateCASLevelUpMenu);
-				}
-
 				return BSEventNotifyControl::kContinue;
 			}
 		};

@@ -180,7 +180,9 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 			return false;
 		}
 
-		if (!scaleform->Register("Cascadia-LevelUpMenu", RE::Cascadia::LevelUpMenu::RegisterScaleform))
+
+		RE::Cascadia::LevelUpMenu::RegisterMenu();
+		if (!scaleform->Register("CASLevelUpMenu", RE::Cascadia::LevelUpMenu::RegisterScaleform))
 		{
 			FATAL("Failed to register 'LevelUpMenu', marking as incompatible."sv);
 			return false;

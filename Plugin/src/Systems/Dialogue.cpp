@@ -652,7 +652,7 @@ namespace RE
 					}
 				}
 
-				// Expanded logic for 'Enabled' value, needs to take inot account possible values from both Shared and 'local' info.
+				// Expanded logic for 'Enabled' value, needs to take into account possible values from both Shared and 'local' info.
 				bool enabled = false;
 				if (dataInfo)
 				{
@@ -675,7 +675,7 @@ namespace RE
 					// No NPC response info - look one phase ahead (only) for a NPC response action.
 					if (BGSSceneActionNPCResponseDialogue* npcResponseAction = FindNextNPCResponseAction(currentScene, currentScene->currentActivePhase))
 					{
-						// Another framework check...
+						// Another framework check normally goes here...
 						npcResponseInfo = GetNPCResponseInfo(npcResponseAction, infoEntry.optionID);
 					}
 				}
@@ -778,6 +778,7 @@ namespace RE
 		{
 			// Restore player dialogue starting.
 			uint8_t bytes[] = { 0x48, 0x8B, 0xC8 };
+
 			// StartPlayerDialogue - 2196817 + 652 offset.
 			REL::Relocation<std::uintptr_t> startPlayerDialogue{ REL::ID(2196817), 0x652 };
 			REL::safe_write<uint8_t>(startPlayerDialogue.address(), std::span{ bytes });

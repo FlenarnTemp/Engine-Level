@@ -11,7 +11,7 @@ namespace RE
 		{
 			virtual BSEventNotifyControl ProcessEvent(const LevelIncrease::Event& a_event, BSTEventSource<LevelIncrease::Event>*) override
 			{
-				LevelUpMenu::HandleLevelup();
+				LevelUpMenu::HandleLevelUp();
 				return BSEventNotifyControl::kContinue;
 			}
 		};

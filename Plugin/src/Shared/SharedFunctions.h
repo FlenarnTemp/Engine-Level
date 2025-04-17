@@ -104,20 +104,8 @@ namespace RE
 			root->SetVariable(name.c_str(), arg);
 		}
 
-		bool InMenuMode()
-		{
-			UI* ui = UI::GetSingleton();
-			return (
-				(ui->menuMode >= 1)
-				|| ui->GetMenuOpen("CookingMenu")
-				|| ui->GetMenuOpen("FaderMenu")
-				|| ui->GetMenuOpen("FavoritesMenu")
-				|| ui->GetMenuOpen("PowerArmorModMenu")
-				|| ui->GetMenuOpen("RobotModMenu")
-				|| ui->GetMenuOpen("VATSMenu")
-				|| ui->GetMenuOpen("WorkshopMenu")
-				|| ui->GetMenuOpen("DialogueMenu")
-			);
-		}
+		extern bool InMenuMode();
+
+		std::uint32_t GetAvailableComponentCount(BGSInventoryList* a_list, TESForm* a_form);
 	}
 }

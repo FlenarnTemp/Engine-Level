@@ -67,5 +67,65 @@ namespace RE
 			size_t end = str.find_last_not_of(" \t\n\r");
 			return (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 		}
+
+		bool InMenuMode()
+		{
+			UI* ui = UI::GetSingleton();
+			return (
+				(ui->menuMode >= 1)
+				|| ui->GetMenuOpen("CookingMenu")
+				|| ui->GetMenuOpen("FaderMenu")
+				|| ui->GetMenuOpen("FavoritesMenu")
+				|| ui->GetMenuOpen("PowerArmorModMenu")
+				|| ui->GetMenuOpen("RobotModMenu")
+				|| ui->GetMenuOpen("VATSMenu")
+				|| ui->GetMenuOpen("WorkshopMenu")
+				|| ui->GetMenuOpen("DialogueMenu")
+			);
+		}
+
+		std::uint32_t GetAvailableComponentCount(BGSInventoryList* a_list, TESForm* a_form)
+		{
+			auto reverseInv = a_list->data;
+			std::reverse(reverseInv.begin(), reverseInv.end());
+
+			std::uint32_t amount = 0;
+
+			for (BGSInventoryItem& item : reverseInv)
+			{
+				if (item.object->formType == ENUM_FORM_ID::kMISC)
+				{
+					TESObjectMISC* miscItem = (TESObjectMISC*)(item.object);
+					
+					if (miscItem->componentData)
+					{
+						for (auto& componentData : *miscItem->componentData)
+						{
+							if (componentData.first == a_form)
+							{
+								std::uint32_t count = [item]
+									{
+										std::uint32_t _count = 0;
+										BSTSmartPointer<BGSInventoryItem::Stack> pointer = item.stackData;
+
+										while (pointer)
+										{
+											_count += pointer->GetCount();
+											pointer = pointer->nextStack;
+										}
+
+										return _count;
+									}();
+								
+								amount += componentData.second.i * count;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			return amount;
+		}
 	}
 }

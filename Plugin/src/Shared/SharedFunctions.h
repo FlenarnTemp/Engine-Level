@@ -10,6 +10,7 @@ namespace RE
 			void RegisterString(Scaleform::GFx::Value* destination, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> asMovieRoot, const char* name, const char* string);
 			void RegisterNumber(Scaleform::GFx::Value* destination, const char* name, double value);
 			void RegisterInt(Scaleform::GFx::Value* destination, const char* name, std::uint32_t value);
+			void RegisterBool(Scaleform::GFx::Value* destination, const char* name, bool value);
 		}
 
 		std::string FloatToPreciseString(float value, std::uint32_t precision);

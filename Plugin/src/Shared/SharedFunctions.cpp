@@ -34,6 +34,13 @@ namespace RE
 				fxValue = value;
 				destination->SetMember(name, &fxValue);
 			}
+
+			void RegisterBool(Scaleform::GFx::Value* destination, const char* name, bool value)
+			{
+				Scaleform::GFx::Value fxValue;
+				fxValue = value;
+				destination->SetMember(name, &fxValue);
+			}
 		}
 
 		// Takes a Float and converts it to a Precise String.

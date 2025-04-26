@@ -33,8 +33,28 @@ namespace RE
 			};
 			extern VanillaAV_Struct VanillaActorValues;
 
-			void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue);
-			void PopulateSkillEntries(Scaleform::GFx::ASMovieRootBase* asMovieRoot);
+			struct CascadiaAV_Struct
+			{
+				// Skill Values
+				ActorValueInfo* Barter;
+				ActorValueInfo* EnergyWeapons;
+				ActorValueInfo* Explosives;
+				ActorValueInfo* Lockpick;
+				ActorValueInfo* Medicine;
+				ActorValueInfo* MeleeWeapons;
+				ActorValueInfo* Repair;
+				ActorValueInfo* Science;
+				ActorValueInfo* Guns;
+				ActorValueInfo* Sneak;
+				ActorValueInfo* Speech;
+				ActorValueInfo* Unarmed;
+				ActorValueInfo* Survival;
+				ActorValueInfo* WeaponCNDResist;
+			};
+			extern CascadiaAV_Struct CascadiaActorValues;
+
+			void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue);
+			void PopulateSkillEntries(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot);
 
 			ActorValueInfo* GetSkillByName(std::string mySkill);
 			float GetSkillByValueName(Actor* myActor, std::string mySkill);

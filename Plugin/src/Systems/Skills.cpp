@@ -9,24 +9,6 @@ namespace RE
 		{
 			VanillaAV_Struct VanillaActorValues;
 
-			struct CascadiaAV_Struct
-			{
-				// Skill Values
-				ActorValueInfo* Barter;
-				ActorValueInfo* EnergyWeapons;
-				ActorValueInfo* Explosives;
-				ActorValueInfo* Lockpick;
-				ActorValueInfo* Medicine;
-				ActorValueInfo* MeleeWeapons;
-				ActorValueInfo* Repair;
-				ActorValueInfo* Science;
-				ActorValueInfo* Guns;
-				ActorValueInfo* Sneak;
-				ActorValueInfo* Speech;
-				ActorValueInfo* Unarmed;
-				ActorValueInfo* Survival;
-				ActorValueInfo* WeaponCNDResist;
-			};
 			CascadiaAV_Struct CascadiaActorValues;
 
 			struct CascadiaPerks_Struct
@@ -89,24 +71,24 @@ namespace RE
 
 			AVVector CascadiaSkillsList;
 
-			/**void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue)
+			/**void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_MovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue)
 			{
 				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
 
 				Scaleform::GFx::Value arrayArguments;
-				asMovieRoot->CreateObject(&arrayArguments);
+				a_MovieRoot->CreateObject(&arrayArguments);
 				float value = playerCharacter->GetPermanentActorValue(*skill);
 				float buffedValue = playerCharacter->GetActorValue(*skill);
-				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "text", skill->fullName.c_str());
-				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "editorid", skill->GetFormEditorID());
-				GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "description", "TEST");
+				GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "text", skill->fullName.c_str());
+				GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "editorid", skill->GetFormEditorID());
+				GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "description", "TEST");
 				if (stringValue.size() > (int)value)
 				{
-					GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "stringValue", stringValue[(int)value].c_str());
+					GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "stringValue", stringValue[(int)value].c_str());
 				}
 				else
 				{
-					GFxUtilities::RegisterString(&arrayArguments, asMovieRoot, "stringValue", "");
+					GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "stringValue", "");
 				}
 
 				GFxUtilities::RegisterInt(&arrayArguments, "formid", skill->formID);
@@ -120,40 +102,47 @@ namespace RE
 				destination->PushBack(&arrayArguments);
 			}
 
-			void PopulateSkillEntries(Scaleform::GFx::ASMovieRootBase* asMovieRoot)
+			void PopulateSkillEntries(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot)
 			{
 				Scaleform::GFx::Value arraySkills[7];
-					asMovieRoot->CreateString(&arraySkills[0], "skills");
-					asMovieRoot->CreateString(&arraySkills[1], "$F4CW_SKILLS");
+				a_movieRoot->CreateString(&arraySkills[0], "skills");
+				a_movieRoot->CreateString(&arraySkills[1], "$F4CW_SKILLS");
 
-					arraySkills[2] = 0;
-					arraySkills[3] = 0; // Pipboy Page - Skills
+				arraySkills[2] = 0;
+				arraySkills[3] = 0; // Pipboy Page - Skills
 
-					asMovieRoot->CreateObject(&arraySkills[4]);
-					Scaleform::GFx::Value skillsArray;
-					asMovieRoot->CreateArray(&skillsArray);
-					std::vector<std::string> stringArray;
+				a_movieRoot->CreateObject(&arraySkills[4]);
+				Scaleform::GFx::Value skillsArray;
+				a_movieRoot->CreateArray(&skillsArray);
+				std::vector<std::string> stringArray;
 
-					// All skills injected here.
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Barter, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.EnergyWeapons, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Explosives, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Guns, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Lockpick, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Medicine, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.MeleeWeapons, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Repair, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Science, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Sneak, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Speech, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Survival, 1, stringArray);
-					PopulateSkillEntry(&skillsArray, asMovieRoot, Skills::CascadiaActorValues.Unarmed, 1, stringArray);
+				// All skills injected here.
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Barter, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.EnergyWeapons, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Explosives, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Guns, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Lockpick, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Medicine, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.MeleeWeapons, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Repair, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Science, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Sneak, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Speech, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Survival, 1, stringArray);
+				PopulateSkillEntry(&skillsArray, a_movieRoot, Skills::CascadiaActorValues.Unarmed, 1, stringArray);
 
-					arraySkills[4].SetMember("arrayList", &skillsArray);
-					arraySkills[5] = 0;
-					arraySkills[6] = 0;
+				arraySkills[4].SetMember("arrayList", &skillsArray);
+				arraySkills[5] = 0;
+				arraySkills[6] = 0;
 
-					asMovieRoot->Invoke("root.casPipboy_loader.content.registerTab", nullptr, arraySkills, 7);
+				a_movieRoot->Invoke("root.casPipboy_loader.content.registerTab", nullptr, arraySkills, 7);
+			}*/
+
+			/*bool ProcessSkillsList(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot)
+			{
+				Scaleform::GFx::Value arraySkills[3];
+
+				a_movieRoot->CreateArray(&arraySkills[0]);
 			}*/
 
 			// Returns ActorValueInfo based on Skill Name.

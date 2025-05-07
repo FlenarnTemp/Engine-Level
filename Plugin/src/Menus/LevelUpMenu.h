@@ -223,16 +223,6 @@ namespace RE
 				return true;
 			}
 
-			bool IsXPMetervisible()
-			{
-				BSFixedString menuString("HUDMenu");
-				IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
-				Scaleform::GFx::Value openValue;
-				menu->uiMovie->asMovieRoot->GetVariable(&openValue, "root.HUDNotificationsGroup_mc.XPMeter_mc.visible");
-
-				return openValue.GetBoolean();
-			}
-
 			std::uint32_t GetSkillArrayIndexByEditorID(const char* editorID) 
 			{
 				// Create a map of editor IDs to skill array indices.

@@ -134,5 +134,15 @@ namespace RE
 
 			return amount;
 		}
+
+		bool IsXPMetervisible()
+			{
+				BSFixedString menuString("HUDMenu");
+				IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+				Scaleform::GFx::Value openValue;
+				menu->uiMovie->asMovieRoot->GetVariable(&openValue, "root.HUDNotificationsGroup_mc.XPMeter_mc.visible");
+
+				return openValue.GetBoolean();
+			}
 	}
 }

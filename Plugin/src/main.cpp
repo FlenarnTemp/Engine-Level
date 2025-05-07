@@ -58,7 +58,7 @@ namespace
 			RE::Cascadia::RegisterTESInitScriptEventSink();
 			RE::Cascadia::RegisterTESHarvestEventSink();
 			RE::Cascadia::RegisterTESHitEventSink();
-			RE::Cascadia::RegisterForCellFullyLoaded(RE::Cascadia::CellFullyLoadedListener::GetSingleton());
+			RE::Cascadia::RegisterForCellFullyLoaded();
 			RE::Cascadia::RegisterLevelIncreaseEventSink();
 			RE::Cascadia::RegisterTESLoadGameEventSink();
 

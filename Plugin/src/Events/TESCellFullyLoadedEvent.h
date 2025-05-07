@@ -4,15 +4,10 @@ namespace RE
 {
 	namespace Cascadia
 	{
-		class CellFullyLoadedListener : public BSTEventSink<TESCellFullyLoadedEvent>
+		class CellFullyLoadedListener : 
+			public BSTEventSink<TESCellFullyLoadedEvent>
 		{
 		public:
-			static CellFullyLoadedListener* GetSingleton() 
-			{
-				static CellFullyLoadedListener instance;
-				return &instance;
-			}
-
 			virtual BSEventNotifyControl ProcessEvent(const TESCellFullyLoadedEvent& a_event, BSTEventSource<TESCellFullyLoadedEvent>*) override
 			{
 				if (a_event.cell)
@@ -24,10 +19,10 @@ namespace RE
 			}
 		};
 
-		void RegisterForCellFullyLoaded(BSTEventSink<TESCellFullyLoadedEvent>* a_sink) {
-			using func_t = decltype(&RegisterForCellFullyLoaded);
-			REL::Relocation<func_t> func{ REL::ID(2201571) };
-			return func(a_sink);
+		void RegisterForCellFullyLoaded() {
+			CellFullyLoadedListener* fullyLoadedCellEvent = new CellFullyLoadedListener();
+			TESCellFullyLoadedEvent::GetEventSource()->RegisterSink(fullyLoadedCellEvent);
+			DEBUG("Registered 'TESCellFullLoadedEvent' sink.");
 		}
 	}
 }

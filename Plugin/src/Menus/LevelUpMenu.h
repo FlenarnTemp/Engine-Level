@@ -569,8 +569,7 @@ namespace RE
 						UI_MENU_FLAGS::kUsesCursor,
 						UI_MENU_FLAGS::kTopmostRenderedMenu,
 						UI_MENU_FLAGS::kUpdateUsesCursor,
-						UI_MENU_FLAGS::kUsesBlurredBackground,
-						UI_MENU_FLAGS::kUsesMovementToDirection
+						UI_MENU_FLAGS::kUsesBlurredBackground
 					);
 					menuHUDMode = "SpecialMode";
 					depthPriority = UI_DEPTH_PRIORITY::kTerminal;

@@ -26,7 +26,7 @@ namespace RE
 						Scaleform::Ptr<RE::DialogueMenu> dialogueMenu = UI::GetSingleton()->GetMenu<RE::DialogueMenu>();
 						BSTSmartPointer<BSInputEnableLayer> menuInputLayer = dialogueMenu.get()->inputLayer;
 
-						BSInputEnableManager::GetSingleton()->EnableUserEvent(menuInputLayer->layerID, UEFlag::kWheelZoom, enabled, UserEvents::SENDER_ID::kMenu);
+						BSInputEnableManager::GetSingleton()->EnableUserEvent(menuInputLayer->layerID, UserEvents::USER_EVENT_FLAG::kWheelZoom, enabled, UserEvents::SENDER_ID::kMenu);
 					}
 				}
 			};
@@ -47,7 +47,7 @@ namespace RE
 						Scaleform::Ptr<RE::DialogueMenu> dialogueMenu = UI::GetSingleton()->GetMenu<RE::DialogueMenu>();
 						BSTSmartPointer<BSInputEnableLayer> menuInputLayer = dialogueMenu.get()->inputLayer;
 
-						BSInputEnableManager::GetSingleton()->EnableOtherEvent(menuInputLayer->layerID, OEFlag::kFavorites, enabled, UserEvents::SENDER_ID::kMenu);
+						BSInputEnableManager::GetSingleton()->EnableOtherEvent(menuInputLayer->layerID, OtherInputEvents::OTHER_EVENT_FLAG::kFavorites, enabled, UserEvents::SENDER_ID::kMenu);
 					}
 				}
 			};
@@ -68,7 +68,7 @@ namespace RE
 						Scaleform::Ptr<RE::DialogueMenu> dialogueMenu = UI::GetSingleton()->GetMenu<RE::DialogueMenu>();
 						BSTSmartPointer<BSInputEnableLayer> menuInputLayer = dialogueMenu.get()->inputLayer;
 
-						BSInputEnableManager::GetSingleton()->EnableUserEvent(menuInputLayer->layerID, UEFlag::kMovement, enabled, UserEvents::SENDER_ID::kMenu);
+						BSInputEnableManager::GetSingleton()->EnableUserEvent(menuInputLayer->layerID, UserEvents::USER_EVENT_FLAG::kMovement, enabled, UserEvents::SENDER_ID::kMenu);
 					}
 				}
 			};
@@ -96,12 +96,12 @@ namespace RE
 							if (setting)
 							{
 								value = setting->GetInt();
-								DEBUG("DialogueMenu::GetINISetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
+								REX::DEBUG("DialogueMenu::GetINISetting called, requested setting: {:s}, returned: {}", a_params.args[0].GetString(), value);
 								*a_params.retVal = value;
 							}
 							else
 							{
-								WARN("DialogueMenu::GetINISetting called, requested setting: {:s} which was not found.", a_params.args[0].GetString());
+								REX::WARN("DialogueMenu::GetINISetting called, requested setting: {:s} which was not found.", a_params.args[0].GetString());
 							}
 						}
 					}
@@ -167,7 +167,7 @@ namespace RE
 						}
 						else
 						{
-							DEBUG("Unable to retrieve the subtitle position because `HUDMenu` is not open.");
+							REX::DEBUG("Unable to retrieve the subtitle position because `HUDMenu` is not open.");
 						}
 					}
 				}
@@ -184,11 +184,11 @@ namespace RE
 						if (TESObjectREFR* target = GetCurrentPlayerDialogueTarget())
 						{
 							result = target->GetDisplayFullName();
-							DEBUG("DialogueMenu::GetTargetName called, target name: {:s}", result);
+							REX::DEBUG("DialogueMenu::GetTargetName called, target name: {:s}", result);
 						}
 						else
 						{
-							WARN("DialogueMenu::GetTargetName called, no target name found.");
+							REX::WARN("DialogueMenu::GetTargetName called, no target name found.");
 							result = "Error: No name found.";
 						}
 
@@ -233,7 +233,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("SelectDialogueOption_GFx called.");
+					REX::DEBUG("SelectDialogueOption_GFx called.");
 					if (a_params.retVal)
 					{
 						if (a_params.argCount < 1) return;
@@ -320,7 +320,7 @@ namespace RE
 						}
 						else
 						{
-							WARN("DialogueMenu::GetDialogueOptions - Player dialogue not currently available. No dialogue will be retrieved.");
+							REX::WARN("DialogueMenu::GetDialogueOptions - Player dialogue not currently available. No dialogue will be retrieved.");
 						}
 					}
 				}
@@ -362,7 +362,7 @@ namespace RE
 				}
 				else
 				{
-					WARN("WARNING: Unable to retrieve the subtitle position because 'HUDMenu' is not open.");
+					REX::WARN("WARNING: Unable to retrieve the subtitle position because 'HUDMenu' is not open.");
 				}
 
 				return position;

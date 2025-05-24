@@ -19,8 +19,8 @@ namespace RE
 		void RegisterLevelIncreaseEventSink()
 		{
 			LevelIncreaseEventWatcher* levelIncreaseEvent = new LevelIncreaseEventWatcher();
-			LevelIncrease::Event::GetEventSource()->RegisterSink(levelIncreaseEvent);
-			DEBUG("Registered 'LevelIncrease::Event' sink.");
+			LevelIncrease::GetEventSource()->RegisterSink(levelIncreaseEvent);
+			REX::DEBUG("Registered 'LevelIncrease::Event' sink.");
 		}
 	}
 }

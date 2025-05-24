@@ -19,7 +19,7 @@ namespace RE
 					return BSEventNotifyControl::kContinue;
 				}
 
-				DEBUG("Harvest event sent by player, harvested REFR: {}, harvest object: {}.", a_event.referenceHarvested->GetFormEditorID(), a_event.itemHarvested->GetFormEditorID());
+				REX::DEBUG("Harvest event sent by player, harvested REFR: {}, harvest object: {}.", a_event.referenceHarvested->GetFormEditorID(), a_event.itemHarvested->GetFormEditorID());
 				const char* itemHarvestedEDID = a_event.itemHarvested->GetFormEditorID();
 				GameSettingCollection* gameSettingCollection = GameSettingCollection::GetSingleton();
 				const char* addedMessage = gameSettingCollection->GetSetting("sAddItemtoInventory")->GetString().data();
@@ -51,7 +51,7 @@ namespace RE
 		{
 			TESHarvestEventWatcher* tesHarvestEvent = new TESHarvestEventWatcher();
 			TESHarvestEvent::ItemHarvested::GetEventSource()->RegisterSink(tesHarvestEvent);
-			DEBUG("Registered 'TESHarvestEvent::ItemHarvested' sink.");
+			REX::DEBUG("Registered 'TESHarvestEvent::ItemHarvested' sink.");
 		}
 	}
 }

@@ -13,11 +13,11 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("this.BGSCodeObj.OnEscapePress");
+					REX::DEBUG("this.BGSCodeObj.OnEscapePress");
 					Scaleform::Ptr<RE::ExamineMenu> examineMenu = UI::GetSingleton()->GetMenu<RE::ExamineMenu>();
 					if (examineMenu)
 					{
-						DEBUG("Examine menu!");
+						REX::DEBUG("Examine menu!");
 						examineMenu->repairing = false;
 					}
 				}

@@ -18,7 +18,7 @@ namespace RE
 
 		void DefineItemDegradationFormsFromGame()
 		{
-			INFO("Item Degradation: Linking degradation forms.");
+			REX::INFO("Item Degradation: Linking degradation forms.");
 			TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
 
 			// Armor Type Keywords
@@ -45,7 +45,7 @@ namespace RE
 			ammoDegradationMap[ammo44] = 0.011f;
 			ammoDegradationMap[ammo45] = 0.0035f;
 
-			INFO("Item Degradation: Finished linking degradation forms.");
+			REX::INFO("Item Degradation: Finished linking degradation forms.");
 		}
 	}
 }

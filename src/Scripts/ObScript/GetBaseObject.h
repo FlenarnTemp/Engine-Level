@@ -23,11 +23,11 @@ namespace ObScript
 				it->referenceFunction = true;
 				it->executeFunction = Execute;
 
-				DEBUG("Registered 'GetBaseObject' command.");
+				REX::DEBUG("Registered 'GetBaseObject' command.");
 			}
 			else
 			{
-				DEBUG("WARNING: Failed to register 'GetBaseObject' command.");
+				REX::DEBUG("WARNING: Failed to register 'GetBaseObject' command.");
 			}
 		}
 

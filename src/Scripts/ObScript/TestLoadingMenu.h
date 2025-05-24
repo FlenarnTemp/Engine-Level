@@ -23,11 +23,11 @@ namespace ObScript
 				it->helpString = HelpString().data();
 				it->referenceFunction = false;
 				it->executeFunction = Execute;
-				DEBUG("Registered 'TestLoadingMenu' command.");
+				REX::DEBUG("Registered 'TestLoadingMenu' command.");
 			}
 			else
 			{
-				WARN("Failed to register 'TestLoadingMenu' command.");
+				REX::WARN("Failed to register 'TestLoadingMenu' command.");
 			}
 		}
 	private:

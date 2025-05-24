@@ -234,7 +234,7 @@ namespace RE
 
 			void RegisterForSkillLink()
 			{
-				INFO("Skills: Linking Skills from FalloutCascadia.esm");
+				REX::INFO("Skills: Linking Skills from FalloutCascadia.esm");
 
 				skillsLinkMap.clear();
 				strSkillMap.clear();

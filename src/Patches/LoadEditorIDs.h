@@ -51,7 +51,7 @@ namespace RE
 						{
 							if (iter->second->GetFormID() != a_this->GetFormID())
 							{
-								WARN(
+								REX::WARN(
 									"EditorID Conflict: {:08X} and {:08X} are both {:s}."sv,
 									iter->second->GetFormID(),
 									a_this->GetFormID(),
@@ -226,7 +226,7 @@ namespace RE
 					InstallHook<BGSLensFlare>();
 					InstallHook<BGSGodRays>();
 
-					DEBUG("Installed Patch: 'LoadEditorIDs'.");
+					REX::DEBUG("Installed Patch: 'LoadEditorIDs'.");
 				}
 			};
 		}

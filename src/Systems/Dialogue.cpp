@@ -46,7 +46,7 @@ namespace RE
 			{
 				TESTopicInfo* playerInfo = playerTopic->topicInfos[i];
 
-				DEBUG("Topic type: {}, entry: {}", c, i);
+				REX::DEBUG("Topic type: {}, entry: {}", c, i);
 
 				if (!playerInfo->responses.head && !playerInfo->dataInfo)
 				{
@@ -123,8 +123,7 @@ namespace RE
 			TESConditionItem* conditionItem = conditions.head;
 			while (conditionItem != nullptr)
 			{
-				int conditionFunction = conditionItem->data.functionData.function.underlying() + 0x1000;
-				if (conditionFunction == static_cast<std::underlying_type_t<SCRIPT_OUTPUT>>(SCRIPT_OUTPUT::FUNCTION_DIALOGUE_GETAV))
+				if (conditionItem->data.functionData.function.get() == SCRIPT_OUTPUT::kScript_DialogueGetAv)
 				{
 					const char* rawResponseText = a_info->responses.head->GetResponseText();
 					if (!rawResponseText) continue;
@@ -142,13 +141,13 @@ namespace RE
 					const std::string succeededPrefix = "[SUCCEEDED] ";
 					switch (conditionItem->data.condition)
 					{
-					case ENUM_COMPARISON_CONDITION::kLessThan:
+					case 4: // ENUM_COMPARISON_CONDITION::kLessThan
 						if (responseText.find(failedPrefix) != 0)
 						{
 							responseText.insert(0, failedPrefix);
 						}
 						break;
-					case ENUM_COMPARISON_CONDITION::kGreaterThanEqual:
+					case 3: // ENUM_COMPARISON_CONDITION::kGreaterThanEqual
 						if (responseText.find(succeededPrefix) != 0)
 						{
 							responseText.insert(0, succeededPrefix);
@@ -173,11 +172,11 @@ namespace RE
 		std::vector<TESTopicInfo*> npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
 		BSTArray<TESTopicInfo*> randomOptions{};
 
-		DEBUG("NPC Infos size: {}", npcInfos.size());
+		REX::DEBUG("NPC Infos size: {}", npcInfos.size());
 
 		for (TESTopicInfo* info : npcInfos)
 		{
-			DEBUG("Info!");
+			REX::DEBUG("Info!");
 
 			if ((info->formFlags >> 5) & 1) // Check if 'Deleted'.
 			{
@@ -225,7 +224,7 @@ namespace RE
 		}
 
 		// All infos failed their condition checks.
-		DEBUG("All infos failed their condition checks");
+		REX::DEBUG("All infos failed their condition checks");
 		return nullptr;
 	}
 
@@ -345,13 +344,13 @@ namespace RE
 				}
 			}
 		}
-		DEBUG("GetCurrentPlayerDialogueAction - return `nullptr`.");
+		REX::DEBUG("GetCurrentPlayerDialogueAction - return `nullptr`.");
 		return nullptr;
 	}
 
 	bool SelectDialogueOption(std::uint32_t option)
 	{
-		DEBUG("SelectDialogueOption called.");
+		REX::DEBUG("SelectDialogueOption called.");
 		if (!(MenuTopicManager::GetSingleton()->allowInput))
 		{
 			return false;
@@ -482,7 +481,7 @@ namespace RE
 
 			BGSScene* currentScene = PlayerCharacter::GetSingleton()->GetCurrentScene();
 
-			DEBUG("Amount of possible player infos: {}", infos.size());
+			REX::DEBUG("Amount of possible player infos: {}", infos.size());
 
 			std::uint32_t lastResponseIndex = -1;
 			bool initialized = false;
@@ -611,11 +610,9 @@ namespace RE
 
 						while (conditionItem != nullptr)
 						{
-							int conditionFunction = conditionItem->data.functionData.function.underlying() + 0x1000;
-
-							if (conditionFunction == static_cast<std::underlying_type_t<SCRIPT_OUTPUT>>(SCRIPT_OUTPUT::FUNCTION_DIALOGUE_GETAV))
+							if (conditionItem->data.functionData.function == SCRIPT_OUTPUT::kScript_DialogueGetAv)
 							{
-								if (conditionItem->data.condition == ENUM_COMPARISON_CONDITION::kLessThan)
+								if (conditionItem->data.condition == std::to_underlying(ENUM_COMPARISON_CONDITION::kLessThan))
 								{
 									ActorValueInfo* actorValue = static_cast<ActorValueInfo*>(conditionItem->data.functionData.param[0]);
 									if (actorValue)
@@ -625,7 +622,7 @@ namespace RE
 										responseText.insert(0, skillCheck);
 									}
 								}
-								else if (conditionItem->data.condition == ENUM_COMPARISON_CONDITION::kGreaterThanEqual)
+								else if (conditionItem->data.condition == std::to_underlying(ENUM_COMPARISON_CONDITION::kGreaterThanEqual))
 								{
 									ActorValueInfo* actorValue = static_cast<ActorValueInfo*>(conditionItem->data.functionData.param[0]);
 									if (actorValue)
@@ -635,9 +632,9 @@ namespace RE
 									}
 								}
 							}
-							else if (conditionFunction == static_cast<std::underlying_type_t<SCRIPT_OUTPUT>>(SCRIPT_OUTPUT::FUNCTION_HAS_PERK) || conditionFunction == static_cast<std::underlying_type_t<SCRIPT_OUTPUT>>(SCRIPT_OUTPUT::FUNCTION_DIALOGUE_HASPERK))
+							else if (conditionItem->data.functionData.function == SCRIPT_OUTPUT::kScript_HasPerk || conditionItem->data.functionData.function == SCRIPT_OUTPUT::kScript_DialogueHasPerk)
 							{
-								if (conditionItem->data.condition == ENUM_COMPARISON_CONDITION::kEqual)
+								if (conditionItem->data.condition == std::to_underlying(ENUM_COMPARISON_CONDITION::kEqual))
 								{
 									BGSPerk* perk = static_cast<BGSPerk*>(conditionItem->data.functionData.param[0]);
 									if (perk)
@@ -696,8 +693,8 @@ namespace RE
 					}
 				}
 
-				DEBUG("Response text: {:s}", responseText);
-				DEBUG("Prompt text: {:s}", prompt.data());
+				REX::DEBUG("Response text: {:s}", responseText);
+				REX::DEBUG("Prompt text: {:s}", prompt.data());
 
 				DialogueOption option = {};
 				option.optionID = infoEntry.optionID;
@@ -716,7 +713,7 @@ namespace RE
 			}
 		}
 
-		DEBUG("GetDialogueOptions: Got {:s} options when checking scene {:s}.", std::to_string(options.size()), PlayerCharacter::GetSingleton()->GetCurrentScene()->GetFormEditorID());
+		REX::DEBUG("GetDialogueOptions: Got {:s} options when checking scene {:s}.", std::to_string(options.size()), PlayerCharacter::GetSingleton()->GetCurrentScene()->GetFormEditorID());
 		return options;
 	}
 
@@ -777,28 +774,26 @@ namespace RE
 		if (a_enable)
 		{
 			// Restore player dialogue starting.
-			uint8_t bytes[] = { 0x48, 0x8B, 0xC8 };
-
 			// StartPlayerDialogue - 2196817 + 652 offset.
-			REL::Relocation<std::uintptr_t> startPlayerDialogue{ REL::ID(2196817), 0x652 };
-			REL::safe_write<uint8_t>(startPlayerDialogue.address(), std::span{ bytes });
+			REL::Relocation<std::uintptr_t> startPlayerDialogue{ REL::ID(2196817) };
+			startPlayerDialogue.write<0x652>({ 0x48, 0x8B, 0xC8 });
 
-			// SwitchToPlayerCC - 2214898 ID + AD5 offset.
-			REL::Relocation<std::uintptr_t> switchToPlayerCC{ REL::ID(2214898), 0xAD5 };
-			REL::safe_write<uint8_t>(switchToPlayerCC.address() + 7, 0x1);
+			// SwitchToPlayerCC - 2214898 ID + ADC offset.
+			REL::Relocation<std::uintptr_t> switchToPlayerCC{ REL::ID(2214898) };
+			switchToPlayerCC.write<0xADC>({ 0x01 });
 		}
 		else
 		{
 			// Disable player dialogue starting.
 			uint8_t bytes[] = { 0xEB, 0x1E, 0x90 };
 			// StartPlayerDialogue - 2196817 + 652 offset.
-			REL::Relocation<std::uintptr_t> startPlayerDialogue{ REL::ID(2196817), 0x652 };
-			REL::safe_write<uint8_t>(startPlayerDialogue.address(), std::span{ bytes });
+			REL::Relocation<std::uintptr_t> startPlayerDialogue{ REL::ID(2196817) };
+			startPlayerDialogue.write<0x652>({ 0xEB, 0x1E, 0x90 });
 
 			// Disable dialogue camera switching to player.
-			// SwitchToPlayerCC - 2214898 ID + AD5 offset.
-			REL::Relocation<std::uintptr_t> switchToPlayerCC{ REL::ID(2214898), 0xAD5 };
-			REL::safe_write<uint8_t>(switchToPlayerCC.address() + 7, 0x2);
+			// SwitchToPlayerCC - 2214898 ID + ADC offset.
+			REL::Relocation<std::uintptr_t> switchToPlayerCC{ REL::ID(2214898) };
+			switchToPlayerCC.write<0xADC>({ 0x02 });
 		}
 	}
 
@@ -808,7 +803,7 @@ namespace RE
 
 	TESTopicInfo* GetCurrentTopicInfo_Player_Hook(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType)
 	{
-		DEBUG("GetCurrentTopicInfo_Player_Hook called.");
+		REX::DEBUG("GetCurrentTopicInfo_Player_Hook called.");
 		// Use >5 for custom selections.
 		if (apPlayerDialogue->playerInput >= 5)
 		{
@@ -828,7 +823,7 @@ namespace RE
 				if (sceneData)
 				{
 					// This is necessary as no response => no pre/post TopicInfo will run.
-					DEBUG("Following scene link from player dialogue.");
+					REX::DEBUG("Following scene link from player dialogue.");
 					StartScene(sceneData->scene, sceneData->phase);
 				}
 			}
@@ -842,13 +837,13 @@ namespace RE
 		}
 		// Re-enable player dialogue.
 		SetPlayerDialogue(true);
-		DEBUG("GetCurrentTopicInfo_Player_Hook - default function return.");
+		REX::DEBUG("GetCurrentTopicInfo_Player_Hook - default function return.");
 		return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
 	}
 
 	TESTopicInfo* GetCurrentTopicInfo_NPC_Hook(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType)
 	{
-		DEBUG("GetCurrentTopicInfo_NPC_Hook called.");
+		REX::DEBUG("GetCurrentTopicInfo_NPC_Hook called.");
 		// Use >5 for custom selections.
 		if (apPlayerDialogue->playerInput >= 5)
 		{
@@ -872,13 +867,13 @@ namespace RE
 			return info;
 		}
 
-		DEBUG("GetCurrentTopicInfo_NPC_Hook - default function return.");
+		REX::DEBUG("GetCurrentTopicInfo_NPC_Hook - default function return.");
 		return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
 	}
 
 	TESTopicInfo* GetCurrentTopicInfo_NPCAction_Hook(BGSSceneActionNPCResponseDialogue* apNPCDialogue, BGSScene* apParentScene)
 	{
-		DEBUG("GetCurrentTopicInfo_NPCAction_Hook called.");
+		REX::DEBUG("GetCurrentTopicInfo_NPCAction_Hook called.");
 		std::uint32_t dialogueOption = PlayerCharacter::GetSingleton()->playerDialogueInput.underlying();
 
 		// Use >5 for custom selections.
@@ -890,7 +885,7 @@ namespace RE
 			return info;
 		}
 
-		DEBUG("GetCurrentTopicInfo_NPCAction_Hook - default function return.");
+		REX::DEBUG("GetCurrentTopicInfo_NPCAction_Hook - default function return.");
 		return apNPCDialogue->GetCurrentTopicInfo(apParentScene);
 	}
 }

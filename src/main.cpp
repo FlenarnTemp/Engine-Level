@@ -49,7 +49,7 @@ namespace
 			}
 			else
 			{
-				FATAL("Failed to define skills.");
+				REX::CRITICAL("Failed to define skills.");
 			}
 
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
@@ -62,48 +62,48 @@ namespace
 			RE::Cascadia::RegisterLevelIncreaseEventSink();
 			RE::Cascadia::RegisterTESLoadGameEventSink();
 
-			INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kGameLoaded:
-			INFO("{:s} - 'kGameLoaded'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kGameLoaded'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostLoad:
-			INFO("{:s} - 'kPostLoad'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kPostLoad'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostLoadGame:
 			RE::Cascadia::AmmoSwitch::PostLoadGameAmmoFix();
-			INFO("{:s} - 'kPostLoadGame'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kPostLoadGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostPostLoad:
-			INFO("{:s} - 'kPostPostLoad'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kPostPostLoad'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPostSaveGame:
-			INFO("{:s} - 'kPostSaveGame'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kPostSaveGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kDeleteGame:
-			INFO("{:s} - 'kDeleteGame'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kDeleteGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kNewGame:
-			INFO("{:s} - 'kNewGame'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kNewGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kInputLoaded:
-			INFO("{:s} - 'kInputLoaded'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kInputLoaded'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPreLoadGame:
-			INFO("{:s} - 'kPreLoadGame'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kPreLoadGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		case F4SE::MessagingInterface::kPreSaveGame:
-			INFO("{:s} - 'kPreSaveGame'.", "Cascadia Gameplay Systems");
+			REX::INFO("{:s} - 'kPreSaveGame'.", "Cascadia Gameplay Systems");
 			break;
 
 		default:
@@ -112,25 +112,14 @@ namespace
 	}
 }
 
-DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
+F4SE_PLUGIN_LOAD(const F4SE::LoadInterface* a_f4se)
 {
-#ifndef NDEBUG
-	MessageBoxA(NULL, "Loaded. You can now attach the debugger or continue execution.", Plugin::NAME.data(), NULL);
-#endif
-	F4SE::Init(a_F4SE);
-
-	DKUtil::Logger::Init(Plugin::NAME, std::to_string(Plugin::Version));
-	INFO("{} v{} loaded."sv, Plugin::NAME, Plugin::Version);
-
-	auto& trampoline = REL::GetTrampoline();
-	trampoline.create(1024 * 32);
-
-	RE::Cascadia::Hooks::Install(trampoline);
+	F4SE::Init(a_f4se, { .trampoline = true, .trampolineSize = 0x8000 });
 
 	const F4SE::SerializationInterface* serialization = F4SE::GetSerializationInterface();
 	if (!serialization)
 	{
-		FATAL("Failed to register serialization interface, marking as incompatible."sv);
+		REX::CRITICAL("Failed to register serialization interface, marking as incompatible."sv);
 		return false;
 	}
 	else
@@ -144,39 +133,39 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	const F4SE::MessagingInterface* messaging = F4SE::GetMessagingInterface();
 	if (!messaging || !messaging->RegisterListener(MessageHandler))
 	{
-		FATAL("Failed to register messaging handler, marking as incompatible."sv);
+		REX::CRITICAL("Failed to register messaging handler, marking as incompatible."sv);
 		return false;
 	}
 
 	const F4SE::ScaleformInterface* scaleform = F4SE::GetScaleformInterface();
 	if (!scaleform)
 	{
-		FATAL("Failed to register Scaleform callback, marking as incompatible."sv);
+		REX::CRITICAL("Failed to register Scaleform callback, marking as incompatible."sv);
 		return false;
 	}
 	else
 	{
 		if (!scaleform->Register("Cascadia-DialogueMenu", RE::Cascadia::DialogueMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register 'DialogueMenu', marking as incompatible."sv);
+			REX::CRITICAL("Failed to register 'DialogueMenu', marking as incompatible."sv);
 			return false;
 		}
 
 		if (!scaleform->Register("Cascadia-ExamineMenu", RE::Cascadia::ExamineMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register 'ExamineMenu', marking as incompatible."sv);
+			REX::CRITICAL("Failed to register 'ExamineMenu', marking as incompatible."sv);
 			return false;
 		}
 
 		/*if (!scaleform->Register("Cascadia-PipboyMenu", RE::Cascadia::PipboyMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register 'PipboyMenu', marking as incompatible.");
+			REX::CRITICAL("Failed to register 'PipboyMenu', marking as incompatible.");
 			return false;
 		}*/
 
 		if (!scaleform->Register("Cascadia-ExamineConfirmMenu", RE::Cascadia::ExamineConfirmMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register 'ExamineConfirmMenu', marking as incompatible."sv);
+			REX::CRITICAL("Failed to register 'ExamineConfirmMenu', marking as incompatible."sv);
 			return false;
 		}
 
@@ -184,7 +173,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 		RE::Cascadia::LevelUpMenu::RegisterMenu();
 		if (!scaleform->Register("CASLevelUpMenu", RE::Cascadia::LevelUpMenu::RegisterScaleform))
 		{
-			FATAL("Failed to register 'LevelUpMenu', marking as incompatible."sv);
+			REX::CRITICAL("Failed to register 'LevelUpMenu', marking as incompatible."sv);
 			return false;
 		}
 	}
@@ -192,7 +181,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	const F4SE::PapyrusInterface* papyrus = F4SE::GetPapyrusInterface();
 	if (!papyrus)
 	{
-		FATAL("Failed to register Papyrus handler, marking as incompatible."sv);
+		REX::CRITICAL("Failed to register Papyrus handler, marking as incompatible."sv);
 		return false;
 	}
 	else
@@ -206,7 +195,7 @@ DLLEXPORT bool F4SEAPI F4SEPlugin_Load(const F4SE::LoadInterface* a_F4SE)
 	RE::Cascadia::Patches::Install();
 	ObScript::Install();
 
-	INFO(("{:s} finished loading."), "Cascadia Gameplay Systems");
+	REX::INFO(("{:s} finished loading."), "Cascadia Gameplay Systems");
 
 	return true;
 }

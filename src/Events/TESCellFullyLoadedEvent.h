@@ -22,7 +22,7 @@ namespace RE
 		void RegisterForCellFullyLoaded() {
 			CellFullyLoadedListener* fullyLoadedCellEvent = new CellFullyLoadedListener();
 			TESCellFullyLoadedEvent::GetEventSource()->RegisterSink(fullyLoadedCellEvent);
-			DEBUG("Registered 'TESCellFullLoadedEvent' sink.");
+			REX::DEBUG("Registered 'TESCellFullLoadedEvent' sink.");
 		}
 	}
 }

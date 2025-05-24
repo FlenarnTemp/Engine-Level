@@ -22,7 +22,7 @@ namespace RE
 
 				if (a_event.tag == ReloadComplete && AmmoSwitch::switchingAmmo == true)
 				{
-					DEBUG("'BSEventNotifyControl::ProcessEvent' - 'ReloadComplete'.");
+					REX::DEBUG("'BSEventNotifyControl::ProcessEvent' - 'ReloadComplete'.");
 
 					BGSObjectInstanceT<TESObjectWEAP>* weaponInstance = new BGSObjectInstanceT<TESObjectWEAP>{ static_cast<TESObjectWEAP*>(AmmoSwitch::equippedInstance->object), AmmoSwitch::equippedInstance->instanceData.get() };
 					TESObjectWEAP::InstanceData* instanceDataWEAP = (TESObjectWEAP::InstanceData*)(weaponInstance->instanceData.get());
@@ -45,14 +45,14 @@ namespace RE
 
 						if (inventoryItem)
 						{
-							DEBUG("Inventory item found.");
+							REX::DEBUG("Inventory item found.");
 							BGSMod::Attachment::Mod* modTest = TESDataHandler::GetSingleton()->LookupForm<BGSMod::Attachment::Mod>(0x0009C2, "CAS_Jimswapping.esp");
 							//BGSInventoryItem::Stack* stack = inventoryItem->GetStackByID(0);
 
 							bool test = false;
 							BGSInventoryItem::CheckStackIDFunctor compareFunction(0);
 							BGSInventoryItem::ModifyModDataFunctor writeDataFunction(modTest, 0, true, &test);
-							DEBUG("Managed to write new mod data: {}", test);
+							REX::DEBUG("Managed to write new mod data: {}", test);
 							playerCharacter->FindAndWriteStackDataForInventoryItem(tesWEAP, compareFunction, writeDataFunction);
 							playerCharacter->currentProcess->SetCurrentAmmo(BGSEquipIndex{ 0 }, AmmoSwitch::ammoToSwitchTo);
 							playerCharacter->SetCurrentAmmoCount(BGSEquipIndex{ 0 }, 0);
@@ -75,7 +75,7 @@ namespace RE
 
 				if (a_event.tag == reloadStateExit && AmmoSwitch::switchingAmmo == true)
 				{
-					DEBUG("'BSEventNotifyControl::ProcessEvent' - 'reloadStateExit'.");
+					REX::DEBUG("'BSEventNotifyControl::ProcessEvent' - 'reloadStateExit'.");
 					AmmoSwitch::switchingAmmo = false;
 					AmmoSwitch::ammoToSwitchTo = nullptr;
 					AmmoSwitch::equippedInstance = nullptr;

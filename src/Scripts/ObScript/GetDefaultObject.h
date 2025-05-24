@@ -29,11 +29,11 @@ namespace ObScript
 				it->parameters = params.data();
 				it->executeFunction = Execute;
 
-				DEBUG("Registered 'GetDefaultObject' command.");
+				REX::DEBUG("Registered 'GetDefaultObject' command.");
 			}
 			else
 			{
-				DEBUG("Failed to register 'GetDefaultObject' command.");
+				REX::DEBUG("Failed to register 'GetDefaultObject' command.");
 			}
 		}
 

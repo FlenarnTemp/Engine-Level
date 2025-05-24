@@ -29,11 +29,11 @@ namespace ObScript
 				it->parameters = params.data();
 				it->executeFunction = Execute;
 
-				DEBUG("Registered 'BetaComment' command.");
+				REX::DEBUG("Registered 'BetaComment' command.");
 			}
 			else
 			{
-				WARN("Failed to register 'BetaComment' command.");
+				REX::WARN("Failed to register 'BetaComment' command.");
 			}
 		}
 
@@ -110,7 +110,7 @@ namespace ObScript
 			PrintRefrPositionInfo(line);
 			PrintCameraPositionInfo(line);
 
-			DEBUG("");
+			REX::DEBUG("");
 
 			// Print Comment
 			line << "\"" << rawComment.data() << "\"";
@@ -128,7 +128,7 @@ namespace ObScript
 		{
 			auto currentTime_t = std::chrono::system_clock::now();
 			auto currentTime = std::format("{:%m/%d/%y (%H:%M)}"sv, currentTime_t);
-			DEBUG("CurrentTime: {:s}", currentTime);
+			REX::DEBUG("CurrentTime: {:s}", currentTime);
 
 			a_buf << currentTime << _delim;
 			return true;
@@ -141,14 +141,14 @@ namespace ObScript
 			{
 				auto fileName = file->GetFilename();
 				auto fileTime = std::format("{:%m/%d/%y (%H:%M)}"sv, GetFileTime(file));
-				DEBUG("File Name: {:s}", fileName);
-				DEBUG("File Time: {:s}", fileTime);
+				REX::DEBUG("File Name: {:s}", fileName);
+				REX::DEBUG("File Time: {:s}", fileTime);
 
 				a_buf << fileName << _delim << fileTime << _delim;
 			}
 			else
 			{
-				DEBUG("Warning: No File.");
+				REX::DEBUG("Warning: No File.");
 				a_buf << _delim << _delim;
 			}
 
@@ -167,7 +167,7 @@ namespace ObScript
 				return (result) ? buffer : "UNKNOWN"s;
 			}();
 
-			DEBUG("Machine Name: {:s}", machineName);
+			REX::DEBUG("Machine Name: {:s}", machineName);
 
 			a_buf << machineName << _delim;
 			return true;
@@ -177,8 +177,8 @@ namespace ObScript
 		{
 			auto formID = std::format("{:08X}"sv, m_refr->formID);
 			auto formName = m_refr->GetFormEditorID();
-			DEBUG("FormID: {:s}", formID);
-			DEBUG("Form Name: {:s}", formName);
+			REX::DEBUG("FormID: {:s}", formID);
+			REX::DEBUG("Form Name: {:s}", formName);
 
 			a_buf << formID << _delim << formName << _delim;
 			return true;
@@ -196,15 +196,15 @@ namespace ObScript
 				if (cell->cellFlags.all(RE::TESObjectCELL::Flag::kInterior))
 				{
 					auto cellName = cell->GetFormEditorID();
-					DEBUG("Cell (Interior): {:s}", cellName);
-					DEBUG("Cell FormID (Interior): {:s}", cellID);
+					REX::DEBUG("Cell (Interior): {:s}", cellName);
+					REX::DEBUG("Cell FormID (Interior): {:s}", cellID);
 					temp << cellName << _delim << cellID << _delim;
 				}
 				else
 				{
 					if ((cell->formFlags >> 13) & 1)
 					{
-						WARN("BetaComment::PrintCellInfo: Unknown Edge Case.");
+						REX::WARN("BetaComment::PrintCellInfo: Unknown Edge Case.");
 						temp << _delim << _delim;
 					}
 					else
@@ -216,15 +216,15 @@ namespace ObScript
 							cell->worldSpace->GetFormEditorID(),
 							cellX,
 							cellY);
-						DEBUG("Cell (Exterior): {:s}", cellName);
-						DEBUG("Cell FormID (Exterior): {:s}", cellID);
+						REX::DEBUG("Cell (Exterior): {:s}", cellName);
+						REX::DEBUG("Cell FormID (Exterior): {:s}", cellID);
 						temp << cellName << _delim << cellID << _delim;
 					}
 				}
 			}
 			else
 			{
-				DEBUG("Cell Info: No Cell.");
+				REX::DEBUG("Cell Info: No Cell.");
 				temp << _delim << _delim;
 			}
 
@@ -237,12 +237,12 @@ namespace ObScript
 			auto locationX = std::format("{:.0f}"sv, m_refr->data.location.x);
 			auto locationY = std::format("{:.0f}"sv, m_refr->data.location.y);
 			auto locationZ = std::format("{:.0f}"sv, m_refr->data.location.z);
-			DEBUG("Refr Location: {:s}, {:s}, {:s}", locationX, locationY, locationZ);
+			REX::DEBUG("Refr Location: {:s}, {:s}, {:s}", locationX, locationY, locationZ);
 
 			auto angleX = std::format("{:.0f}"sv, m_refr->data.angle.x);
 			auto angleY = std::format("{:.0f}"sv, m_refr->data.angle.y);
 			auto angleZ = std::format("{:.0f}"sv, m_refr->data.angle.z);
-			DEBUG("Refr Angle: {:s}, {:s}, {:s}", angleX, angleY, angleZ);
+			REX::DEBUG("Refr Angle: {:s}, {:s}, {:s}", angleX, angleY, angleZ);
 
 			a_buf
 				<< locationX << _delim
@@ -260,14 +260,14 @@ namespace ObScript
 			auto cameraPositionX = std::format("{:.0f}"sv, rootCamera->world.translate.x);
 			auto cameraPositionY = std::format("{:.0f}"sv, rootCamera->world.translate.y);
 			auto cameraPositionZ = std::format("{:.0f}"sv, rootCamera->world.translate.z);
-			DEBUG("Camera Position: {:s}, {:s}, {:s}", cameraPositionX, cameraPositionY, cameraPositionZ);
+			REX::DEBUG("Camera Position: {:s}, {:s}, {:s}", cameraPositionX, cameraPositionY, cameraPositionZ);
 
 			float fCameraAngleX{ 0.0f }, fCameraAngleY{ 0.0f }, fCameraAngleZ{ 0.0f };
 			rootCamera->parent->world.rotate.ToEulerAnglesXYZ(fCameraAngleX, fCameraAngleY, fCameraAngleZ);
 			auto cameraAngleX = std::format("{:.0f}"sv, fCameraAngleX);
 			auto cameraAngleY = std::format("{:.0f}"sv, fCameraAngleY);
 			auto cameraAngleZ = std::format("{:.0f}"sv, fCameraAngleZ);
-			DEBUG("Camera Angle: {:s}, {:s}, {:s}", cameraAngleX, cameraAngleY, cameraAngleZ);
+			REX::DEBUG("Camera Angle: {:s}, {:s}, {:s}", cameraAngleX, cameraAngleY, cameraAngleZ);
 
 			a_buf
 				<< cameraPositionX << _delim

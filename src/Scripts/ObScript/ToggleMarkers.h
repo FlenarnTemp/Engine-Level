@@ -22,11 +22,11 @@ namespace ObScript
 				it->referenceFunction = false;
 				it->executeFunction = Execute;
 
-				DEBUG("Registered 'ToggleMarkers' command.");
+				REX::DEBUG("Registered 'ToggleMarkers' command.");
 			}
 			else
 			{
-				WARN("Failed to register 'ToggleMarkers' command.");
+				REX::WARN("Failed to register 'ToggleMarkers' command.");
 			}
 		}
 	
@@ -46,7 +46,7 @@ namespace ObScript
 			RE::Setting* bShowMarkersSetting = INISettingCollection->GetSetting("bShowMarkers:Display");
 			bool showMarkers = !bShowMarkersSetting->GetBinary();
 			bShowMarkersSetting->SetBinary(showMarkers);
-			DEBUG("'ToggleMarkers' - value set to: {}", showMarkers);
+			REX::DEBUG("'ToggleMarkers' - value set to: {}", showMarkers);
 
 			CullMarkers(RE::TES::GetSingleton(), !showMarkers);
 			if (showMarkers)
@@ -189,7 +189,7 @@ namespace ObScript
 
 				if (a_cell->references.empty())
 				{
-					WARN("'ToggleMarkers' - refrence array lacks data.");
+					REX::WARN("'ToggleMarkers' - refrence array lacks data.");
 				}
 
 				forEachResult = SetCullMarkersFunctorOperator(a_func, &a_cell->references.at(i));
@@ -226,9 +226,9 @@ namespace ObScript
 					RE::BSFadeNode* fadeNode = v6->IsFadeNode();
 					if (fadeNode)
 					{
-						_InterlockedIncrement(&fadeNode->refCount);
+						fadeNode->IncRefCount();
 						fadeNode->flags.flags &= 0xFFFFFFFFBFFFFFFF;
-						if (!_InterlockedDecrement(&fadeNode->refCount))
+						if (!fadeNode->DecRefCount())
 						{
 							fadeNode->DeleteThis();
 						}

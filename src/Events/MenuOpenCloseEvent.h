@@ -33,7 +33,7 @@ namespace RE
 		{
 			MenuOpenCloseEventWatcher* menuOpenCloseEvent = new MenuOpenCloseEventWatcher();
 			UI::GetSingleton()->GetEventSource<MenuOpenCloseEvent>()->RegisterSink(menuOpenCloseEvent);
-			DEBUG("Registered 'MenuOpenCloseEvent' sink.");
+			REX::DEBUG("Registered 'MenuOpenCloseEvent' sink.");
 		}
 	}
 }

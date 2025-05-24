@@ -417,7 +417,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("Open menu called from AS3");
+					REX::DEBUG("Open menu called from AS3");
 					LevelUpMenu::InitialiseValues();
 					// TODO - RegisterForInput
 					LevelUpMenu::HandleLevelUpMenuOpen(a_params.movie->asMovieRoot);
@@ -429,7 +429,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("Close menu called from AS3");
+					REX::DEBUG("Close menu called from AS3");
 				}
 			};
 
@@ -438,7 +438,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("SetSkills called from AS3");
+					REX::DEBUG("SetSkills called from AS3");
 				}
 			};
 
@@ -447,7 +447,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("ResetSkills called from AS3");
+					REX::DEBUG("ResetSkills called from AS3");
 				}
 			};
 
@@ -456,7 +456,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("ResetTagSkills called from AS3");
+					REX::DEBUG("ResetTagSkills called from AS3");
 				}
 			};
 
@@ -465,7 +465,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("BackToSkills called from AS3");
+					REX::DEBUG("BackToSkills called from AS3");
 				}
 			};
 
@@ -474,7 +474,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("UpdatePerksMenu called from AS3");
+					REX::DEBUG("UpdatePerksMenu called from AS3");
 				}
 			};
 
@@ -483,7 +483,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("AddPerks called from AS3");
+					REX::DEBUG("AddPerks called from AS3");
 				}
 			};
 
@@ -492,7 +492,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("TagSkills called from AS3");
+					REX::DEBUG("TagSkills called from AS3");
 				}
 			};
 
@@ -501,7 +501,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("PlayUISound called from AS3");
+					REX::DEBUG("PlayUISound called from AS3");
 					if (a_params.argCount < 1) return;
 					if (!a_params.args[0].IsString()) return;
 
@@ -516,7 +516,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("LearnSpecial called from AS3");
+					REX::DEBUG("LearnSpecial called from AS3");
 				}
 			};
 
@@ -525,7 +525,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("ResetSpecial called from AS3");
+					REX::DEBUG("ResetSpecial called from AS3");
 				}
 			};
 
@@ -583,7 +583,7 @@ namespace RE
 					Scaleform::GFx::Value bgsCodeObj;
 					movieRoot->GetVariable(&bgsCodeObj, "root.Menu_mc.BGSCodeObj");
 
-					filterHolder = RE::msvc::make_unique<BSGFxShaderFXTarget>(*uiMovie, "root.Menu_mc");
+					filterHolder = std::make_unique<BSGFxShaderFXTarget>(*uiMovie, "root.Menu_mc");
 					if (filterHolder)
 					{
 						filterHolder->CreateAndSetFiltersToHUD(HUDColorTypes::kGameplayHUDColor);
@@ -654,7 +654,7 @@ namespace RE
 					if (!ui->menuMap.contains("CASLevelUpMenu"))
 					{
 						ui->RegisterMenu("CASLevelUpMenu", CASLevelUpMenu::Create);
-						DEBUG("Registered 'CASLevelUpMenu'.");
+						REX::DEBUG("Registered 'CASLevelUpMenu'.");
 					}
 				}
 			}

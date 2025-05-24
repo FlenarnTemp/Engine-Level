@@ -297,7 +297,7 @@ namespace RE
 				BGSCharacterTint::Entry* entry = npc->tintingData->entriesA[i];
 				TintEntry currentTintEntry{};
 
-				if (entry->GetType() == BGSCharacterTint::kPalette)
+				if (entry->GetType() == BGSCharacterTint::EntryType::kPalette)
 				{
 					BGSCharacterTint::PaletteEntry* palette = static_cast<BGSCharacterTint::PaletteEntry*>(entry);
 
@@ -331,7 +331,7 @@ namespace RE
 				Actor* a_actor = RE::PlayerCharacter::GetSingleton();
 				TESNPC* npc = a_actor->GetNPC();
 
-				char outputFile[MAX_PATH] = "";
+				char outputFile[REX::W32::MAX_PATH] = "";
 				strcat_s(outputFile, fileName);
 				strcat_s(outputFile, ".npc");
 

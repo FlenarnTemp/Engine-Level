@@ -1,7 +1,5 @@
 #pragma once
 
-#include "RE/Bethesda/BGSBodyPartDefs.h"
-
 namespace RE
 {
 	namespace Cascadia
@@ -23,7 +21,7 @@ namespace RE
 				// Return if 'target' is not a 'Actor'.
 				if (target->formType != ENUM_FORM_ID::kACHR)
 				{
-					DEBUG("TESHitEvent: 'target' was not of type 'Actor'.");
+					REX::DEBUG("TESHitEvent: 'target' was not of type 'Actor'.");
 					return BSEventNotifyControl::kContinue;
 				}
 
@@ -117,7 +115,7 @@ namespace RE
 						std::uint32_t damageLimb = a_event.hitData.damageLimb.underlying();
 						if (damageLimb != std::uint32_t(BGSBodyPartDefs::LIMB_ENUM::kWeapon) && damageLimb != std::uint32_t(BGSBodyPartDefs::LIMB_ENUM::kNone))
 						{
-							DEBUG("No explosion - limb hit: {}", a_event.hitData.damageLimb.underlying());
+							REX::DEBUG("No explosion - limb hit: {}", a_event.hitData.damageLimb.underlying());
 						}
 					}
 				}
@@ -129,7 +127,7 @@ namespace RE
 						// Weapons like the 'Ashmaker' only do physical damage (unclear as to why), take that into account here.
 						float damage = std::max(a_event.hitData.healthDamage, a_event.hitData.physicalDamage);
 
-						DEBUG("No explosion - limb hit: {}", a_event.hitData.damageLimb.underlying());
+						REX::DEBUG("No explosion - limb hit: {}", a_event.hitData.damageLimb.underlying());
 					}
 				}
 
@@ -141,7 +139,7 @@ namespace RE
 		{
 			TESHitEventWatcher* tesHitEvent = new TESHitEventWatcher();
 			TESHitEvent::GetEventSource()->RegisterSink(tesHitEvent);
-			DEBUG("Registered 'TESHitEvent' sink.");
+			REX::DEBUG("Registered 'TESHitEvent' sink.");
 		}
 	}
 }

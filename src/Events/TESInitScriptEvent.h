@@ -1,9 +1,5 @@
 #pragma once
 
-#include "RE/Bethesda/BSTEvent.h"
-#include "RE/Bethesda/Events.h"
-
-
 namespace RE
 {
 	namespace Cascadia
@@ -20,8 +16,8 @@ namespace RE
 		void RegisterTESInitScriptEventSink()
 		{
 			TESInitScriptEventWatcher* tesInitScriptEvent = new TESInitScriptEventWatcher();
-			TESInitScriptEventSource::GetSingleton()->RegisterSink(tesInitScriptEvent);
-			DEBUG("Registered 'TESInitScriptEvent' sink.");
+			TESInitScriptEvent::GetEventSource()->RegisterSink(tesInitScriptEvent);
+			REX::DEBUG("Registered 'TESInitScriptEvent' sink.");
 		}
 	}
 }

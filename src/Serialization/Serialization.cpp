@@ -18,7 +18,7 @@ namespace RE
 			
 			void CASSerialization::Serialize(const F4SE::SerializationInterface* a_intfc)
 			{
-				DEBUG("Serialize save data.");
+				REX::DEBUG("Serialize save data.");
 				std::int32_t test = 12;
 	
 				a_intfc->WriteRecord('USKP', SerializationVersion, &test, sizeof(int32_t));
@@ -32,7 +32,7 @@ namespace RE
 					std::uint32_t formID = form;
 					a_intfc->WriteRecordData(&formID, sizeof(uint32_t));
 				}
-				DEBUG("Saving tagged skills.");
+				REX::DEBUG("Saving tagged skills.");
 	
 				a_intfc->WriteRecord('BPRL', SerializationVersion, &playerReadyToLevelUp, sizeof(bool));
 			
@@ -40,7 +40,7 @@ namespace RE
 	
 			void CASSerialization::Deserialize(const F4SE::SerializationInterface* a_intfc)
 			{
-				DEBUG("Deserialize save data.");
+				REX::DEBUG("Deserialize save data.");
 				std::uint32_t type;
 				std::uint32_t version;
 				std::uint32_t length;
@@ -49,18 +49,18 @@ namespace RE
 				{
 					switch (type) {
 					case 'BPRL':
-						DEBUG("Found PlayerReadyToLevelUp data.");
+						REX::DEBUG("Found PlayerReadyToLevelUp data.");
 						a_intfc->ReadRecordData(&playerReadyToLevelUp, sizeof(bool));
 						break;
 	
 					case 'USKP':
-						DEBUG("Found playerSkillPoints data.");
+						REX::DEBUG("Found playerSkillPoints data.");
 						a_intfc->ReadRecordData(&playerSkillPoints, sizeof(int32_t));
-						DEBUG(playerSkillPoints);
+						REX::DEBUG("{}", playerSkillPoints);
 						break;
 	
 					case 'UTSK':
-						DEBUG("Found tagged skills data.");
+						REX::DEBUG("Found tagged skills data.");
 						std::uint32_t taggedSkillsCount = 0;
 						a_intfc->ReadRecordData(&taggedSkillsCount, sizeof(uint32_t));
 	
@@ -83,7 +83,7 @@ namespace RE
 	
 			void CASSerialization::Revert()
 			{
-				DEBUG("Revert serialization data.");
+				REX::DEBUG("Revert serialization data.");
 				playerSkillPoints = 0;
 				playerReadyToLevelUp = false;
 				taggedSkills.clear();

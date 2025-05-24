@@ -74,7 +74,7 @@ namespace RE
 
 			bool HookFavoritesManagerUseQuickkeyItem(FavoritesManager* a_this, std::uint32_t a_quickkeyIndex)
 			{
-				DEBUG("'FavoritesManager::UseQuickkeyItem' - quickkey index: {}.", a_quickkeyIndex);
+				REX::DEBUG("'FavoritesManager::UseQuickkeyItem' - quickkey index: {}.", a_quickkeyIndex);
 				if (a_quickkeyIndex == 1)
 				{
 					return AmmoSwitch::InitializeAmmoSwitch();
@@ -112,7 +112,7 @@ namespace RE
 				// PopulateItemCardInfo - { ID 2225264 + 0x651 }
 				typedef void(PopulateItemCardInfo1_Sig)(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data);
 				REL::Relocation<PopulateItemCardInfo1_Sig> PopulateItemCardInfo1_Location{ REL::ID(2225264), 0x651 };
-				trampoline.write_branch<5>(PopulateItemCardInfo1_Location.address(), &HookPipboyDataPopulateItemCardInfo);
+				trampoline.write_jmp<5>(PopulateItemCardInfo1_Location.address(), &HookPipboyDataPopulateItemCardInfo);
 
 				// PopulateItemCardInfo - { ID 2225279 + 0x40F }
 				typedef void(PopulateItemCardInfo2_Sig)(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data);
@@ -121,23 +121,19 @@ namespace RE
 
 				// InventoryUserUIUtils::PopulateItemCardInfo_Helper - { ID 2222625 + 0x1226 }
 				REL::Relocation<std::uintptr_t> InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP{ REL::ID(2222625), 0x1226 };
-				auto InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP_bytes = NOP_BYTES(5);
-				REL::safe_write<std::uint8_t>(InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP.address(), std::span{ InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP_bytes });
+				InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP.write_fill(REL::NOP, 5);
 
 				// PipboyInventoryData::PopulateItemCardInfo - { 2225266 + 0x8CD }
 				REL::Relocation<std::uintptr_t> PipboyInventoryDataPopulateItemCardInfo_NOP{ REL::ID(2225266), 0x8CD };
-				auto PipboyInventoryDataPopulateItemCardInfo_NOP_bytes = NOP_BYTES(5);
-				REL::safe_write<std::uint8_t>(PipboyInventoryDataPopulateItemCardInfo_NOP.address(), std::span{ PipboyInventoryDataPopulateItemCardInfo_NOP_bytes });
+				PipboyInventoryDataPopulateItemCardInfo_NOP.write_fill(REL::NOP, 5);
 
 				// HUDExperienceMeter::UpdateDisplayObject - { 2220382 + 0x221 }
 				REL::Relocation<std::uintptr_t> HUDExperienceMeterUpdateDisplayObject_NOP_1{ REL::ID(2220382), 0x221 };
-				auto HUDExperienceMeterUpdateDisplayObject_NOP_bytes_1 = NOP_BYTES(5);
-				REL::safe_write<std::uint8_t>(HUDExperienceMeterUpdateDisplayObject_NOP_1.address(), std::span{ HUDExperienceMeterUpdateDisplayObject_NOP_bytes_1 });
+				HUDExperienceMeterUpdateDisplayObject_NOP_1.write_fill(REL::NOP, 5);
 
 				// HUDExperienceMeter::UpdateDisplayObject - { 2220382 + 0x26B }
 				REL::Relocation<std::uintptr_t> HUDExperienceMeterUpdateDisplayObject_NOP_2{ REL::ID(2220382), 0x26B };
-				auto HUDExperienceMeterUpdateDisplayObject_NOP_bytes_2 = NOP_BYTES(5);
-				REL::safe_write<std::uint8_t>(HUDExperienceMeterUpdateDisplayObject_NOP_2.address(), std::span{ HUDExperienceMeterUpdateDisplayObject_NOP_bytes_2 });
+				HUDExperienceMeterUpdateDisplayObject_NOP_2.write_fill(REL::NOP, 5);
 
 				// Actor::GetDesirability - { 2229946 + 0x56 } - .984
 				REL::Relocation<std::uintptr_t> ActorUtilsArmorRatingVisitorBaseoperator_1{ REL::ID(2229946), 0x56 };
@@ -222,7 +218,7 @@ namespace RE
 										{
 											TESBoundObject* object = reinterpret_cast<TESBoundObject*>(form);
 
-											//DEBUG("'sharedContainerREF' has inventory list.");
+											//REX::DEBUG("'sharedContainerREF' has inventory list.");
 											std::uint32_t availableCount = GetAvailableComponentCount(inventoryList, form);
 											insertObject = { object, availableCount };
 										}
@@ -231,7 +227,7 @@ namespace RE
 											BaseFormComponent* container = sharedContainerREF->HasContainer();
 											if (container)
 											{
-												DEBUG("'sharedContainerREF' has container - HANDLE SOMEHOW");
+												REX::DEBUG("'sharedContainerREF' has container - HANDLE SOMEHOW");
 											}
 										}
 
@@ -408,14 +404,14 @@ namespace RE
 								TESObjectWEAP* tempREFR = static_cast<TESObjectWEAP*>(a_boundObject);
 								if (tempREFR->weaponData.type == WEAPON_TYPE::kGrenade || tempREFR->weaponData.type == WEAPON_TYPE::kMine)
 								{
-									DEBUG("BGSInventoryList::AddItem: REFR grenade/mine weapon type.");
+									REX::DEBUG("BGSInventoryList::AddItem: REFR grenade/mine weapon type.");
 									break;
 								}
 
 								// Set to '1.0' when initializing if the 'noDegradation' keyword is on the object.
 								if (tempREFR->HasKeyword(Shared::noDegradation))
 								{
-									DEBUG("'CAS_NoDegradation' keyword found on weapon: {}.", tempREFR->GetFormEditorID());
+									REX::DEBUG("'CAS_NoDegradation' keyword found on weapon: {}.", tempREFR->GetFormEditorID());
 									break;
 								}
 							}
@@ -432,7 +428,7 @@ namespace RE
 
 								if (tempREFR->HasKeyword(Shared::noDegradation))
 								{
-									DEBUG("'CAS_NoDegradation' keyword found on armor: {}.", tempREFR->GetFormEditorID());
+									REX::DEBUG("'CAS_NoDegradation' keyword found on armor: {}.", tempREFR->GetFormEditorID());
 									break;
 								}
 							}
@@ -581,7 +577,7 @@ namespace RE
 
 					if (conditionReduction == 0.01f)
 					{
-						WARN("TESObjectWEAP::Fire - Ammo type '{}' is not declared in 'ammoDegradationMap'.", ammoInstance->GetFormEditorID());
+						REX::WARN("TESObjectWEAP::Fire - Ammo type '{}' is not declared in 'ammoDegradationMap'.", ammoInstance->GetFormEditorID());
 					}
 
 					// TODO: Rework these numbers after gameplay tests.
@@ -642,8 +638,8 @@ namespace RE
 				}
 				else
 				{
-					DEBUG("RETAIL DAMAGE: {}", retailDamageResistance);
-					DEBUG("AP INFO: {}", a_info->GetFormEditorID());
+					REX::DEBUG("RETAIL DAMAGE: {}", retailDamageResistance);
+					REX::DEBUG("AP INFO: {}", a_info->GetFormEditorID());
 					return retailDamageResistance;
 				}
 			}
@@ -755,10 +751,10 @@ namespace RE
 
 				for (const auto& pair : a_p2->memberMap) {
 
-					//DEBUG(pair.first.c_str());
+					//REX::DEBUG(pair.first.c_str());
 				}
 
-				//DEBUG(a_p2->memberMap.find("isLegendary")->second->kBool);
+				//REX::DEBUG(a_p2->memberMap.find("isLegendary")->second->kBool);
 
 				
 				return returnValue;
@@ -768,221 +764,221 @@ namespace RE
 			void RegisterInventoryUserUIUtilsPopulateMenuObj()
 			{
 				REL::Relocation<InventoryUserUIUtilsPopulateMenuObjSig> functionLocation{ REL::ID(2224177) };
-				if (hook_InventoryUserUIUtilsPopulateMenuObj.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookInventoryUserUIUtilsPopulateMenuObj))
+				if (hook_InventoryUserUIUtilsPopulateMenuObj.Create(reinterpret_cast<void*>(functionLocation.address()), &HookInventoryUserUIUtilsPopulateMenuObj))
 				{
-					DEBUG("Installed 'InventoryUserUIUtils::PopulateMenuObj' hook.");
+					REX::DEBUG("Installed 'InventoryUserUIUtils::PopulateMenuObj' hook.");
 					InventoryUserUIUtilsPopulateMenuObj_Original = reinterpret_cast<uintptr_t>(hook_InventoryUserUIUtilsPopulateMenuObj.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'InventoryUserUIUtils::PopulateMenuObj', exiting.");
+					REX::CRITICAL("Failed to hook 'InventoryUserUIUtils::PopulateMenuObj', exiting.");
 				}
 			}
 
 			void RegisterGetBuildConfirmQuestion()
 			{
 				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };
-				if (hook_GetBuildConfirmQuestion.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExamineMenuGetBuildConfirmQuestion))
+				if (hook_GetBuildConfirmQuestion.Create(reinterpret_cast<void*>(functionLocation.address()), &HookExamineMenuGetBuildConfirmQuestion))
 				{
-					DEBUG("Installed 'ExamineMenu::GetBuildConfirmQuestion' hook.");
+					REX::DEBUG("Installed 'ExamineMenu::GetBuildConfirmQuestion' hook.");
 				}
 				else
 				{
-					FATAL("Failed to hook 'ExamineMenu::GetBuildConfirmQuestion', exiting.");
+					REX::CRITICAL("Failed to hook 'ExamineMenu::GetBuildConfirmQuestion', exiting.");
 				}
 			}
 
 			void RegisterShowBuildFailureMessage()
 			{
 				REL::Relocation<ShowBuildFailureMessageSig> functionLocation{ REL::ID(2224959) };
-				if (hook_ShowBuildFailureMessage.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookWorkbenchMenuBaseShowBuildFailureMessage))
+				if (hook_ShowBuildFailureMessage.Create(reinterpret_cast<void*>(functionLocation.address()), &HookWorkbenchMenuBaseShowBuildFailureMessage))
 				{
-					DEBUG("Installed 'WorkbenchMenuBase::ShowBuildFailureMessage' hook.");
+					REX::DEBUG("Installed 'WorkbenchMenuBase::ShowBuildFailureMessage' hook.");
 				}
 				else
 				{
-					FATAL("Failed to hook 'WorkbenchMenuBase::ShowBuildFailureMessage', exiting.");
+					REX::CRITICAL("Failed to hook 'WorkbenchMenuBase::ShowBuildFailureMessage', exiting.");
 				}
 			}
 
 			void RegisterSetHealthPercHook()
 			{
 				REL::Relocation<SetHealthPercSig> functionLocation{ REL::ID(2190124) };
-				if (hook_SetHealthPerc.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExtraDataListSetHealthPerc))
+				if (hook_SetHealthPerc.Create(reinterpret_cast<void*>(functionLocation.address()), &HookExtraDataListSetHealthPerc))
 				{
-					DEBUG("Installed 'ExtraDataList::SetHealthPerc' hook.");
+					REX::DEBUG("Installed 'ExtraDataList::SetHealthPerc' hook.");
 					SetHealthPercOriginal = reinterpret_cast<uintptr_t>(hook_SetHealthPerc.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'ExtraDataList::SetHealthPerc', exiting.");
+					REX::CRITICAL("Failed to hook 'ExtraDataList::SetHealthPerc', exiting.");
 				}
 			}
 
 			void RegisterAddItemHook()
 			{
 				REL::Relocation<AddItemSig> functionLocation{ REL::ID(2194159) };
-				if (hook_AddItem.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookBGSInventoryListAddItem))
+				if (hook_AddItem.Create(reinterpret_cast<void*>(functionLocation.address()), &HookBGSInventoryListAddItem))
 				{
-					DEBUG("Installed 'BGSInventoryList::AddItem' hook.");
+					REX::DEBUG("Installed 'BGSInventoryList::AddItem' hook.");
 					AddItemOriginal = reinterpret_cast<uintptr_t>(hook_AddItem.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'BGSInventoryList::AddItem', exiting.");
+					REX::CRITICAL("Failed to hook 'BGSInventoryList::AddItem', exiting.");
 				}
 			}
 
 			void RegisterGetInventoryValueHook()
 			{
 				REL::Relocation<GetInventoryValueSig> functionLocation{ REL::ID(2194127) };
-				if (hook_GetInventoryValue.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookBGSInventoryItemUtilsGetInventoryValue))
+				if (hook_GetInventoryValue.Create(reinterpret_cast<void*>(functionLocation.address()), &HookBGSInventoryItemUtilsGetInventoryValue))
 				{
-					DEBUG("Installed 'BGSInventoryItemUtils::GetInventoryValue' hook.");
+					REX::DEBUG("Installed 'BGSInventoryItemUtils::GetInventoryValue' hook.");
 					GetInventoryValueOriginal = reinterpret_cast<uintptr_t>(hook_GetInventoryValue.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'BGSInventoryItemUtils::GetInventoryValue', exiting.");
+					REX::CRITICAL("Failed to hook 'BGSInventoryItemUtils::GetInventoryValue', exiting.");
 				}
 			}
 
 			void RegisterQCurrentModChoiceData()
 			{
 				REL::Relocation<QCurrentModChoiceDataSig> functionLocation{ REL::ID(2224958) };
-				if (hook_QCurrentModChoiceData.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookWorkbenchMenuBaseQCurrentModChoiceData))
+				if (hook_QCurrentModChoiceData.Create(reinterpret_cast<void*>(functionLocation.address()), &HookWorkbenchMenuBaseQCurrentModChoiceData))
 				{
-					DEBUG("Installed 'WorkbenchMenuBase::QCurrentModChoiceData' hook.");
+					REX::DEBUG("Installed 'WorkbenchMenuBase::QCurrentModChoiceData' hook.");
 				}
 				else
 				{
-					FATAL("Failed to hook 'BGSInventoryItemUtils::GetInventoryValue', exiting.");
+					REX::CRITICAL("Failed to hook 'BGSInventoryItemUtils::GetInventoryValue', exiting.");
 				}
 			}
 
 			void RegisterExamineMenuBuildConfirmed()
 			{
 				REL::Relocation<ExamineMenuBuildConfirmedSig> functionLocation{ REL::ID(2223013) };
-				if (hook_ExamineMenuBuildConfirmed.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookExamineMenuBuildConfirmed))
+				if (hook_ExamineMenuBuildConfirmed.Create(reinterpret_cast<void*>(functionLocation.address()), &HookExamineMenuBuildConfirmed))
 				{
-					DEBUG("Installed 'ExamineMenu::BuildConfirmed' hook.");
+					REX::DEBUG("Installed 'ExamineMenu::BuildConfirmed' hook.");
 					ExamineMenuBuildConfirmedOriginal = reinterpret_cast<uintptr_t>(hook_ExamineMenuBuildConfirmed.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'ExamineMenu::BuildConfirmed', exiting.");
+					REX::CRITICAL("Failed to hook 'ExamineMenu::BuildConfirmed', exiting.");
 				}
 			}
 
 			void RegisterTESObjectWEAPFire()
 			{
 				REL::Relocation<TESObjectWEAPFireSig> functionLocation{ REL::ID(2198960) };
-				if (hook_TESObjectWEAPFire.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookTESObjectWEAPFire))
+				if (hook_TESObjectWEAPFire.Create(reinterpret_cast<void*>(functionLocation.address()), &HookTESObjectWEAPFire))
 				{
-					DEBUG("Installed 'TESObjectWEAP::Fire' hook.");
+					REX::DEBUG("Installed 'TESObjectWEAP::Fire' hook.");
 					TESObjectWEAPFireOriginal = reinterpret_cast<uintptr_t>(hook_TESObjectWEAPFire.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'TESObjectWEAP::Fire', exiting.");
+					REX::CRITICAL("Failed to hook 'TESObjectWEAP::Fire', exiting.");
 				}
 			}
 
 			void RegisterCombatFormulasCalcWeaponDamage()
 			{
 				REL::Relocation<CombatFormulasCalcWeaponDamageSig> functionLocation{ REL::ID(2209001) };
-				if (hook_CombatFormulasCalcWeaponDamage.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookCombatFormulasCalcWeaponDamage))
+				if (hook_CombatFormulasCalcWeaponDamage.Create(reinterpret_cast<void*>(functionLocation.address()), &HookCombatFormulasCalcWeaponDamage))
 				{
-					DEBUG("Installed 'CombatFormulas::CalcWeaponDamage' hook.");
+					REX::DEBUG("Installed 'CombatFormulas::CalcWeaponDamage' hook.");
 					CombatFormulasCalcWeaponDamageOriginal = reinterpret_cast<uintptr_t>(hook_CombatFormulasCalcWeaponDamage.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'CombatFormulas::CalcWeaponDamage', exiting.");
+					REX::CRITICAL("Failed to hook 'CombatFormulas::CalcWeaponDamage', exiting.");
 				}
 			}
 
 			void RegisterGetEquippedArmorDamageResistance()
 			{
 				REL::Relocation<GetEquippedArmorDamageResistanceSig> functionLocation{ REL::ID(2227189) };
-				if (hook_GetEquippedArmorDamageResistance.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookGetEquippedDamageResistance))
+				if (hook_GetEquippedArmorDamageResistance.Create(reinterpret_cast<void*>(functionLocation.address()), &HookGetEquippedDamageResistance))
 				{
-					DEBUG("Installed 'ActorUtils::GetEquippedArmorDamageResistance' hook.");
+					REX::DEBUG("Installed 'ActorUtils::GetEquippedArmorDamageResistance' hook.");
 					GetEquippedArmorDamageResistanceOriginal = reinterpret_cast<uintptr_t>(hook_GetEquippedArmorDamageResistance.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'ActorUtils::GetEquippedArmorDamageResistance', exiting.");
+					REX::CRITICAL("Failed to hook 'ActorUtils::GetEquippedArmorDamageResistance', exiting.");
 				}
 			}
 
 			void RegisterIUUIIUtilsAddItemCardInfoEntry()
 			{
 				REL::Relocation<IUUIIUtilsAddItemCardInfoEntrySig> functionLocation{ REL::ID(2222648) };
-				if (hook_IUUIIUtilsAddItemCardInfoEntry.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookIUUIIUtilsAddItemCardInfoEntry))
+				if (hook_IUUIIUtilsAddItemCardInfoEntry.Create(reinterpret_cast<void*>(functionLocation.address()), &HookIUUIIUtilsAddItemCardInfoEntry))
 				{
-					DEBUG("Installed 'IUUIIUtils::AddItemCardInfoEntry' hook.");
+					REX::DEBUG("Installed 'IUUIIUtils::AddItemCardInfoEntry' hook.");
 					IUUIIUtilsAddItemCardInfoEntryOriginal = reinterpret_cast<uintptr_t>(hook_IUUIIUtilsAddItemCardInfoEntry.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'IUUIIUtils::AddItemCardInfoEntry', exiting.");
+					REX::CRITICAL("Failed to hook 'IUUIIUtils::AddItemCardInfoEntry', exiting.");
 				}
 			}
 
 			void RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry()
 			{
 				REL::Relocation<PipboyInventoryDataBaseAddItemCardInfoEntrySig> functionLocation{ REL::ID(2225270) };
-				if (hook_PipboyInventoryDataBaseAddItemCardInfoEntry.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookPipboyInventoryDataBaseAddItemCardInfoEntry))
+				if (hook_PipboyInventoryDataBaseAddItemCardInfoEntry.Create(reinterpret_cast<void*>(functionLocation.address()), &HookPipboyInventoryDataBaseAddItemCardInfoEntry))
 				{
-					DEBUG("Installed 'PipboyInventoryData::BaseAddItemCardInfoEntry' hook.");
+					REX::DEBUG("Installed 'PipboyInventoryData::BaseAddItemCardInfoEntry' hook.");
 					PipboyInventoryDataBaseAddItemCardInfoEntryOriginal = reinterpret_cast<uintptr_t>(hook_PipboyInventoryDataBaseAddItemCardInfoEntry.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'PipboyInventoryData::BaseAddItemCardInfoEntry', exiting.");
+					REX::CRITICAL("Failed to hook 'PipboyInventoryData::BaseAddItemCardInfoEntry', exiting.");
 				}
 			}
 
 			void RegisterIUUIIUtilsPopulateItemCardInfo_Helper()
 			{
 				REL::Relocation<IUUIIUtilsPopulateItemCardInfo_HelperSig> functionLocation{ REL::ID(2222625) };
-				if (hook_IUUIIUtilsPopulateItemCardInfo_Helper.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookIUUIIUtilsPopulateItemCardInfo_Helper))
+				if (hook_IUUIIUtilsPopulateItemCardInfo_Helper.Create(reinterpret_cast<void*>(functionLocation.address()), &HookIUUIIUtilsPopulateItemCardInfo_Helper))
 				{
-					DEBUG("Installed 'IUUIIUtils::PopulateItemCardInfo_Helper' hook.");
+					REX::DEBUG("Installed 'IUUIIUtils::PopulateItemCardInfo_Helper' hook.");
 					IUUIIUtilsPopulateItemCardInfo_HelperOriginal = reinterpret_cast<uintptr_t>(hook_IUUIIUtilsPopulateItemCardInfo_Helper.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'IUUIIUtils::PopulateItemCardInfo_Helper', exiting.");
+					REX::CRITICAL("Failed to hook 'IUUIIUtils::PopulateItemCardInfo_Helper', exiting.");
 				}
 			}
 
 			void RegisterPipboyInventoryUtilsFillResistTypeInfo()
 			{
 				REL::Relocation<PipboyInventoryUtilsFillResistTypeInfoSig> functionLocation{ REL::ID(2225235) };
-				if (hook_PipboyInventoryUtilsFillResistTypeInfo.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookPipboyInventoryUtilsFillResistTypeInfo))
+				if (hook_PipboyInventoryUtilsFillResistTypeInfo.Create(reinterpret_cast<void*>(functionLocation.address()), &HookPipboyInventoryUtilsFillResistTypeInfo))
 				{
-					DEBUG("Installed 'PipboyInventoryUtils::FillResistTypeInfo' hook.");
+					REX::DEBUG("Installed 'PipboyInventoryUtils::FillResistTypeInfo' hook.");
 					PipboyInventoryUtilsFillResistTypeInfo_Original = reinterpret_cast<uintptr_t>(hook_PipboyInventoryUtilsFillResistTypeInfo.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook 'PipboyInventoryUtils::FillResistTypeInfo', exiting.");
+					REX::CRITICAL("Failed to hook 'PipboyInventoryUtils::FillResistTypeInfo', exiting.");
 				}
 			}
 
 			/**void RegisterActorUtilsArmorRatingVisitorBaseOperator()
 			{
 				REL::Relocation<ActorUtilsArmorRatingVisitorBaseOperatorSig> functionLocation{ REL::ID(2227206) };
-				if (hook_ActorUtilsArmorRatingVisitorBaseOperator.Create(reinterpret_cast<LPVOID>(functionLocation.address()), &HookActorUtilsArmorRatingVisitorBaseOperator))
+				if (hook_ActorUtilsArmorRatingVisitorBaseOperator.Create(reinterpret_cast<void*>(functionLocation.address()), &HookActorUtilsArmorRatingVisitorBaseOperator))
 				{
-					DEBUG("Installed 'ActorUtils::ArmorRatingVisitorBaseOperator' hook.");
+					REX::DEBUG("Installed 'ActorUtils::ArmorRatingVisitorBaseOperator' hook.");
 					ActorUtilsArmorRatingVisitorBaseOperator_Original = reinterpret_cast<uintptr_t>(hook_ActorUtilsArmorRatingVisitorBaseOperator.GetTrampoline());
 				}
 				else
 				{
-					FATAL("Failed to hook: 'ActorUtils::ArmorRatingVisitorBaseOperator', exiting.");
+					REX::CRITICAL("Failed to hook: 'ActorUtils::ArmorRatingVisitorBaseOperator', exiting.");
 				}
 			}*/
 		}

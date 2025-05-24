@@ -30,11 +30,11 @@ namespace ObScript
 				it->parameters = params.data();
 				it->executeFunction = Execute;
 
-				DEBUG("Registered 'Help' command.");
+				REX::DEBUG("Registered 'Help' command.");
 			}
 			else
 			{
-				DEBUG("Failed to register 'Help' command.");
+				REX::DEBUG("Failed to register 'Help' command.");
 			}
 		}
 
@@ -540,7 +540,7 @@ namespace ObScript
 		{
 			if (!a_file->OpenTES(RE::NiFile::OpenMode::kReadOnly, false))
 			{
-				WARN("failed to open file: {:s}"sv, a_file->filename);
+				REX::WARN("failed to open file: {:s}"sv, a_file->filename);
 				return;
 			}
 
@@ -591,7 +591,7 @@ namespace ObScript
 
 			if (!a_file->CloseTES(false))
 			{
-				WARN(("failed to close file: {:s}"sv), a_file->filename);
+				REX::WARN(("failed to close file: {:s}"sv), a_file->filename);
 			}
 		}
 

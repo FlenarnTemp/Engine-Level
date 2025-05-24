@@ -16,7 +16,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					DEBUG("PipboyMenu::PipboyReady function called.");
+					REX::DEBUG("PipboyMenu::PipboyReady function called.");
 					//Cascadia::Skills::PopulateSkillEntries(a_params.movie->asMovieRoot, &loader);
 				}
 			};

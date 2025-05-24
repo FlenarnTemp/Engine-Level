@@ -38,7 +38,7 @@ namespace RE
 
 				    // Junkjet and other very unique weapons in terms of ammunition.
 				    if (weapon->HasKeyword(noFormlistWEAP)) {
-				        DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - weapon '{}' is flagged for no ammo switching.", weapon->GetFormEditorID());
+				        REX::DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - weapon '{}' is flagged for no ammo switching.", weapon->GetFormEditorID());
 				        return false;
 				    }
 
@@ -77,7 +77,7 @@ namespace RE
 				            }
 				        }
 				        if (!foundKeyword) {
-				            DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - {} flagged for ammo switch but no matching keyword found.", isUnique ? "weapon" : "ammo");
+				            REX::DEBUG("'AmmoSwitch::InitializeAmmoSwitch' - {} flagged for ammo switch but no matching keyword found.", isUnique ? "weapon" : "ammo");
 				            return false;
 				        }
 				    } else {
@@ -103,7 +103,7 @@ namespace RE
 			            std::uint32_t index = 0;
 			            for (; index < formListSize; ++index) {
 			                if (formList->arrayOfForms.begin()[index] == (TESForm*)currentAmmo) {
-			                    DEBUG("'AmmoSwitch::FindAmmoInFormlist' - current ammo position in found formlist: {}.", index);
+			                    REX::DEBUG("'AmmoSwitch::FindAmmoInFormlist' - current ammo position in found formlist: {}.", index);
 			                    break;
 			                }
 			            }
@@ -118,24 +118,24 @@ namespace RE
 			            }
 			        }
 			    } else {
-			        FATAL("'AmmoSwitch::FindAmmoInFormlist' - keyword not found in 'keywordFormlistMap'.");
+			        REX::CRITICAL("'AmmoSwitch::FindAmmoInFormlist' - keyword not found in 'keywordFormlistMap'.");
 			    }
 			    return false;
 			}
 
 			bool MaterialSwap(TESAmmo* currentAmmo)
 			{
-				DEBUG("'AmmoSwitch::MaterialSwap' init.");
+				REX::DEBUG("'AmmoSwitch::MaterialSwap' init.");
 
 				if (ammoToSwitchTo->swapForm)
 				{
-					//DEBUG("'AmmoSwitch::MaterialSwap', ammunition: {} does not have a swapForm.", ammoToSwitchTo->GetFormEditorID());
+					//REX::DEBUG("'AmmoSwitch::MaterialSwap', ammunition: {} does not have a swapForm.", ammoToSwitchTo->GetFormEditorID());
 
 					BGSMaterialSwap* materialSwap = ammoToSwitchTo->swapForm;
 					BSTHashMap<BSFixedString, BGSMaterialSwap::Entry> swapMap = materialSwap->swapMap;
 					if (swapMap.size() != 1)
 					{
-						WARN("'AmmoSwitch::MaterialSwap' - ammo: {} has too many entries in swapMap: {}", ammoToSwitchTo->GetFormEditorID(), swapMap.size());
+						REX::WARN("'AmmoSwitch::MaterialSwap' - ammo: {} has too many entries in swapMap: {}", ammoToSwitchTo->GetFormEditorID(), swapMap.size());
 						return false;
 					}
 					PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
@@ -148,14 +148,14 @@ namespace RE
 					BSTArray<BGSMaterialSwap*>* test = instanceDataWEAP->materialSwaps;
 					if (test)
 					{
-						DEBUG("WEAPON HAS MATERIAL SWAP ARRAY!");
+						REX::DEBUG("WEAPON HAS MATERIAL SWAP ARRAY!");
 					}
 					else
 					{
-						DEBUG("non existant, so sad...");
+						REX::DEBUG("non existant, so sad...");
 						BSTArray<BGSMaterialSwap*>* test = new BSTArray<BGSMaterialSwap*>;
 						instanceDataWEAP->materialSwaps = test;
-						DEBUG("tried establishing new array for it?");
+						REX::DEBUG("tried establishing new array for it?");
 						instanceDataWEAP->materialSwaps->push_back(materialSwap);
 						
 					}
@@ -180,7 +180,7 @@ namespace RE
 						BGSObjectInstanceExtra* objectModData = (BGSObjectInstanceExtra*)extraDataList->GetByType(EXTRA_DATA_TYPE::kObjectInstance);
 						if (objectModData)
 						{
-							DEBUG("'AmmoSwitch::MaterialSwap' - OMOD count on '{}' is: {}.", tesWEAP->GetFormEditorID(), objectModData->GetNumMods(false));
+							REX::DEBUG("'AmmoSwitch::MaterialSwap' - OMOD count on '{}' is: {}.", tesWEAP->GetFormEditorID(), objectModData->GetNumMods(false));
 						}
 						auto test = equippedInstance->instanceData.get();
 					}
@@ -214,14 +214,14 @@ namespace RE
 
 					if (strncmp(formEditorID, standardListPrefix, strlen(standardListPrefix)) == 0 || strncmp(formEditorID, uniqueListPrefix, strlen(uniqueListPrefix)) == 0)
 					{
-						DEBUG("'AmmoSwitch::DefineAmmoLists' - matching keyword: {}, added to 'keywordsAmmo'.", formEditorID);
+						REX::DEBUG("'AmmoSwitch::DefineAmmoLists' - matching keyword: {}, added to 'keywordsAmmo'.", formEditorID);
 						keywordsAmmo.push_back((BGSKeyword*)tesForm);
 						keywordFormlistMap[(BGSKeyword*)tesForm] = new BGSListForm;
 					}
 
 					if (strncmp(formEditorID, omodPrefix, strlen(omodPrefix)) == 0)
 					{
-						DEBUG("'AmmoSwitch::DefineAmmoLists' - matching keyword: {}, added to 'keywordsOMOD'.", formEditorID);
+						REX::DEBUG("'AmmoSwitch::DefineAmmoLists' - matching keyword: {}, added to 'keywordsOMOD'.", formEditorID);
 						keywordsOMOD.push_back((BGSKeyword*)tesForm);
 					}
 				}
@@ -242,7 +242,7 @@ namespace RE
 								const char* formEditorID = bgsKeyword.value()->GetFormEditorID();
 								if (strncmp(formEditorID, standardListPrefix, strlen(standardListPrefix)) == 0 || strncmp(formEditorID, uniqueListPrefix, strlen(uniqueListPrefix)) == 0)
 								{
-									DEBUG("'AmmoSwitch::DefineAmmoLists' - found keyword: {}, on ammo: {}.", bgsKeyword.value()->GetFormEditorID(), tesForm->GetFormEditorID());
+									REX::DEBUG("'AmmoSwitch::DefineAmmoLists' - found keyword: {}, on ammo: {}.", bgsKeyword.value()->GetFormEditorID(), tesForm->GetFormEditorID());
 									auto mapEntry = keywordFormlistMap.find(bgsKeyword.value());
 									if (mapEntry != keywordFormlistMap.end())
 									{
@@ -251,7 +251,7 @@ namespace RE
 									}
 									else
 									{
-										FATAL("'AmmoSwitch::DefineAmmoLists' - keyword '{}' not found in 'keywordFormlistMap'.", formEditorID);
+										REX::CRITICAL("'AmmoSwitch::DefineAmmoLists' - keyword '{}' not found in 'keywordFormlistMap'.", formEditorID);
 									}	
 								}
 							}
@@ -263,13 +263,12 @@ namespace RE
 				{
 					BGSMod::Attachment::Mod* omod = static_cast<BGSMod::Attachment::Mod*>(tesForm);
 					BGSKeyword* currentKeyword = BGSKeyword::GetTypedKeywordByIndex(KeywordType::kAttachPoint, omod->attachPoint.keywordIndex);
-					if ()
 					if (currentKeyword == omodAP)
 					{
 
 					}
 				}
-				DEBUG("'AmmoSwitch::DefineAmmoLists' - 'keywordFormlistMap' size: {}", keywordFormlistMap.size());
+				REX::DEBUG("'AmmoSwitch::DefineAmmoLists' - 'keywordFormlistMap' size: {}", keywordFormlistMap.size());
 			}
 
 			void PostLoadGameAmmoFix()
@@ -285,7 +284,7 @@ namespace RE
 
 					if (currentAmmoInPlayerMemory != currentAmmoInWeaponInstance)
 					{
-						DEBUG("'AmmoSwitch::PostLoadGameAmmoFix' - adjusted weapon instance ammo from: {}, to: {}", currentAmmoInWeaponInstance->GetFormEditorID(), currentAmmoInPlayerMemory->GetFormEditorID());
+						REX::DEBUG("'AmmoSwitch::PostLoadGameAmmoFix' - adjusted weapon instance ammo from: {}, to: {}", currentAmmoInWeaponInstance->GetFormEditorID(), currentAmmoInPlayerMemory->GetFormEditorID());
 						instanceDataWEAP->ammo = currentAmmoInPlayerMemory;
 						PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
 					}

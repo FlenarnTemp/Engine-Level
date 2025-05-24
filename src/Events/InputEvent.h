@@ -15,7 +15,7 @@ namespace RE
 
 			void ProcessButtonEvent(const ButtonEvent* event)
 			{
-				//DEBUG("Button!");
+				//REX::DEBUG("Button!");
 			}
 
 			void ProcessEvent(InputEvent* a_queueHead)

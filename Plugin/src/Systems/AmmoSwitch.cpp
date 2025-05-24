@@ -12,9 +12,15 @@ namespace RE
 
 			BSTArray<BGSKeyword*> keywordsAmmo;
 			std::unordered_map<BGSKeyword*, BGSListForm*> keywordFormlistMap;
+
+			BSTArray<BGSKeyword*> keywordsOMOD;
+			
 			BGSKeyword* noFormlistWEAP;
 			BGSKeyword* uniqueFormlistWEAP;
 			BGSKeyword* materialChange;
+			BGSKeyword* omodAP;
+
+			std::vector<std::pair<BGSKeyword*, BGSMod::Attachment::Mod*>> omodFormListMap;
 
 			bool InitializeAmmoSwitch() {
 				// Return true to make sure proper menu audio is played if ammo switch is successfully initiated, otherwise false return.
@@ -168,6 +174,8 @@ namespace RE
 
 					if (inventoryItem)
 					{
+
+
 						ExtraDataList* extraDataList = inventoryItem->stackData->extra.get();
 						BGSObjectInstanceExtra* objectModData = (BGSObjectInstanceExtra*)extraDataList->GetByType(EXTRA_DATA_TYPE::kObjectInstance);
 						if (objectModData)
@@ -190,12 +198,15 @@ namespace RE
 				TESDataHandler* dataHandler = TESDataHandler::GetSingleton();
 				BSTArray<TESForm*> ammoEntries = dataHandler->formArrays[std::to_underlying(ENUM_FORM_ID::kAMMO)];
 				BSTArray<TESForm*> keywordEntries = dataHandler->formArrays[std::to_underlying(ENUM_FORM_ID::kKYWD)];
+				BSTArray<TESForm*> omodEntries = dataHandler->formArrays[std::to_underlying(ENUM_FORM_ID::kOMOD)];
 				noFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x2D9AB8, "FalloutCascadia.esm");
 				uniqueFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x2D9AB9, "FalloutCascadia.esm");
+				omodAP = dataHandler->LookupForm<BGSKeyword>(0x0008FC, "CAS_AmmoSwitch_OMOD.esp");
 				materialChange = dataHandler->LookupForm<BGSKeyword>(0x000001, "CAS_AmmoSwitch_Extension.esp");
 				
 				const char* standardListPrefix = "CAS_AmmoSwitch_Standard_";
 				const char* uniqueListPrefix = "CAS_AmmoSwitch_Unique_";
+				const char* omodPrefix = "CAS_AmmoSwitch_OMOD_";
 
 				for (TESForm* tesForm : keywordEntries)
 				{
@@ -207,7 +218,14 @@ namespace RE
 						keywordsAmmo.push_back((BGSKeyword*)tesForm);
 						keywordFormlistMap[(BGSKeyword*)tesForm] = new BGSListForm;
 					}
-				}				
+
+					if (strncmp(formEditorID, omodPrefix, strlen(omodPrefix)) == 0)
+					{
+						DEBUG("'AmmoSwitch::DefineAmmoLists' - matching keyword: {}, added to 'keywordsOMOD'.", formEditorID);
+						keywordsOMOD.push_back((BGSKeyword*)tesForm);
+					}
+				}
+
 				for (TESForm* tesForm : ammoEntries)
 				{
 					TESAmmo* tesAMMO = static_cast<TESAmmo*>(tesForm);
@@ -238,6 +256,17 @@ namespace RE
 								}
 							}
 						}
+					}
+				}
+
+				for (TESForm* tesForm : omodEntries)
+				{
+					BGSMod::Attachment::Mod* omod = static_cast<BGSMod::Attachment::Mod*>(tesForm);
+					BGSKeyword* currentKeyword = BGSKeyword::GetTypedKeywordByIndex(KeywordType::kAttachPoint, omod->attachPoint.keywordIndex);
+					if ()
+					if (currentKeyword == omodAP)
+					{
+
 					}
 				}
 				DEBUG("'AmmoSwitch::DefineAmmoLists' - 'keywordFormlistMap' size: {}", keywordFormlistMap.size());

@@ -29,12 +29,43 @@ namespace RE
 
 					if (AmmoSwitch::ammoToSwitchTo)
 					{
-						instanceDataWEAP->ammo = AmmoSwitch::ammoToSwitchTo;
+						PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+
+						BGSInventoryItem* inventoryItem = nullptr;
+						TESObjectWEAP* tesWEAP = (TESObjectWEAP*)AmmoSwitch::equippedInstance->object;
+						TESFormID weaponFormID = tesWEAP->GetFormID();
+						for (BGSInventoryItem& item : playerCharacter->inventoryList->data)
+						{
+							if (item.object->GetFormID() == weaponFormID)
+							{
+								inventoryItem = &item;
+								break;
+							}
+						}
+
+						if (inventoryItem)
+						{
+							DEBUG("Inventory item found.");
+							BGSMod::Attachment::Mod* modTest = TESDataHandler::GetSingleton()->LookupForm<BGSMod::Attachment::Mod>(0x0009C2, "CAS_Jimswapping.esp");
+							//BGSInventoryItem::Stack* stack = inventoryItem->GetStackByID(0);
+
+							bool test = false;
+							BGSInventoryItem::CheckStackIDFunctor compareFunction(0);
+							BGSInventoryItem::ModifyModDataFunctor writeDataFunction(modTest, 0, true, &test);
+							DEBUG("Managed to write new mod data: {}", test);
+							playerCharacter->FindAndWriteStackDataForInventoryItem(tesWEAP, compareFunction, writeDataFunction);
+							playerCharacter->currentProcess->SetCurrentAmmo(BGSEquipIndex{ 0 }, AmmoSwitch::ammoToSwitchTo);
+							playerCharacter->SetCurrentAmmoCount(BGSEquipIndex{ 0 }, 0);
+							(Actor*)playerCharacter->ReloadWeapon(weaponInstance, BGSEquipIndex{ 0 });
+						}
+						
+							
+						/**instanceDataWEAP->ammo = AmmoSwitch::ammoToSwitchTo;
 						PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
 						playerCharacter->currentProcess->SetCurrentAmmo(BGSEquipIndex{ 0 }, AmmoSwitch::ammoToSwitchTo);
 						playerCharacter->SetCurrentAmmoCount(BGSEquipIndex{ 0 }, 0);
 						(Actor*)playerCharacter->ReloadWeapon(weaponInstance, BGSEquipIndex{ 0 });
-						PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);
+						PipboyDataManager::GetSingleton()->inventoryData.RepopulateItemCardsOnSection(ENUM_FORM_ID::kWEAP);*/
 					}
 						
 					AmmoSwitch::switchingAmmo = false;

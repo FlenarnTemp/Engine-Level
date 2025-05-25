@@ -1,5 +1,4 @@
 #include "Events/BSAnimationGraphEvent.h"
-#include "Events/InputEvent.h"
 #include "Events/LevelIncreaseEvent.h"
 #include "Events/MenuOpenCloseEvent.h"
 #include "Events/TESCellFullyLoadedEvent.h"
@@ -21,7 +20,7 @@ namespace RE
 	{
 		namespace Hooks
 		{
-			extern void Install(F4SE::Trampoline& trampoline);
+			extern void Install();
 			extern void RegisterHooks();
 		}
 		
@@ -53,9 +52,8 @@ namespace
 			}
 
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
-			RE::Cascadia::InputEventReceiverOverride::Install();
 			RE::Cascadia::BSAnimationGraphEventWatcher::Install();
-			RE::Cascadia::RegisterTESInitScriptEventSink();
+			//RE::Cascadia::RegisterTESInitScriptEventSink();
 			RE::Cascadia::RegisterTESHarvestEventSink();
 			RE::Cascadia::RegisterTESHitEventSink();
 			RE::Cascadia::RegisterForCellFullyLoaded();
@@ -115,6 +113,8 @@ namespace
 F4SE_PLUGIN_LOAD(const F4SE::LoadInterface* a_f4se)
 {
 	F4SE::Init(a_f4se, { .trampoline = true, .trampolineSize = 0x8000 });
+
+	RE::Cascadia::Hooks::Install();
 
 	const F4SE::SerializationInterface* serialization = F4SE::GetSerializationInterface();
 	if (!serialization)

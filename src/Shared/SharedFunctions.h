@@ -34,17 +34,17 @@ namespace RE
 
 		template<class Ty>
 		Ty SafeWrite64Function(uintptr_t addr, Ty data) {
-			DWORD oldProtect;
+			std::uint32_t oldProtect;
 			void* _d[2];
 			memcpy(_d, &data, sizeof(data));
 			size_t len = sizeof(_d[0]);
 
-			VirtualProtect((void*)addr, len, PAGE_EXECUTE_READWRITE, &oldProtect);
+			REX::W32::VirtualProtect((void*)addr, len, REX::W32::PAGE_EXECUTE_READWRITE, &oldProtect);
 			Ty olddata;
 			memset(&olddata, 0, sizeof(Ty));
 			memcpy(&olddata, (void*)addr, len);
 			memcpy((void*)addr, &_d[0], len);
-			VirtualProtect((void*)addr, len, oldProtect, &oldProtect);
+			REX::W32::VirtualProtect((void*)addr, len, oldProtect, &oldProtect);
 			return olddata;
 		}
 

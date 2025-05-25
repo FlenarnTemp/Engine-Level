@@ -1,4 +1,8 @@
 #include "Shared/Hooks.h"
+#include "detourXS/detourxs.h"
+#undef min
+#undef max
+#undef GetForm
 
 namespace RE
 {
@@ -92,8 +96,10 @@ namespace RE
 				return;
 			}
 
-			void Install(F4SE::Trampoline& trampoline)
+			void Install()
 			{
+				auto& trampoline = REL::GetTrampoline();
+
 				// GetInfoForPlayerDialogueOptionHook - { ID 2196817 + 0x40A }
 				typedef TESTopicInfo(GetCurrentTopicInfo_Player_Sig)(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType);
 				REL::Relocation<GetCurrentTopicInfo_Player_Sig> GetCurrentTopicInfo_Player_Location{ REL::ID(2196817), 0x40A };

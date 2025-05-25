@@ -1,6 +1,5 @@
 #pragma once
 
-#include "detourXS/detourxs.h"
 #include "Systems/Dialogue.h"
 #include "Shared/SharedDeclarations.h"
 #include "Shared/SharedFunctions.h"
@@ -12,7 +11,7 @@ namespace RE
 	{
 		namespace Hooks
 		{
-			void Install(F4SE::Trampoline& trampoline);
+			void Install();
 			void RegisterAddItemHook();
 			void RegisterSetHealthPercHook();
 			void RegisterGetInventoryValueHook();

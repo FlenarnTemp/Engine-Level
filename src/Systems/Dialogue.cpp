@@ -168,20 +168,49 @@ namespace RE
 	// Returns the first NPC response info that passes its condition check.
 	TESTopicInfo* GetNPCInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID)
 	{
+		REX::DEBUG("GetNPCInfo firing off!");
 		BuildDialogueMap();
 		std::vector<TESTopicInfo*> npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
 		BSTArray<TESTopicInfo*> randomOptions{};
+		std::unordered_map<TESTopicInfo*, bool> infoGroupConditions;
 
 		REX::DEBUG("NPC Infos size: {}", npcInfos.size());
 
 		for (TESTopicInfo* info : npcInfos)
 		{
-			REX::DEBUG("Info!");
-
 			if ((info->formFlags >> 5) & 1) // Check if 'Deleted'.
 			{
 				continue;
 			}
+
+			if (info->formFlags & TESTopicInfo::Flags::kInfoGroup)
+			{
+				infoGroupConditions[info] = EvaluateInfoConditions(info, playerDialogue, true);
+				continue;
+			}
+
+			if (TESTopicInfo* parentInfoGroup = info->GetParentInfoGroup())
+			{
+				auto it = infoGroupConditions.find(parentInfoGroup);
+				if (it != infoGroupConditions.end())
+				{
+					if (!it->second)
+					{
+						continue;
+					}
+				}
+				else
+				{
+					bool valid = EvaluateInfoConditions(parentInfoGroup, playerDialogue, true);
+					infoGroupConditions[parentInfoGroup] = valid;
+					
+					if (!valid)
+					{
+						continue;
+					}
+				}
+			}
+
 			if ((info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kSayOnce) && (info->data.flags & TOPIC_INFO_DATA::TOPIC_INFO_FLAGS::kDialogueInfoSaid))
 			{
 				continue;

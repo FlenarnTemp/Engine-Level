@@ -325,7 +325,7 @@ namespace RE
 				else
 				{
 					UIMessageQueue* uiMessageQueue = UIMessageQueue::GetSingleton();
-					if (auto ui = UI::GetSingleton())
+					if (UI* ui = UI::GetSingleton())
 					{
 						if (ui->menuMap.contains("CASLevelUpMenu"))
 						{

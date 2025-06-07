@@ -136,13 +136,36 @@ namespace RE
 		}
 
 		bool IsXPMetervisible()
-			{
-				BSFixedString menuString("HUDMenu");
-				IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
-				Scaleform::GFx::Value openValue;
-				menu->uiMovie->asMovieRoot->GetVariable(&openValue, "root.HUDNotificationsGroup_mc.XPMeter_mc.visible");
+		{
+			BSFixedString menuString("HUDMenu");
+			IMenu* menu = UI::GetSingleton()->GetMenu(menuString).get();
+			Scaleform::GFx::Value openValue;
+			menu->uiMovie->asMovieRoot->GetVariable(&openValue, "root.HUDNotificationsGroup_mc.XPMeter_mc.visible");
 
-				return openValue.GetBoolean();
+			return openValue.GetBoolean();
+		}
+
+		BGSKeyword* GetAmmoKeywordStandard(TESAmmo* ammo)
+		{
+			std::uint32_t keywordCount = ammo->GetNumKeywords();
+			const char* standardListPrefix = "CAS_AmmoSwitch_Standard_";
+
+			for (std::uint32_t i = 0; i <= keywordCount; i++)
+			{
+				std::optional<BGSKeyword*> keyword = ammo->GetKeywordAt(i);
+				if (keyword.has_value())
+				{
+					const char* keywordEDID = keyword.value()->GetFormEditorID();
+
+					if (strncmp(keywordEDID, standardListPrefix, strlen(standardListPrefix)) == 0)
+					{
+
+						return keyword.value();
+					}
+				}
 			}
+
+			return nullptr;
+		}
 	}
 }

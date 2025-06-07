@@ -106,9 +106,11 @@ namespace RE
 		}
 
 		extern bool InMenuMode();
+		
+		std::uint32_t GetAvailableComponentCount(BGSInventoryList* a_list, TESForm* a_form);
 
 		bool IsXPMetervisible();
 
-		std::uint32_t GetAvailableComponentCount(BGSInventoryList* a_list, TESForm* a_form);
+		BGSKeyword* GetAmmoKeywordStandard(TESAmmo* ammo);
 	}
 }

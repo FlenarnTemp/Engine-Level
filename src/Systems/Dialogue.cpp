@@ -168,13 +168,10 @@ namespace RE
 	// Returns the first NPC response info that passes its condition check.
 	TESTopicInfo* GetNPCInfo(BGSSceneActionPlayerDialogue* playerDialogue, std::uint32_t optionID)
 	{
-		REX::DEBUG("GetNPCInfo firing off!");
 		BuildDialogueMap();
 		std::vector<TESTopicInfo*> npcInfos = g_dialogueHolder.dialogueMap[optionID].second;
 		BSTArray<TESTopicInfo*> randomOptions{};
 		std::unordered_map<TESTopicInfo*, bool> infoGroupConditions;
-
-		REX::DEBUG("NPC Infos size: {}", npcInfos.size());
 
 		for (TESTopicInfo* info : npcInfos)
 		{

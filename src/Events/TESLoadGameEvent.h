@@ -22,7 +22,7 @@ namespace RE
 		{
 			TESLoadGameEventWatcher* tesLoadGameEvent = new TESLoadGameEventWatcher();
 			TESLoadGameEvent::GetEventSource()->RegisterSink(tesLoadGameEvent);
-			REX::DEBUG("Registerd 'TESLoadGameEvent' sink.");
+			REX::DEBUG("Registered 'TESLoadGameEvent' sink.");
 		}
 	}
 }

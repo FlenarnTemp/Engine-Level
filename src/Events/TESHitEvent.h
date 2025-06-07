@@ -73,7 +73,7 @@ namespace RE
 
 										float newHealth;
 
-										// Random amount if melee weapon, 'else' statement handles weapon bashing.
+										// Random amount if melee weapon, weapon bashing has special handling.
 										if (weapon->weaponData.type != WEAPON_TYPE::kGun)
 										{
 											newHealth = std::max(currentHealth - BSRandom::Float(0.005, 0.015), 0.0f);

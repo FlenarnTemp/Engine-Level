@@ -53,7 +53,7 @@ namespace
 
 			RE::Cascadia::DefineItemDegradationFormsFromGame();
 			RE::Cascadia::BSAnimationGraphEventWatcher::Install();
-			//RE::Cascadia::RegisterTESInitScriptEventSink();
+			RE::Cascadia::RegisterTESInitScriptEventSink();
 			RE::Cascadia::RegisterTESHarvestEventSink();
 			RE::Cascadia::RegisterTESHitEventSink();
 			RE::Cascadia::RegisterForCellFullyLoaded();

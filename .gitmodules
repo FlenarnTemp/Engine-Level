@@ -1,3 +1,6 @@
 [submodule "lib/commonlibf4"]
 	path = lib/commonlibf4
 	url = https://github.com/libxse/commonlibf4.git
+[submodule "src/detourXS"]
+	path = src/detourXS
+	url = https://github.com/DominicTobias/detourxs

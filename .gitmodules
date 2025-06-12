@@ -3,4 +3,4 @@
 	url = https://github.com/flenarntemp/commonlibf4.git
 [submodule "src/detourXS"]
 	path = detourXS
-	url = https://github.com/DominicTobias/detourxs
+	url = https://github.com/DominicTobias/detourxs.git

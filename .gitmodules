@@ -2,5 +2,5 @@
 	path = lib/commonlibf4
 	url = https://github.com/flenarntemp/commonlibf4.git
 [submodule "src/detourXS"]
-	path = detourXS
+	path = src/detourXS
 	url = https://github.com/DominicTobias/detourxs.git

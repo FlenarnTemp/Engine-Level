@@ -6,43 +6,6 @@ namespace RE
 {
 	namespace Cascadia
 	{
-		namespace GFxUtilities
-		{
-			void RegisterArray(Scaleform::GFx::Value* destination, Scaleform::GFx::ASMovieRootBase* asMovieRoot, const char* name, Scaleform::GFx::Value* array)
-			{
-				asMovieRoot->CreateArray(array);
-				destination->SetMember(name, array);
-			}
-
-			void RegisterString(Scaleform::GFx::Value* destination, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> asMovieRoot, const char* name, const char* string)
-			{
-				Scaleform::GFx::Value fxValue;
-				asMovieRoot->CreateString(&fxValue, string);
-				destination->SetMember(name, &fxValue);
-			}
-
-			void RegisterNumber(Scaleform::GFx::Value* destination, const char* name, double value)
-			{
-				Scaleform::GFx::Value fxValue;
-				fxValue = value;
-				destination->SetMember(name, &fxValue);
-			}
-
-			void RegisterInt(Scaleform::GFx::Value* destination, const char* name, std::uint32_t value)
-			{
-				Scaleform::GFx::Value fxValue;
-				fxValue = value;
-				destination->SetMember(name, &fxValue);
-			}
-
-			void RegisterBool(Scaleform::GFx::Value* destination, const char* name, bool value)
-			{
-				Scaleform::GFx::Value fxValue;
-				fxValue = value;
-				destination->SetMember(name, &fxValue);
-			}
-		}
-
 		// Takes a Float and converts it to a Precise String.
 		// eg. FloatToPreciseString(3.141592, 2) would return "3.14"
 		std::string FloatToPreciseString(float a_value, std::uint32_t a_precision)

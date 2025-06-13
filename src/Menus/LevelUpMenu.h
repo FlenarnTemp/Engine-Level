@@ -222,6 +222,19 @@ namespace RE
 				return true;
 			}
 
+			void PopulatePerkEntry(Scaleform::GFx::Value* a_destination, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot, BGSPerk* a_perk, bool a_eligibleOnly)
+			{
+
+			}
+
+			bool ProcessPerkList(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot)
+			{
+				Scaleform::GFx::Value argumentsArray[2];
+				a_movieRoot->CreateArray(&argumentsArray[0]);
+
+
+			}
+
 			std::uint32_t GetSkillArrayIndexByEditorID(const char* editorID) 
 			{
 				// Create a map of editor IDs to skill array indices.

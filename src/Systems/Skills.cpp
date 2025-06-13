@@ -71,38 +71,7 @@ namespace RE
 
 			AVVector CascadiaSkillsList;
 
-			/**void PopulateSkillEntry(Scaleform::GFx::Value* destination, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_MovieRoot, ActorValueInfo* skill, std::uint32_t filter, std::vector<std::string> stringValue)
-			{
-				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
-
-				Scaleform::GFx::Value arrayArguments;
-				a_MovieRoot->CreateObject(&arrayArguments);
-				float value = playerCharacter->GetPermanentActorValue(*skill);
-				float buffedValue = playerCharacter->GetActorValue(*skill);
-				GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "text", skill->fullName.c_str());
-				GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "editorid", skill->GetFormEditorID());
-				GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "description", "TEST");
-				if (stringValue.size() > (int)value)
-				{
-					GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "stringValue", stringValue[(int)value].c_str());
-				}
-				else
-				{
-					GFxUtilities::RegisterString(&arrayArguments, a_MovieRoot, "stringValue", "");
-				}
-
-				GFxUtilities::RegisterInt(&arrayArguments, "formid", skill->formID);
-				GFxUtilities::RegisterNumber(&arrayArguments, "value", buffedValue);
-				GFxUtilities::RegisterNumber(&arrayArguments, "maxVal", 0.0);
-				GFxUtilities::RegisterNumber(&arrayArguments, "baseValue", value);
-				GFxUtilities::RegisterNumber(&arrayArguments, "modified", buffedValue - value);
-				GFxUtilities::RegisterNumber(&arrayArguments, "buffedValue", buffedValue);
-				GFxUtilities::RegisterInt(&arrayArguments, "filterFlag", filter);
-
-				destination->PushBack(&arrayArguments);
-			}
-
-			void PopulateSkillEntries(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot)
+			/*void PopulateSkillEntries(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot)
 			{
 				Scaleform::GFx::Value arraySkills[7];
 				a_movieRoot->CreateString(&arraySkills[0], "skills");
@@ -136,13 +105,6 @@ namespace RE
 				arraySkills[6] = 0;
 
 				a_movieRoot->Invoke("root.casPipboy_loader.content.registerTab", nullptr, arraySkills, 7);
-			}*/
-
-			/*bool ProcessSkillsList(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot)
-			{
-				Scaleform::GFx::Value arraySkills[3];
-
-				a_movieRoot->CreateArray(&arraySkills[0]);
 			}*/
 
 			// Returns ActorValueInfo based on Skill Name.

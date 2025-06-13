@@ -201,7 +201,7 @@ namespace RE
 				BSTArray<TESForm*> omodEntries = dataHandler->formArrays[std::to_underlying(ENUM_FORM_ID::kOMOD)];
 				noFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x2D9AB8, "FalloutCascadia.esm");
 				uniqueFormlistWEAP = dataHandler->LookupForm<BGSKeyword>(0x2D9AB9, "FalloutCascadia.esm");
-				omodAP = dataHandler->LookupForm<BGSKeyword>(0x0008FC, "CAS_AmmoSwitch_OMOD.esp");
+				omodAP = dataHandler->LookupForm<BGSKeyword>(0x0008CF, "CAS_AmmoSwitch_OMOD.esp");
 				materialChange = dataHandler->LookupForm<BGSKeyword>(0x000001, "CAS_AmmoSwitch_Extension.esp");
 				
 				const char* standardListPrefix = "CAS_AmmoSwitch_Standard_";

@@ -447,6 +447,7 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'ResetSkills' called from AS3.");
+					ProcessSkillsList(a_params.movie->asMovieRoot);
 				}
 			};
 
@@ -652,8 +653,8 @@ namespace RE
 						RegisterFunction<TagSkills>(&bgsCodeObj, a_view->asMovieRoot, "TagSkills");
 						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "LearnSpecial");
 						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "ResetSpecial");
-						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "PlaySkillSound");
-						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "PlayPerkSound");
+						RegisterFunction<PlaySkillSound>(&bgsCodeObj, a_view->asMovieRoot, "PlaySkillSound");
+						RegisterFunction<PlayPerkSound>(&bgsCodeObj, a_view->asMovieRoot, "PlayPerkSound");
 						RegisterFunction<CloseMenu>(&bgsCodeObj, a_view->asMovieRoot, "CloseMenu");
 						RegisterFunction<PlayUISound>(&bgsCodeObj, a_view->asMovieRoot, "PlayUISound");
 

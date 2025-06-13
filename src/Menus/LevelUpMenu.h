@@ -180,21 +180,20 @@ namespace RE
 				BSStringT<char> description;
 				a_skill->GetDescription(description);
 
-				GFxUtilities::RegisterString(&skillEntry, a_movieRoot, "text", a_skill->fullName.c_str());
-				GFxUtilities::RegisterString(&skillEntry, a_movieRoot, "editorID", a_skill->GetFormEditorID());
-				GFxUtilities::RegisterString(&skillEntry, a_movieRoot, "description", description.c_str());
-				GFxUtilities::RegisterInt(&skillEntry, "formid",  a_skill->formID);
+				skillEntry.SetMember("text", a_skill->fullName.c_str());
+				skillEntry.SetMember("editorID", a_skill->GetFormEditorID());
+				skillEntry.SetMember("description", description.c_str());
+				skillEntry.SetMember("formid", a_skill->formID);
 
 				float baseValue = GetInitialActorValue(a_skill);
 				float value = playerCharacter->GetPermanentActorValue(*a_skill);
-			
-				GFxUtilities::RegisterInt(&skillEntry, "value", (std::uint32_t)baseValue);
-				GFxUtilities::RegisterInt(&skillEntry, "baseValue", (std::uint32_t)baseValue);
-				GFxUtilities::RegisterInt(&skillEntry, "buffedValue", (std::uint32_t)value);
-
-				GFxUtilities::RegisterBool(&skillEntry, "alreadyTagged", Serialization::IsSkillTagged(a_skill->formID));
-				GFxUtilities::RegisterBool(&skillEntry, "tagged", Serialization::IsSkillTagged(a_skill->formID));
-				a_destination->PushBack(&skillEntry);
+				skillEntry.SetMember("value", (std::uint32_t)baseValue);
+				skillEntry.SetMember("baseValue", (std::uint32_t)baseValue);
+				skillEntry.SetMember("buffedValue", (std::uint32_t)value);
+				
+				skillEntry.SetMember("alreadyTagged", Serialization::IsSkillTagged(a_skill->formID));
+				skillEntry.SetMember("tagged", Serialization::IsSkillTagged(a_skill->formID));
+				a_destination->PushBack(skillEntry);
 			}
 
 			bool ProcessSkillsList(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot)
@@ -417,7 +416,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("Open menu called from AS3");
+					REX::DEBUG("'OpenMenu' called from AS3.");
 					LevelUpMenu::InitialiseValues();
 					// TODO - RegisterForInput
 					LevelUpMenu::HandleLevelUpMenuOpen(a_params.movie->asMovieRoot);
@@ -429,7 +428,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("Close menu called from AS3");
+					REX::DEBUG("'CloseMenu' called from AS3.");
 				}
 			};
 
@@ -438,7 +437,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("SetSkills called from AS3");
+					REX::DEBUG("'SetSkills' called from AS3.");
 				}
 			};
 
@@ -447,7 +446,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("ResetSkills called from AS3");
+					REX::DEBUG("'ResetSkills' called from AS3.");
 				}
 			};
 
@@ -456,7 +455,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("ResetTagSkills called from AS3");
+					REX::DEBUG("'ResetTagSkills' called from AS3.");
 				}
 			};
 
@@ -465,7 +464,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("BackToSkills called from AS3");
+					REX::DEBUG("'BackToSkills' called from AS3.");
 				}
 			};
 
@@ -474,7 +473,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("UpdatePerksMenu called from AS3");
+					REX::DEBUG("'UpdatePerksMenu' called from AS3.");
 				}
 			};
 
@@ -483,7 +482,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("AddPerks called from AS3");
+					REX::DEBUG("'AddPerks' called from AS3.");
 				}
 			};
 
@@ -492,7 +491,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("TagSkills called from AS3");
+					REX::DEBUG("'TagSkills' called from AS3.");
 				}
 			};
 
@@ -501,7 +500,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("PlayUISound called from AS3");
+					REX::DEBUG("'PlayUISound' called from AS3.");
 					if (a_params.argCount < 1) return;
 					if (!a_params.args[0].IsString()) return;
 
@@ -516,7 +515,7 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("LearnSpecial called from AS3");
+					REX::DEBUG("'LearnSpecial' called from AS3.");
 				}
 			};
 
@@ -525,7 +524,25 @@ namespace RE
 			public:
 				virtual void Call(const Params& a_params)
 				{
-					REX::DEBUG("ResetSpecial called from AS3");
+					REX::DEBUG("'ResetSpecial' called from AS3.");
+				}
+			};
+
+			class PlaySkillSound : public Scaleform::GFx::FunctionHandler
+			{
+			public:
+				virtual void Call(const Params& a_params)
+				{
+					REX::DEBUG("'PlaySkillSound' called from AS3.");
+				}
+			};
+
+			class PlayPerkSound : public Scaleform::GFx::FunctionHandler
+			{
+			public:
+				virtual void Call(const Params& a_params)
+				{
+					REX::DEBUG("'PlayPerkSound' called from AS3.");
 				}
 			};
 
@@ -600,8 +617,8 @@ namespace RE
 					RegisterFunction<TagSkills>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "TagSkills");
 					RegisterFunction<LearnSpecial>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "LearnSpecial");
 					RegisterFunction<ResetSpecial>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "ResetSpecial");
-					RegisterFunction<OpenMenu>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "PlaySkillSound");
-					RegisterFunction<OpenMenu>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "PlayPerkSound");
+					RegisterFunction<PlaySkillSound>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "PlaySkillSound");
+					RegisterFunction<PlayPerkSound>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "PlayPerkSound");
 					RegisterFunction<CloseMenu>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "CloseMenu");
 					RegisterFunction<PlayUISound>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "PlayUISound");
 

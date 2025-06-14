@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Serialization/Serialization.h"
+#include "Shared/PerkHelpers.h"
 #include "Shared/SharedFunctions.h"
 #include "Systems/Skills.h"
-#include "Serialization/Serialization.h"
 
 namespace RE
 {
@@ -224,7 +225,15 @@ namespace RE
 
 			void PopulatePerkEntry(Scaleform::GFx::Value* a_destination, Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot, BGSPerk* a_perk, bool a_eligibleOnly)
 			{
+				PerkHelpers::AvailablePerk currentPerk = PerkHelpers::GetAvailablePerk(a_perk);
 
+				if (currentPerk.perk != nullptr)
+				{
+					REX::DEBUG("Processing perk: {}", currentPerk.perk->GetFormEditorID());
+
+					Scaleform::GFx::Value perkEntry;
+					a_movieRoot->CreateObject(&perkEntry);
+				}
 			}
 
 			bool ProcessPerkList(Scaleform::Ptr<Scaleform::GFx::ASMovieRootBase> a_movieRoot)

@@ -49,7 +49,6 @@ namespace RE
 				ActorValueInfo* Speech;
 				ActorValueInfo* Unarmed;
 				ActorValueInfo* Survival;
-				ActorValueInfo* WeaponCNDResist;
 			};
 			extern CascadiaAV_Struct CascadiaActorValues;
 
@@ -61,8 +60,8 @@ namespace RE
 			float GetBaseSkillValueByName(Actor* myActor, std::string mySkill);
 
 			ActorValueInfo* GetDependantAV(ActorValueInfo* myAV);
-			void AddDependentAV(ActorValueInfo* myAV, ActorValueInfo* dependantAV);
-			void RegisterDerivedAV(ActorValueInfo* myAV, std::function<RE::ActorValueInfo::DerivationFunction_t> CalcFunction);
+			void AddDependentAV(ActorValueInfo* a_newActorValue, ActorValueInfo* a_dependentAV);
+			void RegisterDerivedAV(ActorValueInfo* a_newActorValue, std::function<RE::ActorValueInfo::DerivationFunction_t> a_calcFunction);
 			void RegisterLinkedAV(ActorValueInfo* myAV, std::function<RE::ActorValueInfo::DerivationFunction_t> CalcFunction, ActorValueInfo* av1, ActorValueInfo* av2);
 			float CalculateSkillOffset(const ActorValueOwner* myAVOwner, const ActorValueInfo& myAV);
 			void RegisterForSkillLink();

@@ -19,9 +19,6 @@ namespace RE
 				BGSPerk* WeaponTypeMeleeWeaponsPerk;
 				BGSPerk* WeaponTypeGunsPerk;
 				BGSPerk* WeaponTypeUnarmedPerk;
-
-				// Handler Perks
-				BGSPerk* WeaponConditionHandlerPerk;
 			};
 			CascadiaPerks_Struct CascadiaPerks;
 			
@@ -159,17 +156,17 @@ namespace RE
 			}
 
 			// Add dependent AV to given AV
-			void AddDependentAV(ActorValueInfo* myAV, ActorValueInfo* dependentAV)
+			void AddDependentAV(ActorValueInfo* a_newActorValue, ActorValueInfo* a_dependentAV)
 			{
-				if (dependentAV->numDependentActorValues < sizeof(dependentAV->dependentActorValues) / 8)
+				if (a_dependentAV->numDependentActorValues < sizeof(a_dependentAV->dependentActorValues) / 8)
 				{
-					dependentAV->dependentActorValues[dependentAV->numDependentActorValues++] = myAV;
+					a_dependentAV->dependentActorValues[a_dependentAV->numDependentActorValues++] = a_newActorValue;
 				}
 			}
 
-			void RegisterDerivedAV(ActorValueInfo* myAV, std::function<RE::ActorValueInfo::DerivationFunction_t> CalcFunction)
+			void RegisterDerivedAV(ActorValueInfo* a_newActorValue, std::function<RE::ActorValueInfo::DerivationFunction_t> a_calcFunction)
 			{
-				myAV->derivationFunction = CalcFunction;
+				a_newActorValue->derivationFunction = a_calcFunction;
 			}
 
 			void RegisterLinkedAV(ActorValueInfo* myAV, std::function<RE::ActorValueInfo::DerivationFunction_t> CalcFunction, ActorValueInfo* av1, ActorValueInfo* av2)
@@ -306,7 +303,6 @@ namespace RE
 				CascadiaPerks.WeaponTypeMeleeWeaponsPerk = tesDataHandler->LookupForm<BGSPerk>(0x1F9E00, "FalloutCascadia.esm");
 				CascadiaPerks.WeaponTypeGunsPerk = tesDataHandler->LookupForm<BGSPerk>(0x1F9E01, "FalloutCascadia.esm");
 				CascadiaPerks.WeaponTypeUnarmedPerk = tesDataHandler->LookupForm<BGSPerk>(0x1F9E02, "FalloutCascadia.esm");
-				CascadiaPerks.WeaponConditionHandlerPerk = tesDataHandler->LookupForm<BGSPerk>(0x1F9E04, "FalloutCascadia.esm");
 
 				// Cascadia Skills List
 				CascadiaSkillsList.emplace_back(CascadiaActorValues.Barter);

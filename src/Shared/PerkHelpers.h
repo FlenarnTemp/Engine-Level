@@ -27,6 +27,8 @@ namespace RE
 				std::uint32_t level;
 				std::uint32_t numRanks;
 			};
+
+			AvailablePerk GetAvailablePerk(BGSPerk* a_perk);
 		}
 	}
 }

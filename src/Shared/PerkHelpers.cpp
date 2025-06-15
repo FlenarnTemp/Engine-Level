@@ -6,22 +6,6 @@ namespace RE
 	{
 		namespace PerkHelpers
 		{
-			enum FilterFlags
-			{
-				kEligible = 1,
-				kNotEligible = 2,
-				kHighLevel = 4,
-				kS = 8,
-				kP = 16,
-				kE = 32,
-				kC = 64,
-				kI = 128,
-				kA = 256,
-				kL = 512,
-				kNonSpecial = 1024,
-				kOther = 2048
-			};
-
 			AvailablePerk GetAvailablePerk(BGSPerk* a_perk)
 			{
 				AvailablePerk result;
@@ -107,16 +91,20 @@ namespace RE
 				result.requiredLevel = a_perk->data.level;
 				std::string requirementString = "";
 
-				TESCondition perkCondition = a_perk->perkConditions;
+				TESConditionItem* perkConditionItem = a_perk->perkConditions.head;
 
 				bool lastFlag = false;
+				ActorValueInfo* temporaryAVI;
 
-				while (perkCondition)
+				int counter = 0;
+
+				while (perkConditionItem != nullptr)
 				{
-
-					SCRIPT_OUTPUT scriptOutput = perkCondition.head->data.functionData.function.get();
-					float compareValue = perkCondition.head->GetComparisonValue();
-					ENUM_COMPARISON_CONDITION compareCondition = static_cast<ENUM_COMPARISON_CONDITION>(static_cast<std::int32_t>(perkCondition.head->data.condition));
+					REX::DEBUG("In while loop. - iteration: {}", counter);
+					counter++;
+					SCRIPT_OUTPUT scriptOutput = perkConditionItem->data.functionData.function.get();
+					float compareValue = perkConditionItem->GetComparisonValue();
+					ENUM_COMPARISON_CONDITION compareCondition = static_cast<ENUM_COMPARISON_CONDITION>(static_cast<std::int32_t>(perkConditionItem->data.condition));
 
 					bool eligible = true;
 					switch (scriptOutput)
@@ -124,31 +112,10 @@ namespace RE
 					case SCRIPT_OUTPUT::kScript_GetPermanentValue:
 					case SCRIPT_OUTPUT::kScript_GetBaseValue:
 					case SCRIPT_OUTPUT::kScript_GetValue:
-						ActorValueInfo* temporaryAVI = static_cast<ActorValueInfo*>(perkCondition.head->data.functionData.param[0]);
-
-						switch (compareCondition)
-						{
-						case ENUM_COMPARISON_CONDITION::kEqual:
-							eligible = playerCharacter->GetPermanentActorValue(*temporaryAVI) == compareValue;
-							break;
-						case ENUM_COMPARISON_CONDITION::kNotEqual:
-							eligible = playerCharacter->GetPermanentActorValue(*temporaryAVI) != compareValue;
-							break;
-						case ENUM_COMPARISON_CONDITION::kGreaterThan:
-							eligible = playerCharacter->GetPermanentActorValue(*temporaryAVI) > compareValue;
-							break;
-						case ENUM_COMPARISON_CONDITION::kGreaterThanEqual:
-							eligible = playerCharacter->GetPermanentActorValue(*temporaryAVI) >= compareValue;
-							break;
-						case ENUM_COMPARISON_CONDITION::kLessThan:
-							eligible = playerCharacter->GetPermanentActorValue(*temporaryAVI) < compareValue;
-							break;
-						case ENUM_COMPARISON_CONDITION::kLessThanEqual:
-							eligible = playerCharacter->GetPermanentActorValue(*temporaryAVI) <= compareValue;
-							break;
-						default:
-							break;
-						}
+						temporaryAVI = static_cast<ActorValueInfo*>(perkConditionItem->data.functionData.param[0]);
+						REX::DEBUG("AV check: {}, value to check against: {}", temporaryAVI->GetFormEditorID(), compareValue);
+						eligible = perkConditionItem->IsTrue(playerCharacter, nullptr);
+						REX::DEBUG("Eligibility after AV check: {}", eligible);
 
 						filterFlag |= FilterFlags::kNonSpecial;
 
@@ -199,18 +166,17 @@ namespace RE
 						}
 						break;
 					case SCRIPT_OUTPUT::kScript_GetIsSex:
-						isAllowable = perkCondition.IsTrue(playerCharacter, nullptr);
-						break;
-					case SCRIPT_OUTPUT::kScript_HasPerk:
+						isAllowable = perkConditionItem->IsTrue(playerCharacter, nullptr);
+						REX::DEBUG("Sex check returned: {}", isAllowable);
 						break;
 					default:
 						break;
 					}
 
-					lastFlag = (perkCondition.head->data.compareOr == 0);
+					lastFlag = (perkConditionItem->data.compareOr == 0);
 
-					TESConditionItem* nextPerkCondition = perkCondition.head->next;
-					if (nextPerkCondition)
+					perkConditionItem = perkConditionItem->next;
+					if (perkConditionItem)
 					{
 						if (scriptOutput == SCRIPT_OUTPUT::kScript_GetIsSex)
 						{

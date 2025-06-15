@@ -231,8 +231,44 @@ namespace RE
 				{
 					REX::DEBUG("Processing perk: {}", currentPerk.perk->GetFormEditorID());
 
+					PerkHelpers::PerkData temporaryPerkData = PerkHelpers::GetPerkRequirements(currentPerk.perk);
+
 					Scaleform::GFx::Value perkEntry;
 					a_movieRoot->CreateObject(&perkEntry);
+					perkEntry.SetMember("text", currentPerk.perk->fullName.c_str());
+					perkEntry.SetMember("reqs", temporaryPerkData.requirementsString.c_str());
+					perkEntry.SetMember("filterFlag", temporaryPerkData.filterFlag);
+					perkEntry.SetMember("iselig", temporaryPerkData.isEligible);
+					perkEntry.SetMember("isHighLevel", temporaryPerkData.isHighLevel);
+					perkEntry.SetMember("reqLevel", temporaryPerkData.requiredLevel);
+					perkEntry.SetMember("qname", a_perk->formID);
+					perkEntry.SetMember("formid", currentPerk.perk->formID);
+					perkEntry.SetMember("level", currentPerk.level);
+					perkEntry.SetMember("SWFPath", temporaryPerkData.SWFPath.c_str());
+					perkEntry.SetMember("numranks", currentPerk.numRanks);
+					perkEntry.SetMember("type", PerkTypes::kDefault);
+					perkEntry.SetMember("ranksinfo", "");
+
+					BSStringT<char> description;
+					currentPerk.perk->GetDescription(description);
+
+					perkEntry.SetMember("description", description.c_str());
+					perkEntry.SetMember("isTagged", temporaryPerkData.isTagged);
+
+					if (a_eligibleOnly)
+					{
+						if (temporaryPerkData.isEligible && temporaryPerkData.isAllowable)
+						{
+							a_destination->PushBack(perkEntry);
+						}
+					}
+					else
+					{
+						if (!temporaryPerkData.isEligible && temporaryPerkData.isAllowable)
+						{
+							a_destination->PushBack(perkEntry);
+						}
+					}
 				}
 			}
 

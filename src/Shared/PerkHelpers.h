@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Menus/LevelUpMenu.h"
+
 
 namespace RE
 {
@@ -28,6 +28,22 @@ namespace RE
 				BGSPerk* perk;
 				std::uint32_t level;
 				std::uint32_t numRanks;
+			};
+
+			enum FilterFlags
+			{
+				kEligible = 1,
+				kNotEligible = 2,
+				kHighLevel = 4,
+				kS = 8,
+				kP = 16,
+				kE = 32,
+				kC = 64,
+				kI = 128,
+				kA = 256,
+				kL = 512,
+				kNonSpecial = 1024,
+				kOther = 2048
 			};
 
 			AvailablePerk GetAvailablePerk(BGSPerk* a_perk);

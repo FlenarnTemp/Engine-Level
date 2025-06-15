@@ -630,6 +630,16 @@ namespace RE
 				return retailDamage;
 			}
 
+			DetourXS hook_DialogueUtilsOpenMenu;
+			typedef void(DialogueUtilsOpenMenuSig)();
+			REL::Relocation<DialogueUtilsOpenMenuSig> DialogueUtilsOpenMenuOriginal;
+
+			void HookDialogueUtilsOpenMenu()
+			{
+				REX::DEBUG("'DialogueUtils::OpenMenu' fired!");
+				return DialogueUtilsOpenMenuOriginal();
+			}
+
 			DetourXS hook_GetEquippedArmorDamageResistance;
 			typedef float(GetEquippedArmorDamageResistanceSig)(Actor*, const ActorValueInfo*);
 			REL::Relocation<GetEquippedArmorDamageResistanceSig> GetEquippedArmorDamageResistanceOriginal;
@@ -809,7 +819,7 @@ namespace RE
 
 			void RegisterSetHealthPercHook()
 			{
-				REL::Relocation<SetHealthPercSig> functionLocation{ REL::ID(2190124) };
+				REL::Relocation<SetHealthPercSig> functionLocation{ ID::ExtraDataList::SetHealthPerc };
 				if (hook_SetHealthPerc.Create(reinterpret_cast<void*>(functionLocation.address()), &HookExtraDataListSetHealthPerc))
 				{
 					REX::DEBUG("Installed 'ExtraDataList::SetHealthPerc' hook.");
@@ -920,7 +930,7 @@ namespace RE
 
 			void RegisterIUUIIUtilsAddItemCardInfoEntry()
 			{
-				REL::Relocation<IUUIIUtilsAddItemCardInfoEntrySig> functionLocation{ REL::ID(2222648) };
+				REL::Relocation<IUUIIUtilsAddItemCardInfoEntrySig> functionLocation{ ID::InventoryUserUIUtils::AddItemCardInfoEntry };
 				if (hook_IUUIIUtilsAddItemCardInfoEntry.Create(reinterpret_cast<void*>(functionLocation.address()), &HookIUUIIUtilsAddItemCardInfoEntry))
 				{
 					REX::DEBUG("Installed 'IUUIIUtils::AddItemCardInfoEntry' hook.");
@@ -974,9 +984,24 @@ namespace RE
 				}
 			}
 
+			void RegisterDialogueUtilsOpenMenu()
+			{
+				REL::Relocation<> functionLocation{ ID::DialogueUtils::OpenMenu };
+				if (hook_DialogueUtilsOpenMenu.Create(reinterpret_cast<void*>(functionLocation.address()), &HookDialogueUtilsOpenMenu))
+				{
+					REX::DEBUG("Installed 'DialogueUtils::OpenMenu' hook.");
+					DialogueUtilsOpenMenuOriginal = reinterpret_cast<uintptr_t>(hook_DialogueUtilsOpenMenu.GetTrampoline());
+				}
+				else
+				{
+					REX::CRITICAL("Failed to hook 'DialogueUtils::OpenMenu', exiting.");
+				}
+
+			}
+
 			/**void RegisterActorUtilsArmorRatingVisitorBaseOperator()
 			{
-				REL::Relocation<ActorUtilsArmorRatingVisitorBaseOperatorSig> functionLocation{ REL::ID(2227206) };
+				REL::Relocation<ActorUtilsArmorRatingVisitorBaseOperatorSig> functionLocation{ ActorUtils::ArmorRatingVisitorBase::_operator };
 				if (hook_ActorUtilsArmorRatingVisitorBaseOperator.Create(reinterpret_cast<void*>(functionLocation.address()), &HookActorUtilsArmorRatingVisitorBaseOperator))
 				{
 					REX::DEBUG("Installed 'ActorUtils::ArmorRatingVisitorBaseOperator' hook.");

@@ -27,6 +27,7 @@ namespace RE
 			void RegisterIUUIIUtilsPopulateItemCardInfo_Helper();
 			void RegisterPipboyInventoryUtilsFillResistTypeInfo();
 			void RegisterInventoryUserUIUtilsPopulateMenuObj();
+			void RegisterDialogueUtilsOpenMenu();
 
 			void RegisterHooks()
 			{
@@ -45,6 +46,7 @@ namespace RE
 				RegisterIUUIIUtilsPopulateItemCardInfo_Helper();
 				RegisterPipboyInventoryUtilsFillResistTypeInfo();
 				RegisterInventoryUserUIUtilsPopulateMenuObj();
+				RegisterDialogueUtilsOpenMenu();
 			}
 		}
 	}

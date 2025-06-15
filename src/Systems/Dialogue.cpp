@@ -46,8 +46,6 @@ namespace RE
 			{
 				TESTopicInfo* playerInfo = playerTopic->topicInfos[i];
 
-				REX::DEBUG("Topic type: {}, entry: {}", c, i);
-
 				if (!playerInfo->responses.head && !playerInfo->dataInfo)
 				{
 					continue;  // Skip over infos with no content.
@@ -250,7 +248,6 @@ namespace RE
 		}
 
 		// All infos failed their condition checks.
-		REX::DEBUG("All infos failed their condition checks");
 		return nullptr;
 	}
 
@@ -376,7 +373,6 @@ namespace RE
 
 	bool SelectDialogueOption(std::uint32_t option)
 	{
-		REX::DEBUG("SelectDialogueOption called.");
 		if (!(MenuTopicManager::GetSingleton()->allowInput))
 		{
 			return false;
@@ -506,8 +502,6 @@ namespace RE
 			BSTArray<DialogueEntry> randomOptions;
 
 			BGSScene* currentScene = PlayerCharacter::GetSingleton()->GetCurrentScene();
-
-			REX::DEBUG("Amount of possible player infos: {}", infos.size());
 
 			std::uint32_t lastResponseIndex = -1;
 			bool initialized = false;
@@ -719,8 +713,7 @@ namespace RE
 					}
 				}
 
-				REX::DEBUG("Response text: {:s}", responseText);
-				REX::DEBUG("Prompt text: {:s}", prompt.data());
+				//REX::DEBUG("Response text: {:s}", responseText);
 
 				DialogueOption option = {};
 				option.optionID = infoEntry.optionID;
@@ -739,7 +732,6 @@ namespace RE
 			}
 		}
 
-		REX::DEBUG("GetDialogueOptions: Got {:s} options when checking scene {:s}.", std::to_string(options.size()), PlayerCharacter::GetSingleton()->GetCurrentScene()->GetFormEditorID());
 		return options;
 	}
 
@@ -829,7 +821,6 @@ namespace RE
 
 	TESTopicInfo* GetCurrentTopicInfo_Player_Hook(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType)
 	{
-		REX::DEBUG("GetCurrentTopicInfo_Player_Hook called.");
 		// Use >5 for custom selections.
 		if (apPlayerDialogue->playerInput >= 5)
 		{
@@ -849,7 +840,6 @@ namespace RE
 				if (sceneData)
 				{
 					// This is necessary as no response => no pre/post TopicInfo will run.
-					REX::DEBUG("Following scene link from player dialogue.");
 					StartScene(sceneData->scene, sceneData->phase);
 				}
 			}
@@ -863,13 +853,11 @@ namespace RE
 		}
 		// Re-enable player dialogue.
 		SetPlayerDialogue(true);
-		REX::DEBUG("GetCurrentTopicInfo_Player_Hook - default function return.");
 		return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
 	}
 
 	TESTopicInfo* GetCurrentTopicInfo_NPC_Hook(BGSSceneActionPlayerDialogue* apPlayerDialogue, BGSScene* apParentScene, TESObjectREFR* apTarget, std::uint32_t aeType)
 	{
-		REX::DEBUG("GetCurrentTopicInfo_NPC_Hook called.");
 		// Use >5 for custom selections.
 		if (apPlayerDialogue->playerInput >= 5)
 		{
@@ -893,13 +881,11 @@ namespace RE
 			return info;
 		}
 
-		REX::DEBUG("GetCurrentTopicInfo_NPC_Hook - default function return.");
 		return apPlayerDialogue->GetCurrentTopicInfo(apParentScene, apTarget, aeType);
 	}
 
 	TESTopicInfo* GetCurrentTopicInfo_NPCAction_Hook(BGSSceneActionNPCResponseDialogue* apNPCDialogue, BGSScene* apParentScene)
 	{
-		REX::DEBUG("GetCurrentTopicInfo_NPCAction_Hook called.");
 		std::uint32_t dialogueOption = PlayerCharacter::GetSingleton()->playerDialogueInput.underlying();
 
 		// Use >5 for custom selections.
@@ -911,7 +897,6 @@ namespace RE
 			return info;
 		}
 
-		REX::DEBUG("GetCurrentTopicInfo_NPCAction_Hook - default function return.");
 		return apNPCDialogue->GetCurrentTopicInfo(apParentScene);
 	}
 }

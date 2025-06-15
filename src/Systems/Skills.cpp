@@ -295,7 +295,10 @@ namespace RE
 						continue;
 					}
 
-					CascadiaPerksLevelUp.push_back(perk);
+					if (!perk->data.trait && perk->data.playable)
+					{
+						CascadiaPerksLevelUp.push_back(perk);
+					}
 				}
 
 				REX::DEBUG("Perk count found: {}", CascadiaPerksLevelUp.size());

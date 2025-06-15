@@ -59,6 +59,7 @@ namespace
 			RE::Cascadia::RegisterForCellFullyLoaded();
 			RE::Cascadia::RegisterLevelIncreaseEventSink();
 			RE::Cascadia::RegisterTESLoadGameEventSink();
+			RE::Cascadia::Skills::GetLevelUpFormsFromGame();
 
 			REX::INFO("{:s} - kGameDataReady", "Cascadia Gameplay Systems");
 			break;

@@ -241,7 +241,26 @@ namespace RE
 				Scaleform::GFx::Value argumentsArray[2];
 				a_movieRoot->CreateArray(&argumentsArray[0]);
 
+				// Eligible perks iterated through first to sort at top.
+				for (std::uint32_t p1 = 0; p1 < Skills::CascadiaPerksLevelUp.size(); p1++)
+				{
+					BGSPerk* perk = Skills::CascadiaPerksLevelUp.at(p1);
+					PopulatePerkEntry(&argumentsArray[0], a_movieRoot, perk, true);
+				}
 
+				// Ineligible perks iterated through last to sort at bottom.
+				for (std::uint32_t p2 = 0; p2 < Skills::CascadiaPerksLevelUp.size(); p2++)
+				{
+					BGSPerk* perk = Skills::CascadiaPerksLevelUp.at(p2);
+					PopulatePerkEntry(&argumentsArray[0], a_movieRoot, perk, false);
+				}
+
+				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+
+				argumentsArray[1] = playerCharacter->perkCount;
+
+				a_movieRoot->Invoke("root.Menu_mc.onSwitchToPerks", nullptr, argumentsArray, 2);
+				return true;
 			}
 
 			std::uint32_t GetSkillArrayIndexByEditorID(const char* editorID) 
@@ -460,6 +479,10 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'SetSkills' called from AS3.");
+
+					// TODO - set the skills themselves.
+
+					ProcessPerkList(a_params.movie->asMovieRoot);
 				}
 			};
 
@@ -491,12 +514,13 @@ namespace RE
 				}
 			};
 
-			class UpdatePerksMenu : public Scaleform::GFx::FunctionHandler
+			class UpdatePerkMenu : public Scaleform::GFx::FunctionHandler
 			{
 			public:
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'UpdatePerksMenu' called from AS3.");
+					ProcessPerkList(a_params.movie->asMovieRoot);
 				}
 			};
 
@@ -635,7 +659,7 @@ namespace RE
 					RegisterFunction<ResetSkills>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "ResetSkills");
 					RegisterFunction<ResetTagSkills>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "ResetTagSkills");
 					RegisterFunction<BackToSkills>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "BackToSkills");
-					RegisterFunction<UpdatePerksMenu>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "UpdatePerkMenu");
+					RegisterFunction<UpdatePerkMenu>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "UpdatePerkMenu");
 					RegisterFunction<AddPerks>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "AddPerks");
 					RegisterFunction<TagSkills>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "TagSkills");
 					RegisterFunction<LearnSpecial>(&bgsCodeObj, uiMovie.get()->asMovieRoot, "LearnSpecial");
@@ -670,7 +694,7 @@ namespace RE
 						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "ResetSkills");
 						RegisterFunction<ResetTagSkills>(&bgsCodeObj, a_view->asMovieRoot, "ResetTagSkills");
 						RegisterFunction<BackToSkills>(&bgsCodeObj, a_view->asMovieRoot, "BackToSkills");
-						RegisterFunction<UpdatePerksMenu>(&bgsCodeObj, a_view->asMovieRoot, "UpdatePerkMenu");
+						RegisterFunction<UpdatePerkMenu>(&bgsCodeObj, a_view->asMovieRoot, "UpdatePerkMenu");
 						RegisterFunction<AddPerks>(&bgsCodeObj, a_view->asMovieRoot, "AddPerks");
 						RegisterFunction<TagSkills>(&bgsCodeObj, a_view->asMovieRoot, "TagSkills");
 						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "LearnSpecial");

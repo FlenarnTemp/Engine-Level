@@ -7,6 +7,8 @@ namespace RE
 	{
 		namespace Skills
 		{
+			BSTArray<BGSPerk*> CascadiaPerksLevelUp;
+
 			VanillaAV_Struct VanillaActorValues;
 
 			CascadiaAV_Struct CascadiaActorValues;
@@ -276,6 +278,27 @@ namespace RE
 			void SetPlayerBaseAVValue(ActorValueInfo* myAV, float fSetAmount)
 			{
 				SetBaseAVValue(PlayerCharacter::GetSingleton(), myAV, fSetAmount);
+			}
+
+			void GetLevelUpFormsFromGame()
+			{
+				TESDataHandler* tesDataHandler = TESDataHandler::GetSingleton();
+
+				BGSListForm* perkList = tesDataHandler->LookupForm<BGSListForm>(0x1F9DFA, "FalloutCascadia.esm");
+
+				for (std::uint32_t perkEntry = 0; perkEntry < perkList->arrayOfForms.size(); perkEntry++)
+				{
+					BGSPerk* perk = static_cast<BGSPerk*>(perkList->arrayOfForms[perkEntry]);
+					if (perk == nullptr)
+					{
+						// Entry in list is not a perk.
+						continue;
+					}
+
+					CascadiaPerksLevelUp.push_back(perk);
+				}
+
+				REX::DEBUG("Perk count found: {}", CascadiaPerksLevelUp.size());
 			}
 
 			bool DefineSkillsFormsFromGame()

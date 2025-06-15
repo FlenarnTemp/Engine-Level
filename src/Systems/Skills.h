@@ -7,6 +7,7 @@ namespace RE
 		namespace Skills
 		{
 			typedef std::vector<ActorValueInfo*> AVVector;
+			extern BSTArray<BGSPerk*> CascadiaPerksLevelUp;
 
 			enum SPECIALFormIDs
 			{
@@ -75,6 +76,8 @@ namespace RE
 			float GetPlayerBaseAVValue(ActorValueInfo* myAV);
 			void ModPlayerBaseAVValue(ActorValueInfo* myAV, float fModAmount);
 			void SetPlayerBaseAVValue(ActorValueInfo* myAV, float fSetAmount);
+
+			void GetLevelUpFormsFromGame();
 
 			bool DefineSkillsFormsFromGame();
 		}

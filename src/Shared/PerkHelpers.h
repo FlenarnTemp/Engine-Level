@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Menus/LevelUpMenu.h"
+
 namespace RE
 {
 	namespace Cascadia
@@ -13,12 +15,12 @@ namespace RE
 				bool isEligible;
 				bool isAllowable; // For 'GetIsSex' checks.
 				bool isHighLevel;
-				std::uint32_t filterFlags;
+				std::uint32_t filterFlag;
 				std::uint32_t requiredLevel;
 				std::string requirementsString;
 				std::string description;
 				std::string SWFPath;
-				bool isFlagged;
+				bool isTagged;
 			};
 
 			struct AvailablePerk
@@ -29,6 +31,7 @@ namespace RE
 			};
 
 			AvailablePerk GetAvailablePerk(BGSPerk* a_perk);
+			PerkData GetPerkRequirements(BGSPerk* a_perk);
 		}
 	}
 }

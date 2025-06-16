@@ -1,6 +1,6 @@
 [submodule "lib/commonlibf4"]
 	path = lib/commonlibf4
-	url = https://github.com/flenarntemp/commonlibf4.git
+	url = https://github.com/flenarndev/commonlibf4.git
 [submodule "src/detourXS"]
 	path = src/detourXS
 	url = https://github.com/DominicTobias/detourxs.git

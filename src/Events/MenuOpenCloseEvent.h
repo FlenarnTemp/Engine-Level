@@ -25,6 +25,8 @@ namespace RE
 					}
 				}
 
+				REX::DEBUG("Menu: {}, opening: {}", a_event.menuName, a_event.opening);
+
 				return BSEventNotifyControl::kContinue;
 			}
 		};

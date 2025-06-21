@@ -122,7 +122,7 @@ namespace RE
 
 				// PopulateItemCardInfo - { ID 2225279 + 0x40F }
 				typedef void(PopulateItemCardInfo2_Sig)(PipboyInventoryData* a_pipboyInventoryData, const BGSInventoryItem* a_inventoryItem, const BGSInventoryItem::Stack* a_stack, PipboyObject* a_data);
-				REL::Relocation<PopulateItemCardInfo2_Sig> PopulateItemCardInfo2_Location{ REL::ID(2225279), 0x40F };
+				REL::Relocation<PopulateItemCardInfo2_Sig> PopulateItemCardInfo2_Location{ ID::PipboyInventoryData::RepopulateItemCardsOnSection, 0x40F };
 				trampoline.write_call<5>(PopulateItemCardInfo2_Location.address(), &HookPipboyDataPopulateItemCardInfo);
 
 				// InventoryUserUIUtils::PopulateItemCardInfo_Helper - { ID 2222625 + 0x1226 }
@@ -130,7 +130,7 @@ namespace RE
 				InventoryUserUIUtilsPopulateItemCardInfo_Helper_NOP.write_fill(REL::NOP, 5);
 
 				// PipboyInventoryData::PopulateItemCardInfo - { 2225266 + 0x8CD }
-				REL::Relocation<std::uintptr_t> PipboyInventoryDataPopulateItemCardInfo_NOP{ REL::ID(2225266), 0x8CD };
+				REL::Relocation<std::uintptr_t> PipboyInventoryDataPopulateItemCardInfo_NOP{ ID::PipboyInventoryData::PopulateItemCardInfo, 0x8CD };
 				PipboyInventoryDataPopulateItemCardInfo_NOP.write_fill(REL::NOP, 5);
 
 				// HUDExperienceMeter::UpdateDisplayObject - { 2220382 + 0x221 }
@@ -630,16 +630,6 @@ namespace RE
 				return retailDamage;
 			}
 
-			DetourXS hook_DialogueUtilsOpenMenu;
-			typedef void(DialogueUtilsOpenMenuSig)();
-			REL::Relocation<DialogueUtilsOpenMenuSig> DialogueUtilsOpenMenuOriginal;
-
-			void HookDialogueUtilsOpenMenu()
-			{
-				REX::DEBUG("'DialogueUtils::OpenMenu' fired!");
-				return DialogueUtilsOpenMenuOriginal();
-			}
-
 			DetourXS hook_GetEquippedArmorDamageResistance;
 			typedef float(GetEquippedArmorDamageResistanceSig)(Actor*, const ActorValueInfo*);
 			REL::Relocation<GetEquippedArmorDamageResistanceSig> GetEquippedArmorDamageResistanceOriginal;
@@ -758,11 +748,11 @@ namespace RE
 
 			DetourXS hook_InventoryUserUIUtilsPopulateMenuObj;
 			typedef std::int64_t (InventoryUserUIUtilsPopulateMenuObjSig)(const PipboyObject*, PipboyObject*);
-			REL::Relocation<InventoryUserUIUtilsPopulateMenuObjSig> InventoryUserUIUtilsPopulateMenuObj_Original;
+			REL::Relocation<InventoryUserUIUtilsPopulateMenuObjSig> InventoryUserUIUtilsPopulateMenuObjOriginal;
 
 			std::int64_t HookInventoryUserUIUtilsPopulateMenuObj(const PipboyObject* a_entry, PipboyObject* a_p2)
 			{
-				std::int64_t returnValue = InventoryUserUIUtilsPopulateMenuObj_Original(a_entry, a_p2);
+				std::int64_t returnValue = InventoryUserUIUtilsPopulateMenuObjOriginal(a_entry, a_p2);
 				auto i = 0;
 
 				for (const auto& pair : a_p2->memberMap) {
@@ -783,7 +773,7 @@ namespace RE
 				if (hook_InventoryUserUIUtilsPopulateMenuObj.Create(reinterpret_cast<void*>(functionLocation.address()), &HookInventoryUserUIUtilsPopulateMenuObj))
 				{
 					REX::DEBUG("Installed 'InventoryUserUIUtils::PopulateMenuObj' hook.");
-					InventoryUserUIUtilsPopulateMenuObj_Original = reinterpret_cast<uintptr_t>(hook_InventoryUserUIUtilsPopulateMenuObj.GetTrampoline());
+					InventoryUserUIUtilsPopulateMenuObjOriginal = reinterpret_cast<uintptr_t>(hook_InventoryUserUIUtilsPopulateMenuObj.GetTrampoline());
 				}
 				else
 				{
@@ -982,21 +972,6 @@ namespace RE
 				{
 					REX::CRITICAL("Failed to hook 'PipboyInventoryUtils::FillResistTypeInfo', exiting.");
 				}
-			}
-
-			void RegisterDialogueUtilsOpenMenu()
-			{
-				REL::Relocation<> functionLocation{ ID::DialogueUtils::OpenMenu };
-				if (hook_DialogueUtilsOpenMenu.Create(reinterpret_cast<void*>(functionLocation.address()), &HookDialogueUtilsOpenMenu))
-				{
-					REX::DEBUG("Installed 'DialogueUtils::OpenMenu' hook.");
-					DialogueUtilsOpenMenuOriginal = reinterpret_cast<uintptr_t>(hook_DialogueUtilsOpenMenu.GetTrampoline());
-				}
-				else
-				{
-					REX::CRITICAL("Failed to hook 'DialogueUtils::OpenMenu', exiting.");
-				}
-
 			}
 
 			/**void RegisterActorUtilsArmorRatingVisitorBaseOperator()

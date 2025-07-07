@@ -411,6 +411,29 @@ namespace RE
 				}
 			}
 
+			void SetSkillTagged(ActorValueInfo* a_skill, bool a_tag)
+			{
+				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+				auto formID = a_skill->formID;
+
+				if (a_tag)
+				{
+					if (!Serialization::IsSkillTagged(formID))
+					{
+						Serialization::SetSkillTagged(formID);
+						playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kTemporary, *a_skill, 15);
+					}
+				}
+				else
+				{
+					if (Serialization::IsSkillTagged(formID))
+					{
+						Serialization::RemoveSkillTagged(formID);
+						playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kTemporary, *a_skill, -15);
+					}
+				}
+			}
+
 			// Called from 'LevelIncrease::Event'
 			void HandleLevelUp()
 			{
@@ -582,6 +605,15 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'TagSkills' called from AS3.");
+					std::uint32_t skillsCount = a_params.args[0].GetArraySize();
+					Scaleform::GFx::Value arrayElement, skillName, skillTagged;
+
+					for (std::uint32_t i = 0; i < skillsCount; i++) {
+						a_params.args[0].GetElement(i, &arrayElement);
+						arrayElement.GetMember("sName", &skillName);
+						arrayElement.GetMember("isTagged", &skillTagged);
+
+					}
 				}
 			};
 

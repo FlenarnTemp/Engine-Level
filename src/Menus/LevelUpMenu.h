@@ -566,6 +566,13 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'AddPerks' called from AS3.");
+					std::uint32_t perkCount = a_params.args[0].GetArraySize();
+					Scaleform::GFx::Value arrayElement, perkFormID;
+
+					for (std::uint32_t i = 0; i < perkCount; i++) {
+						a_params.args[0].GetElement(i, &arrayElement);
+						arrayElement.GetMember("iFormID", &perkFormID);
+					}
 				}
 			};
 

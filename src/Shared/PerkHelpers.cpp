@@ -175,8 +175,6 @@ namespace RE
 						else {
 							requirementString += " " + std::to_string((std::uint32_t)compareValue);
 						}
-						
-						
 						break;
 					case SCRIPT_OUTPUT::kScript_GetIsSex:
 						isAllowable = perkConditionItem->IsTrue(playerCharacter, nullptr);

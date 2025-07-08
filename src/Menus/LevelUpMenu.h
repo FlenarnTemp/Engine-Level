@@ -411,6 +411,26 @@ namespace RE
 				}
 			}
 
+			void ModPerkCount(std::int8_t a_count)
+			{
+				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+				std::int8_t result = playerCharacter->perkCount;
+
+				if (a_count < -result)
+				{
+					result = 0;
+				}
+				else
+				{
+					result = result + a_count;
+					if (result > 255)
+					{
+						result = 255;
+					}
+				}
+				playerCharacter->SetPerkCount(result);
+			}
+
 			void SetSkillTagged(ActorValueInfo* a_skill, bool a_tag)
 			{
 				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
@@ -447,6 +467,73 @@ namespace RE
 
 				std::thread LevelUpWait(WaitForLevelUpReady);
 				LevelUpWait.detach();
+			}
+
+			void ModSkillByName(std::string a_skillName, std::uint32_t a_value, std::uint32_t a_baseValue)
+			{
+				std::string skillNameString = a_skillName;
+				skillNameString.erase(std::remove_if(skillNameString.begin(), skillNameString.end(), isspace), skillNameString.end());
+
+				ActorValueInfo* skill = Skills::GetSkillByName(skillNameString);
+				std::string skillEditorID = skill->GetFormEditorID();
+
+				std::uint32_t modValue = (a_value - a_baseValue);
+
+				if (skillEditorID == "CAS_Barter")
+				{
+					TempModValues::barter = modValue;
+				}
+				else if (skillEditorID == "CAS_EnergyWeapons")
+				{
+					TempModValues::energyWeapons = modValue;
+				}
+				else if (skillEditorID == "CAS_Explosives")
+				{
+					TempModValues::explosives = modValue;
+				}
+				else if (skillEditorID == "CAS_Guns")
+				{
+					TempModValues::guns = modValue;
+				}
+				else if (skillEditorID == "CAS_Lockpick")
+				{
+					TempModValues::lockpick = modValue;
+				}
+				else if (skillEditorID == "CAS_Medicine")
+				{
+					TempModValues::medicine = modValue;
+				}
+				else if (skillEditorID == "CAS_MeleeWeapons")
+				{
+					TempModValues::meleeWeapons = modValue;
+				}
+				else if (skillEditorID == "CAS_Repair")
+				{
+					TempModValues::repair = modValue;
+				}
+				else if (skillEditorID == "CAS_Science")
+				{
+					TempModValues::science = modValue;
+				}
+				else if (skillEditorID == "CAS_Sneak")
+				{
+					TempModValues::sneak = modValue;
+				}
+				else if (skillEditorID == "CAS_Speech")
+				{
+					TempModValues::speech = modValue;
+				}
+				else if (skillEditorID == "CAS_Survival")
+				{
+					TempModValues::survival = modValue;
+				}
+				else if (skillEditorID == "CAS_Unarmed")
+				{
+					TempModValues::unarmed = modValue;
+				}
+				
+				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+				playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kTemporary, *skill, modValue);
 			}
 
 			// Check if player saved in the middle of a level up.
@@ -494,17 +581,23 @@ namespace RE
 				case kLevelUp:
 					Serialization::SetReadyToLevelUp(false);
 					Serialization::SetSkillPoints(0);
+					REX::DEBUG("'CompleteLevelUp' - 'kLevelUp'");
 					break;
 
 				case kTagSkills:
 					// TODO - tagPointsValue = 0;
 					allowRetag = false;
+					REX::DEBUG("'CompleteLevelUp' - 'kTagSkills'");
 					break;
 
 				case kSpecialRespec:
+					REX::DEBUG("'CompleteLevelUp' - 'kSpecialRespec'");
 					break;
 
 				case kIntenseTraining:
+					REX::DEBUG("'CompleteLevelUp' - 'kIntenseTraining'");
+					break;
+				default:
 					break;
 				}
 
@@ -529,6 +622,16 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'CloseMenu' called from AS3.");
+					
+					UIMessageQueue* uiMessageQueue = UIMessageQueue::GetSingleton();
+					if (UI* ui = UI::GetSingleton())
+					{
+						if (ui->menuMap.contains("CASLevelUpMenu"))
+						{
+							uiMessageQueue->AddMessage("CASLevelUpMenu", UI_MESSAGE_TYPE::kHide);
+						}
+					}
+					CompleteLevelUp();
 				}
 			};
 
@@ -539,7 +642,33 @@ namespace RE
 				{
 					REX::DEBUG("'SetSkills' called from AS3.");
 
-					// TODO - set the skills themselves.
+					std::uint32_t skillsCount = a_params.args[0].GetArraySize();
+					Scaleform::GFx::Value arrayElement, skillName, skillValue, skillBaseValue;
+
+					for (std::uint32_t i = 0; i < skillsCount; i++)
+					{
+						a_params.args[0].GetElement(i, &arrayElement);
+						arrayElement.GetMember("sName", &skillName);
+						arrayElement.GetMember("iValue", &skillValue);
+						arrayElement.GetMember("iBaseValue", &skillBaseValue);
+						
+						REX::DEBUG("1Number: {}", skillValue.IsNumber());
+						REX::DEBUG("1Int: {}", skillValue.IsInt());
+						REX::DEBUG("1UInt: {}", skillValue.IsUInt());
+						REX::DEBUG("1Array: {}", skillValue.IsArray());
+						REX::DEBUG("1Object: {}", skillValue.IsObject());
+
+						REX::DEBUG("2Number: {}", skillBaseValue.IsNumber());
+						REX::DEBUG("2Int: {}", skillBaseValue.IsInt());
+						REX::DEBUG("2UInt: {}", skillBaseValue.IsUInt());
+						REX::DEBUG("2Array: {}", skillBaseValue.IsArray());
+						REX::DEBUG("2Object: {}", skillBaseValue.IsObject());
+
+						//auto test1 = skillValue.GetUInt();
+						REX::DEBUG("skillValue: {}", skillName.GetString());
+
+						ModSkillByName(skillName.GetString(), skillValue.GetUInt(), skillBaseValue.GetUInt());
+					}
 
 					ProcessPerkList(a_params.movie->asMovieRoot);
 				}
@@ -592,9 +721,15 @@ namespace RE
 					std::uint32_t perkCount = a_params.args[0].GetArraySize();
 					Scaleform::GFx::Value arrayElement, perkFormID;
 
+					PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
+
 					for (std::uint32_t i = 0; i < perkCount; i++) {
 						a_params.args[0].GetElement(i, &arrayElement);
-						arrayElement.GetMember("iFormID", &perkFormID);
+						arrayElement.GetMember("iFormID", &perkFormID);				
+						TESForm* a_perkForm = TESForm::GetFormByNumericID(perkFormID.GetUInt());
+						BGSPerk* a_perk = static_cast<BGSPerk*>(a_perkForm);
+						playerCharacter->AddPerk(a_perk);
+						ModPerkCount(-1);
 					}
 				}
 			};
@@ -612,7 +747,7 @@ namespace RE
 						a_params.args[0].GetElement(i, &arrayElement);
 						arrayElement.GetMember("sName", &skillName);
 						arrayElement.GetMember("isTagged", &skillTagged);
-
+						SetSkillTagged(Skills::GetSkillByName(skillName.GetString()), skillTagged.GetBoolean());
 					}
 				}
 			};
@@ -647,6 +782,7 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'ResetSpecial' called from AS3.");
+					LevelUpMenu::HandleLevelUpMenuOpen(a_params.movie->asMovieRoot);
 				}
 			};
 
@@ -766,14 +902,14 @@ namespace RE
 
 						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "OpenMenu");
 						RegisterFunction<SetSkills>(&bgsCodeObj, a_view->asMovieRoot, "SetSkills");
-						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "ResetSkills");
+						RegisterFunction<ResetSkills>(&bgsCodeObj, a_view->asMovieRoot, "ResetSkills");
 						RegisterFunction<ResetTagSkills>(&bgsCodeObj, a_view->asMovieRoot, "ResetTagSkills");
 						RegisterFunction<BackToSkills>(&bgsCodeObj, a_view->asMovieRoot, "BackToSkills");
 						RegisterFunction<UpdatePerkMenu>(&bgsCodeObj, a_view->asMovieRoot, "UpdatePerkMenu");
 						RegisterFunction<AddPerks>(&bgsCodeObj, a_view->asMovieRoot, "AddPerks");
 						RegisterFunction<TagSkills>(&bgsCodeObj, a_view->asMovieRoot, "TagSkills");
-						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "LearnSpecial");
-						RegisterFunction<OpenMenu>(&bgsCodeObj, a_view->asMovieRoot, "ResetSpecial");
+						RegisterFunction<LearnSpecial>(&bgsCodeObj, a_view->asMovieRoot, "LearnSpecial");
+						RegisterFunction<ResetSpecial>(&bgsCodeObj, a_view->asMovieRoot, "ResetSpecial");
 						RegisterFunction<PlaySkillSound>(&bgsCodeObj, a_view->asMovieRoot, "PlaySkillSound");
 						RegisterFunction<PlayPerkSound>(&bgsCodeObj, a_view->asMovieRoot, "PlayPerkSound");
 						RegisterFunction<CloseMenu>(&bgsCodeObj, a_view->asMovieRoot, "CloseMenu");

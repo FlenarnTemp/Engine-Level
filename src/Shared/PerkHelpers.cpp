@@ -96,12 +96,8 @@ namespace RE
 				bool lastFlag = false;
 				ActorValueInfo* temporaryAVI;
 
-				int counter = 0;
-
 				while (perkConditionItem != nullptr)
 				{
-					REX::DEBUG("In while loop. - iteration: {}", counter);
-					counter++;
 					SCRIPT_OUTPUT scriptOutput = perkConditionItem->data.functionData.function.get();
 					float compareValue = perkConditionItem->GetComparisonValue();
 					ENUM_COMPARISON_CONDITION compareCondition = static_cast<ENUM_COMPARISON_CONDITION>(static_cast<std::int32_t>(perkConditionItem->data.condition));

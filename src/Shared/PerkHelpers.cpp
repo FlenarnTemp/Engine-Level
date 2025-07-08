@@ -94,6 +94,7 @@ namespace RE
 				TESConditionItem* perkConditionItem = a_perk->perkConditions.head;
 
 				bool lastFlag = false;
+				
 				ActorValueInfo* temporaryAVI;
 
 				while (perkConditionItem != nullptr)
@@ -103,15 +104,25 @@ namespace RE
 					ENUM_COMPARISON_CONDITION compareCondition = static_cast<ENUM_COMPARISON_CONDITION>(static_cast<std::int32_t>(perkConditionItem->data.condition));
 
 					bool eligible = true;
+					bool lessThan = false;
+					bool lessThanEqual = false;
+
 					switch (scriptOutput)
 					{
 					case SCRIPT_OUTPUT::kScript_GetPermanentValue:
 					case SCRIPT_OUTPUT::kScript_GetBaseValue:
 					case SCRIPT_OUTPUT::kScript_GetValue:
 						temporaryAVI = static_cast<ActorValueInfo*>(perkConditionItem->data.functionData.param[0]);
-						REX::DEBUG("AV check: {}, value to check against: {}", temporaryAVI->GetFormEditorID(), compareValue);
 						eligible = perkConditionItem->IsTrue(playerCharacter, nullptr);
-						REX::DEBUG("Eligibility after AV check: {}", eligible);
+
+						if (compareCondition == ENUM_COMPARISON_CONDITION::kLessThan)
+						{
+							lessThan = true;
+						}
+						else if (compareCondition == ENUM_COMPARISON_CONDITION::kLessThanEqual)
+						{
+							lessThanEqual = true;
+						}
 
 						filterFlag |= FilterFlags::kNonSpecial;
 
@@ -155,15 +166,20 @@ namespace RE
 							break;
 						}
 
-						requirementString += " " + std::to_string((std::uint32_t)compareValue);
-						if (!eligible)
-						{
-							requirementString += "</font>";
+						if (lessThan) {
+							requirementString += " > " + std::to_string((std::uint32_t)compareValue);
 						}
+						else if (lessThanEqual) {
+							requirementString += " > " + std::to_string((std::uint32_t)compareValue - 1);
+						}
+						else {
+							requirementString += " " + std::to_string((std::uint32_t)compareValue);
+						}
+						
+						
 						break;
 					case SCRIPT_OUTPUT::kScript_GetIsSex:
 						isAllowable = perkConditionItem->IsTrue(playerCharacter, nullptr);
-						REX::DEBUG("Sex check returned: {}", isAllowable);
 						break;
 					default:
 						break;
@@ -172,19 +188,32 @@ namespace RE
 					lastFlag = (perkConditionItem->data.compareOr == 0);
 
 					perkConditionItem = perkConditionItem->next;
+
 					if (perkConditionItem)
 					{
-						if (scriptOutput == SCRIPT_OUTPUT::kScript_GetIsSex)
-						{
-							requirementString += "";
-						}
-						else if (lastFlag)
-						{
-							requirementString += ", ";
-						}
-						else
-						{
-							requirementString += " $CAS_or ";
+						SCRIPT_OUTPUT scriptOutputNext = perkConditionItem->data.functionData.function.get();
+
+						if (scriptOutputNext == SCRIPT_OUTPUT::kScript_GetPermanentValue || scriptOutputNext == SCRIPT_OUTPUT::kScript_GetBaseValue || scriptOutputNext == SCRIPT_OUTPUT::kScript_GetValue) {
+							if (scriptOutput == SCRIPT_OUTPUT::kScript_GetIsSex)
+							{
+								requirementString += "";
+								if (!eligible)
+								{
+									requirementString += "</font>";
+								}
+							}
+							else if (lastFlag)
+							{
+								requirementString += ", ";
+								if (!eligible)
+								{
+									requirementString += "</font>";
+								}
+							}
+							else
+							{
+								requirementString += " $CAS_or ";
+							}
 						}
 					}
 				}

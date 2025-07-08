@@ -441,7 +441,7 @@ namespace RE
 					if (!Serialization::IsSkillTagged(formID))
 					{
 						Serialization::SetSkillTagged(formID);
-						playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kTemporary, *a_skill, 15);
+						playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kPermanent, *a_skill, 15);
 					}
 				}
 				else
@@ -449,7 +449,7 @@ namespace RE
 					if (Serialization::IsSkillTagged(formID))
 					{
 						Serialization::RemoveSkillTagged(formID);
-						playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kTemporary, *a_skill, -15);
+						playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kPermanent, *a_skill, -15);
 					}
 				}
 			}
@@ -533,7 +533,7 @@ namespace RE
 				}
 				
 				PlayerCharacter* playerCharacter = PlayerCharacter::GetSingleton();
-				playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kTemporary, *skill, modValue);
+				playerCharacter->ModActorValue(ACTOR_VALUE_MODIFIER::kPermanent, *skill, modValue);
 			}
 
 			// Check if player saved in the middle of a level up.
@@ -652,22 +652,27 @@ namespace RE
 						arrayElement.GetMember("iValue", &skillValue);
 						arrayElement.GetMember("iBaseValue", &skillBaseValue);
 						
-						REX::DEBUG("1Number: {}", skillValue.IsNumber());
-						REX::DEBUG("1Int: {}", skillValue.IsInt());
-						REX::DEBUG("1UInt: {}", skillValue.IsUInt());
-						REX::DEBUG("1Array: {}", skillValue.IsArray());
-						REX::DEBUG("1Object: {}", skillValue.IsObject());
+						auto skillValueNormal = 0;
+						if (skillValue.IsNumber())
+						{
+							skillValueNormal = skillValue.GetNumber();
+						}
+						else if (skillValue.IsUInt())
+						{
+							skillValueNormal = skillValue.GetUInt();
+						}
 
-						REX::DEBUG("2Number: {}", skillBaseValue.IsNumber());
-						REX::DEBUG("2Int: {}", skillBaseValue.IsInt());
-						REX::DEBUG("2UInt: {}", skillBaseValue.IsUInt());
-						REX::DEBUG("2Array: {}", skillBaseValue.IsArray());
-						REX::DEBUG("2Object: {}", skillBaseValue.IsObject());
+						auto skillBaseValueNormal = 0;
+						if (skillBaseValue.IsNumber())
+						{
+							skillBaseValueNormal = skillBaseValue.GetNumber();
+						}
+						else if (skillBaseValue.IsUInt())
+						{
+							skillBaseValueNormal = skillBaseValue.GetUInt();
+						}
 
-						//auto test1 = skillValue.GetUInt();
-						REX::DEBUG("skillValue: {}", skillName.GetString());
-
-						ModSkillByName(skillName.GetString(), skillValue.GetUInt(), skillBaseValue.GetUInt());
+						ModSkillByName(skillName.GetString(), skillValueNormal, skillBaseValueNormal);
 					}
 
 					ProcessPerkList(a_params.movie->asMovieRoot);

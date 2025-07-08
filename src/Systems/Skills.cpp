@@ -222,6 +222,7 @@ namespace RE
 				strSkillMap.emplace("Guns", CascadiaActorValues.Guns);
 				strSkillMap.emplace("Lockpick", CascadiaActorValues.Lockpick);
 				strSkillMap.emplace("Medicine", CascadiaActorValues.Medicine);
+				strSkillMap.emplace("MeleeWeapons", CascadiaActorValues.MeleeWeapons);
 				strSkillMap.emplace("Repair", CascadiaActorValues.Repair);
 				strSkillMap.emplace("Science", CascadiaActorValues.Science);
 				strSkillMap.emplace("Sneak", CascadiaActorValues.Sneak);

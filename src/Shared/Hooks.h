@@ -27,7 +27,6 @@ namespace RE
 			void RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry();
 			void RegisterIUUIIUtilsPopulateItemCardInfo_Helper();
 			void RegisterPipboyInventoryUtilsFillResistTypeInfo();
-			void RegisterInventoryUserUIUtilsPopulateMenuObj();
 
 			void RegisterHooks()
 			{

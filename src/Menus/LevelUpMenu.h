@@ -807,6 +807,7 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'PlaySkillSound' called from AS3.");
+					// TODO
 				}
 			};
 
@@ -816,6 +817,7 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'PlayPerkSound' called from AS3.");
+					// TODO
 				}
 			};
 

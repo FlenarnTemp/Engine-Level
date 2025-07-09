@@ -778,6 +778,16 @@ namespace RE
 				virtual void Call(const Params& a_params)
 				{
 					REX::DEBUG("'LearnSpecial' called from AS3.");
+					std::uint32_t specialCount = a_params.args[0].GetArraySize();
+					Scaleform::GFx::Value arrayElement, specialFormID, specialValue;
+
+					ActorValueInfo* special;
+
+					for (int i = 0; i < specialCount; i++) {
+						a_params.args[0].GetElement(i, &arrayElement);
+						arrayElement.GetMember("formID", &specialFormID);
+						arrayElement.GetMember("iValue", &specialValue);
+					}
 				}
 			};
 

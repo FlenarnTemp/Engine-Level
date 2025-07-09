@@ -233,7 +233,7 @@ namespace RE
 											BaseFormComponent* container = sharedContainerREF->HasContainer();
 											if (container)
 											{
-												// TODO
+												// TODO - handling needed here.
 												REX::DEBUG("'sharedContainerREF' has container - MISSING HANDLING");
 											}
 										}
@@ -823,7 +823,7 @@ namespace RE
 
 			void RegisterQCurrentModChoiceData()
 			{
-				REL::Relocation<QCurrentModChoiceDataSig> functionLocation{ REL::ID(2224958) };
+				REL::Relocation<QCurrentModChoiceDataSig> functionLocation{ ID::WorkbenchMenuBase::QCurrentModChoiceData };
 				if (hook_QCurrentModChoiceData.Create(reinterpret_cast<void*>(functionLocation.address()), &HookWorkbenchMenuBaseQCurrentModChoiceData))
 				{
 					REX::DEBUG("Installed 'WorkbenchMenuBase::QCurrentModChoiceData' hook.");
@@ -878,7 +878,7 @@ namespace RE
 
 			void RegisterGetEquippedArmorDamageResistance()
 			{
-				REL::Relocation<GetEquippedArmorDamageResistanceSig> functionLocation{ REL::ID(2227189) };
+				REL::Relocation<GetEquippedArmorDamageResistanceSig> functionLocation{ ID::ActorUtils::GetEquippedArmorDamageResistance };
 				if (hook_GetEquippedArmorDamageResistance.Create(reinterpret_cast<void*>(functionLocation.address()), &HookGetEquippedDamageResistance))
 				{
 					REX::DEBUG("Installed 'ActorUtils::GetEquippedArmorDamageResistance' hook.");
@@ -906,7 +906,7 @@ namespace RE
 
 			void RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry()
 			{
-				REL::Relocation<PipboyInventoryDataBaseAddItemCardInfoEntrySig> functionLocation{ REL::ID(2225270) };
+				REL::Relocation<PipboyInventoryDataBaseAddItemCardInfoEntrySig> functionLocation{ ID::PipboyInventoryData::BaseAddItemCardInfoEntry };
 				if (hook_PipboyInventoryDataBaseAddItemCardInfoEntry.Create(reinterpret_cast<void*>(functionLocation.address()), &HookPipboyInventoryDataBaseAddItemCardInfoEntry))
 				{
 					REX::DEBUG("Installed 'PipboyInventoryData::BaseAddItemCardInfoEntry' hook.");

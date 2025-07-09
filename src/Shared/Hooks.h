@@ -4,6 +4,7 @@
 #include "Shared/SharedDeclarations.h"
 #include "Shared/SharedFunctions.h"
 #include "Systems/AmmoSwitch.h"
+#include "Systems/Skills.h"
 
 namespace RE
 {
@@ -44,7 +45,6 @@ namespace RE
 				RegisterPipboyInventoryDataBaseAddItemsCardInfoEntry();
 				RegisterIUUIIUtilsPopulateItemCardInfo_Helper();
 				RegisterPipboyInventoryUtilsFillResistTypeInfo();
-				RegisterInventoryUserUIUtilsPopulateMenuObj();
 			}
 		}
 	}

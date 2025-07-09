@@ -233,7 +233,8 @@ namespace RE
 											BaseFormComponent* container = sharedContainerREF->HasContainer();
 											if (container)
 											{
-												REX::DEBUG("'sharedContainerREF' has container - HANDLE SOMEHOW");
+												// TODO
+												REX::DEBUG("'sharedContainerREF' has container - MISSING HANDLING");
 											}
 										}
 
@@ -294,7 +295,7 @@ namespace RE
 
 			// Required to allow the game to store a value of 1.0, by default it would set it to '-1.0'
 			// This causes issues in the way we handle initialization of the health data.
-			// Here we simply, run the original function, then if the 'a_health' was '1.0', we manually set it 
+			// Here we simply, run the original function, then if 'a_health' was '1.0', we manually set it 
 			// again to '1.0', reverting the original functions result of '-1.0'.
 			void HookExtraDataListSetHealthPerc(ExtraDataList* a_this, float a_health)
 			{
@@ -569,7 +570,7 @@ namespace RE
 				{
 					EquippedItem& equippedWeapon = playerCharacter->currentProcess->middleHigh->equippedItems[0];
 
-					// If ammo is mapped to a degradation value override default of 1%.
+					// If ammo is mapped to a degradation value, override default value of 1%.
 					float conditionReduction = 0.01f;
 					TESObjectWEAP::InstanceData* data = (TESObjectWEAP::InstanceData*)(a_weapon->instanceData.get());
 
@@ -597,7 +598,12 @@ namespace RE
 						conditionReduction *= 2.0f;
 					}
 
-					// TODO: Factor in perk/skill bonus for slower degradation.
+					// Reduces damage to weapon depending on players 'Guns' level.
+					// Linear reduction from 0 - 100, 100 resulting in 20% less damage to weapon.
+					float gunsSkillValue = playerCharacter->GetActorValue(*Skills::CascadiaActorValues.Guns);
+					float reductionPercentFromSkill = (gunsSkillValue / 100.0f) * 0.2;
+
+					conditionReduction *= (1.0f - reductionPercentFromSkill);
 
 					ExtraDataList* extraDataList = inventoryItem->stackData->extra.get();
 
@@ -746,41 +752,7 @@ namespace RE
 				}
 			}
 
-			DetourXS hook_InventoryUserUIUtilsPopulateMenuObj;
-			typedef std::int64_t (InventoryUserUIUtilsPopulateMenuObjSig)(const PipboyObject*, PipboyObject*);
-			REL::Relocation<InventoryUserUIUtilsPopulateMenuObjSig> InventoryUserUIUtilsPopulateMenuObjOriginal;
-
-			std::int64_t HookInventoryUserUIUtilsPopulateMenuObj(const PipboyObject* a_entry, PipboyObject* a_p2)
-			{
-				std::int64_t returnValue = InventoryUserUIUtilsPopulateMenuObjOriginal(a_entry, a_p2);
-				auto i = 0;
-
-				for (const auto& pair : a_p2->memberMap) {
-
-					//REX::DEBUG(pair.first.c_str());
-				}
-
-				//REX::DEBUG(a_p2->memberMap.find("isLegendary")->second->kBool);
-
-				
-				return returnValue;
-			}
-
 			// ========== REGISTERS ==========
-			void RegisterInventoryUserUIUtilsPopulateMenuObj()
-			{
-				REL::Relocation<InventoryUserUIUtilsPopulateMenuObjSig> functionLocation{ REL::ID(2224177) };
-				if (hook_InventoryUserUIUtilsPopulateMenuObj.Create(reinterpret_cast<void*>(functionLocation.address()), &HookInventoryUserUIUtilsPopulateMenuObj))
-				{
-					REX::DEBUG("Installed 'InventoryUserUIUtils::PopulateMenuObj' hook.");
-					InventoryUserUIUtilsPopulateMenuObjOriginal = reinterpret_cast<uintptr_t>(hook_InventoryUserUIUtilsPopulateMenuObj.GetTrampoline());
-				}
-				else
-				{
-					REX::CRITICAL("Failed to hook 'InventoryUserUIUtils::PopulateMenuObj', exiting.");
-				}
-			}
-
 			void RegisterGetBuildConfirmQuestion()
 			{
 				REL::Relocation<GetBuildConfirmQuestionSig> functionLocation{ REL::ID(2223057) };

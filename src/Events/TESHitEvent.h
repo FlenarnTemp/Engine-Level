@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Systems/Skills.h"
+
 namespace RE
 {
 	namespace Cascadia
@@ -72,16 +74,22 @@ namespace RE
 										TESObjectWEAP* weapon = (TESObjectWEAP*)a_event.hitData.weapon.object;
 
 										float newHealth;
+										float conditionReduction = 0.015f; // 1.5% degradation when weapon bashing, melee weapons use random value.
 
-										// Random amount if melee weapon, weapon bashing has special handling.
+										// Melee weapon
 										if (weapon->weaponData.type != WEAPON_TYPE::kGun)
 										{
-											newHealth = std::max(currentHealth - BSRandom::Float(0.005, 0.015), 0.0f);
+											conditionReduction = BSRandom::Float(0.005, 0.015);
 										}
-										else
-										{
-											newHealth = std::max(currentHealth - 0.015f, 0.0f); // Always 1.5% degradation when weapon bashing.
-										}
+										
+										// Reduces damage to weapon depending on players 'Melee weapons' level.
+										// Linear reduction from 0 - 100, 100 resulting in 20% less damage to weapon.
+										float meleeWeaponsSkillValue = playerCharacter->GetActorValue(*Skills::CascadiaActorValues.MeleeWeapons);
+										float reductionPercentFromSkill = (meleeWeaponsSkillValue / 100.0f) * 0.2;
+
+										conditionReduction *= (1.0f - reductionPercentFromSkill);
+
+										newHealth = std::max(currentHealth - conditionReduction, 0.0f); 
 
 										if (newHealth == 0.0f)
 										{

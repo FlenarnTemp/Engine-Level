@@ -836,7 +836,7 @@ namespace RE
 
 			void RegisterExamineMenuBuildConfirmed()
 			{
-				REL::Relocation<ExamineMenuBuildConfirmedSig> functionLocation{ REL::ID(2223013) };
+				REL::Relocation<ExamineMenuBuildConfirmedSig> functionLocation{ ID::ExamineMenu::BuildConfirmed };
 				if (hook_ExamineMenuBuildConfirmed.Create(reinterpret_cast<void*>(functionLocation.address()), &HookExamineMenuBuildConfirmed))
 				{
 					REX::DEBUG("Installed 'ExamineMenu::BuildConfirmed' hook.");
